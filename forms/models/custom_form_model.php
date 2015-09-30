@@ -79,7 +79,16 @@ class Custom_form_model extends NAILS_Model
      **/
     protected function _getcount_common($aData = array(), $_caller = null)
     {
-        $this->db->select('*, (SELECT COUNT(*) FROM nails_user) total_responses');
+        $this->db->select('*');
+        $this->db->select('
+            (
+                SELECT
+                    COUNT(*)
+                FROM ' . NAILS_DB_PREFIX . 'custom_form_response
+                WHERE form_id = ' . $this->tablePrefix . '.id
+            ) total_responses
+        ');
+
         parent::_getcount_common($aData, $_caller);
     }
 
