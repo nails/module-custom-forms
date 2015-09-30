@@ -1,0 +1,31 @@
+{
+    "name": "nailsapp/module-custom-forms",
+    "keywords": ["Nails", "Shed Collective", "CodeIgniter", "Custom Forms Module"],
+    "homepage": "http://nailsapp.co.uk/modules/custom-forms",
+    "description": "This is the \"Custom Forms\" module for Nails.",
+    "license": "MIT",
+    "authors":
+    [
+        {
+            "name": "Pablo de la Pena",
+            "email": "p@shedcollective.org",
+            "homepage": "http://shedcollective.org",
+            "role": "Developer"
+        }
+    ],
+    "support":
+    {
+        "email": "hello@shedcollective.org"
+    },
+    "require":
+    {
+    },
+    "extra":
+    {
+        "nails" :
+        {
+            "moduleName": "forms",
+            "type": "module"
+        }
+    }
+}
