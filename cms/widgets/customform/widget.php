@@ -15,16 +15,15 @@ namespace Nails\Cms\Widget;
 class Customform extends WidgetBase
 {
     /**
-     * Defines the basic widget details object.
-     * @return stdClass
+     * Construct and define the widget
      */
-    public static function details()
+    public function __construct()
     {
-        $d              = parent::details();
-        $d->label       = 'Custom Form';
-        $d->description = 'Render a custom form.';
-        $d->keywords    = 'custom form, form';
+        parent::__construct();
 
-        return $d;
+        $this->label       = 'Custom Form';
+        $this->grouping    = 'Custom Forms';
+        $this->description = 'Render a custom form.';
+        $this->keywords    = 'custom form, form';
     }
 }

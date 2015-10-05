@@ -1,18 +1,26 @@
 <?php
 
 /**
- * This class is the "Plain Text" CMS widget view
+ * This class is the "Custom Forms" CMS widget view
  *
  * @package     Nails
- * @subpackage  module-cms
+ * @subpackage  module-custom-forms
  * @category    Widget
  * @author      Nails Dev Team
  * @link
  */
 
-if (isset($body)) {
+$iFormId = !empty($formId) ? (int) $formId: null;
 
-	echo '<div class="cms-widget cms-widget-html">';
-		echo $body;
-	echo '</div>';
+if (!empty($iFormId)) {
+
+    $oCi->load->model('forms/custom_form_model');
+    $oForm = $oCi->custom_form_model->get_by_id($iFormId);
+
+    ?>
+    <div class="cms-widget cms-widget-custom-forms">
+        <?php dump($oForm) ?>
+    </div>
+    <?php
+
 }
