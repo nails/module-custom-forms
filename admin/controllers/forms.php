@@ -331,15 +331,15 @@ class Forms extends \AdminController
                     $aUpdateData['fields'][] = $aTemp;
                     $iFieldOrder++;
                 }
-                
+
                 if ($this->custom_form_model->update($iFormId, $aUpdateData)) {
 
-                    $this->session->set_flashdata('success', 'Form created successfully.');
+                    $this->session->set_flashdata('success', 'Form updated successfully.');
                     redirect('admin/forms/forms');
-                    
+
                 } else {
-                    
-                    $this->data['error'] = 'Failed to create form.' . $this->custom_form_model->last_error();
+
+                    $this->data['error'] = 'Failed to update form.' . $this->custom_form_model->last_error();
                 }
 
             } else {

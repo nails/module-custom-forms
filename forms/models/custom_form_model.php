@@ -279,7 +279,7 @@ class Custom_form_model extends NAILS_Model
     /**
      * @param array $iFormId The ID of the form to which the fields belong
      * @param array $aFields The fields to update or insert
-    / */
+     */
     private function updateFields($iFormId, $aFields)
     {
         /**
@@ -320,14 +320,12 @@ class Custom_form_model extends NAILS_Model
 
             if ($this->db->{$sAction}($this->tableFields)) {
 
-                if ($sAction === 'update') {
+                if ($sAction === 'insert') {
 
-                    $aProcessedIds[] = $iFieldId;
-
-                } else {
-
-                    $aProcessedIds[] = $this->db->insert_id();
+                    $iFieldId = $this->db->insert_id();
                 }
+
+                $aProcessedIds[] = $iFieldId;
 
                 if (!empty($aField['options'])) {
 
@@ -398,14 +396,12 @@ class Custom_form_model extends NAILS_Model
 
             if ($this->db->{$sAction}($this->tableOptions)) {
 
-                if ($sAction === 'update') {
+                if ($sAction === 'insert') {
 
-                    $aProcessedIds[] = $iOptionId;
-
-                } else {
-
-                    $aProcessedIds[] = $this->db->insert_id();
+                    $iOptionsId = $this->db->insert_id();
                 }
+
+                $aProcessedIds[] = $iOptionId;
 
             } else {
 
