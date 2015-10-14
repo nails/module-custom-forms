@@ -12,7 +12,9 @@
 
 namespace Nails\Admin\Forms;
 
-class Forms extends \AdminController
+use Nails\CustomForms\Controller\BaseAdmin;
+
+class Forms extends BaseAdmin
 {
     /**
      * Announces this controller's navGroups
