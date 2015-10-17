@@ -12,6 +12,7 @@
 
 namespace Nails\Admin\Forms;
 
+use Nails\Admin\Helper;
 use Nails\CustomForms\Controller\BaseAdmin;
 
 class Forms extends BaseAdmin
@@ -109,18 +110,18 @@ class Forms extends BaseAdmin
         $this->data['forms'] = $this->custom_form_model->get_all($page, $perPage, $data);
 
         //  Set Search and Pagination objects for the view
-        $this->data['search']     = \Nails\Admin\Helper::searchObject(true, $sortColumns, $sortOn, $sortOrder, $perPage, $keywords);
-        $this->data['pagination'] = \Nails\Admin\Helper::paginationObject($page, $perPage, $totalRows);
+        $this->data['search']     = Helper::searchObject(true, $sortColumns, $sortOn, $sortOrder, $perPage, $keywords);
+        $this->data['pagination'] = Helper::paginationObject($page, $perPage, $totalRows);
 
         //  Add a header button
         if (userHasPermission('admin:forms:forms:create')) {
 
-             \Nails\Admin\Helper::addHeaderButton('admin/forms/forms/create', 'Create Form');
+             Helper::addHeaderButton('admin/forms/forms/create', 'Create Form');
         }
 
         // --------------------------------------------------------------------------
 
-        \Nails\Admin\Helper::loadView('index');
+        Helper::loadView('index');
     }
 
     // --------------------------------------------------------------------------
@@ -235,7 +236,7 @@ class Forms extends BaseAdmin
         $this->data['page']->title = 'Create Form';
         $this->asset->load('nails.admin.custom.forms.edit.min.js', 'NAILS');
         $this->asset->load('mustache.js/mustache.js', 'NAILS-BOWER');
-        \Nails\Admin\Helper::loadView('edit');
+        Helper::loadView('edit');
     }
 
     // --------------------------------------------------------------------------
@@ -355,7 +356,7 @@ class Forms extends BaseAdmin
         $this->data['page']->title = 'Edit Form';
         $this->asset->load('nails.admin.custom.forms.edit.min.js', 'NAILS');
         $this->asset->load('mustache.js/mustache.js', 'NAILS-BOWER');
-        \Nails\Admin\Helper::loadView('edit');
+        Helper::loadView('edit');
     }
 
     // --------------------------------------------------------------------------
@@ -416,7 +417,7 @@ class Forms extends BaseAdmin
             );
             $this->data['responses'] = $this->custom_form_response_model->get_all(null, null, $aData);
 
-            \Nails\Admin\Helper::addHeaderButton(
+            Helper::addHeaderButton(
                 'admin/forms/forms/responses/' . $this->data['form']->id . '?dl=1',
                 'Download as CSV'
             );
@@ -428,7 +429,7 @@ class Forms extends BaseAdmin
             } else {
 
                 $this->data['page']->title = 'Responses for form: ' . $this->data['form']->label;
-                \Nails\Admin\Helper::loadView('responses');
+                Helper::loadView('responses');
             }
 
         } else {
@@ -439,7 +440,7 @@ class Forms extends BaseAdmin
                 show_404();
             }
 
-            \Nails\Admin\Helper::addHeaderButton(
+            Helper::addHeaderButton(
                 'admin/forms/forms/responses/' . $this->data['form']->id . '/' . $iResponseId . '?dl=1',
                 'Download as CSV'
             );
@@ -451,7 +452,7 @@ class Forms extends BaseAdmin
             } else {
 
                 $this->data['page']->title = 'Responses for form: ' . $this->data['form']->label;
-                \Nails\Admin\Helper::loadView('response');
+                Helper::loadView('response');
             }
         }
     }
