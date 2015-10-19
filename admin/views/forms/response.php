@@ -45,7 +45,7 @@
             ?>
             <tr>
                 <td colspan="3" class="no-data">
-                    No Responses
+                    No Data
                 </td>
             </tr>
             <?php

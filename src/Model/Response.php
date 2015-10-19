@@ -1,7 +1,28 @@
 <?php
 
-class Custom_form_response_model extends NAILS_Model
+/**
+ * Manage Custom form responses
+ *
+ * @package     Nails
+ * @subpackage  module-custom-forms
+ * @category    Model
+ * @author      Nails Dev Team
+ * @link
+ */
+
+namespace Nails\CustomForms\Model;
+
+use Nails\Factory;
+use Nails\Common\Model\Base;
+
+class Response extends Base
 {
+    private $oDb;
+    private $tableAnswer;
+    private $tableAnswerPrefix;
+
+    // --------------------------------------------------------------------------
+
     /**
      * Construct the model
      */
@@ -9,6 +30,7 @@ class Custom_form_response_model extends NAILS_Model
     {
         parent::__construct();
 
+        $this->oDb               = Factory::service('Database');
         $this->table             = NAILS_DB_PREFIX . 'custom_form_response';
         $this->tablePrefix       = 'fr';
         $this->tableAnswer       = NAILS_DB_PREFIX . 'custom_form_response_answer';
@@ -89,28 +111,28 @@ class Custom_form_response_model extends NAILS_Model
     */
     private function getAnswersForResponse($iResponseId)
     {
-        $this->db->select('fra.id,fra.form_field_id,ff.label field_label,fra.value text_value');
-        $this->db->select('fra.form_field_option_id,ffo.label option_label, ff.order field_order');
-        $this->db->join(
+        $this->oDb->select('fra.id,fra.form_field_id,ff.label field_label,fra.value text_value');
+        $this->oDb->select('fra.form_field_option_id,ffo.label option_label, ff.order field_order');
+        $this->oDb->join(
             NAILS_DB_PREFIX . 'custom_form_field ff',
             $this->tableAnswerPrefix . '.form_field_id = ff.id',
             'LEFT'
         );
-        $this->db->join(
+        $this->oDb->join(
             NAILS_DB_PREFIX . 'custom_form_field_option ffo',
             $this->tableAnswerPrefix . '.form_field_option_id = ffo.id',
             'LEFT'
         );
-        $this->db->where($this->tableAnswerPrefix . '.form_response_id', $iResponseId);
-        $this->db->order_by('ff.order,ff.id');
-        $aAnswers = $this->db->get($this->tableAnswer . ' ' . $this->tableAnswerPrefix)->result();
+        $this->oDb->where($this->tableAnswerPrefix . '.form_response_id', $iResponseId);
+        $this->oDb->order_by('ff.order,ff.id');
+        $aAnswers = $this->oDb->get($this->tableAnswer . ' ' . $this->tableAnswerPrefix)->result();
         $aOut = array();
 
         foreach ($aAnswers as $oAnswer) {
 
             if (empty($aOut[$oAnswer->form_field_id])) {
 
-                $aOut[$oAnswer->form_field_id] = new \stdClass();
+                $aOut[$oAnswer->form_field_id]           = new \stdClass();
                 $aOut[$oAnswer->form_field_id]->number   = $oAnswer->field_order + 1;
                 $aOut[$oAnswer->form_field_id]->question = $oAnswer->field_label;
                 $aOut[$oAnswer->form_field_id]->answer   = array();

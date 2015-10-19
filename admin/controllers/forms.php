@@ -12,11 +12,17 @@
 
 namespace Nails\Admin\Forms;
 
+use Nails\Factory;
 use Nails\Admin\Helper;
 use Nails\CustomForms\Controller\BaseAdmin;
 
 class Forms extends BaseAdmin
 {
+    private $oFormModel;
+    private $oResponseModel;
+
+    // --------------------------------------------------------------------------
+
     /**
      * Announces this controller's navGroups
      * @return stdClass
@@ -55,8 +61,8 @@ class Forms extends BaseAdmin
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('forms/custom_form_model');
-        $this->load->model('forms/custom_form_response_model');
+        $this->oFormModel     = Factory::model('Form', 'nailsapp/module-custom-forms');
+        $this->oResponseModel = Factory::model('Response', 'nailsapp/module-custom-forms');
     }
 
     // --------------------------------------------------------------------------
@@ -80,12 +86,12 @@ class Forms extends BaseAdmin
         // --------------------------------------------------------------------------
 
         //  Get pagination and search/sort variables
-        $tablePrefix = $this->custom_form_model->getTablePrefix();
-        $page      = $this->input->get('page')      ? $this->input->get('page')      : 0;
-        $perPage   = $this->input->get('perPage')   ? $this->input->get('perPage')   : 50;
-        $sortOn    = $this->input->get('sortOn')    ? $this->input->get('sortOn')    : $tablePrefix . '.label';
-        $sortOrder = $this->input->get('sortOrder') ? $this->input->get('sortOrder') : 'asc';
-        $keywords  = $this->input->get('keywords')  ? $this->input->get('keywords')  : '';
+        $tablePrefix = $this->oFormModel->getTablePrefix();
+        $page        = $this->input->get('page')      ? $this->input->get('page')      : 0;
+        $perPage     = $this->input->get('perPage')   ? $this->input->get('perPage')   : 50;
+        $sortOn      = $this->input->get('sortOn')    ? $this->input->get('sortOn')    : $tablePrefix . '.label';
+        $sortOrder   = $this->input->get('sortOrder') ? $this->input->get('sortOrder') : 'asc';
+        $keywords    = $this->input->get('keywords')  ? $this->input->get('keywords')  : '';
 
         // --------------------------------------------------------------------------
 
@@ -106,8 +112,8 @@ class Forms extends BaseAdmin
         );
 
         //  Get the items for the page
-        $totalRows           = $this->custom_form_model->count_all($data);
-        $this->data['forms'] = $this->custom_form_model->get_all($page, $perPage, $data);
+        $totalRows           = $this->oFormModel->count_all($data);
+        $this->data['forms'] = $this->oFormModel->get_all($page, $perPage, $data);
 
         //  Set Search and Pagination objects for the view
         $this->data['search']     = Helper::searchObject(true, $sortColumns, $sortOn, $sortOrder, $perPage, $keywords);
@@ -215,14 +221,14 @@ class Forms extends BaseAdmin
                     $iFieldOrder++;
                 }
 
-                if ($this->custom_form_model->create($aCreateData)) {
+                if ($this->oFormModel->create($aCreateData)) {
 
                     $this->session->set_flashdata('success', 'Form created successfully.');
                     redirect('admin/forms/forms');
 
                 } else {
 
-                    $this->data['error'] = 'Failed to create form.' . $this->custom_form_model->last_error();
+                    $this->data['error'] = 'Failed to create form.' . $this->oFormModel->last_error();
                 }
 
             } else {
@@ -253,7 +259,7 @@ class Forms extends BaseAdmin
         }
 
         $iFormId = (int) $this->uri->segment(5);
-        $this->data['form'] = $this->custom_form_model->get_by_id($iFormId);
+        $this->data['form'] = $this->oFormModel->get_by_id($iFormId);
 
         if (empty($this->data['form'])) {
             show_404();
@@ -280,21 +286,22 @@ class Forms extends BaseAdmin
 
             if ($this->form_validation->run()) {
 
-                $aUpdateData = array();
-                $aUpdateData['label'] = $this->input->post('label');
-                $aUpdateData['header'] = $this->input->post('header');
-                $aUpdateData['footer'] = $this->input->post('footer');
-                $aUpdateData['cta_label'] = $this->input->post('cta_label');
-                $aUpdateData['form_attributes'] = $this->input->post('form_attributes');
-                $aUpdateData['notification_email'] = $this->input->post('notification_email');
-                $aUpdateData['thankyou_email'] = (bool) $this->input->post('thankyou_email');
-                $aUpdateData['thankyou_email_subject'] = $this->input->post('thankyou_email_subject');
-                $aUpdateData['thankyou_email_body'] = $this->input->post('thankyou_email_body');
-                $aUpdateData['thankyou_page_title'] = $this->input->post('thankyou_page_title');
-                $aUpdateData['thankyou_page_body'] = $this->input->post('thankyou_page_body');
+                $aUpdateData = array(
+                    'label' => $this->input->post('label'),
+                    'header' => $this->input->post('header'),
+                    'footer' => $this->input->post('footer'),
+                    'cta_label' => $this->input->post('cta_label'),
+                    'form_attributes' => $this->input->post('form_attributes'),
+                    'notification_email' => $this->input->post('notification_email'),
+                    'thankyou_email' => (bool) $this->input->post('thankyou_email'),
+                    'thankyou_email_subject' => $this->input->post('thankyou_email_subject'),
+                    'thankyou_email_body' => $this->input->post('thankyou_email_body'),
+                    'thankyou_page_title' => $this->input->post('thankyou_page_title'),
+                    'thankyou_page_body' => $this->input->post('thankyou_page_body'),
+                    'fields' => array()
+                );
 
                 //  Build up fields
-                $aUpdateData['fields'] = array();
                 $iFieldOrder = 0;
 
                 foreach ($this->input->post('fields') as $aField) {
@@ -335,14 +342,14 @@ class Forms extends BaseAdmin
                     $iFieldOrder++;
                 }
 
-                if ($this->custom_form_model->update($iFormId, $aUpdateData)) {
+                if ($this->oFormModel->update($iFormId, $aUpdateData)) {
 
                     $this->session->set_flashdata('success', 'Form updated successfully.');
                     redirect('admin/forms/forms');
 
                 } else {
 
-                    $this->data['error'] = 'Failed to update form.' . $this->custom_form_model->last_error();
+                    $this->data['error'] = 'Failed to update form.' . $this->oFormModel->last_error();
                 }
 
             } else {
@@ -375,7 +382,7 @@ class Forms extends BaseAdmin
         $iFormId = (int) $this->uri->segment(5);
         $sReturn = $this->input->get('return') ? $this->input->get('return') : 'admin/forms/forms/index';
 
-        if ($this->custom_form_model->delete($iFormId)) {
+        if ($this->oFormModel->delete($iFormId)) {
 
             $sStatus  = 'success';
             $sMessage = 'Custom form was deleted successfully.';
@@ -383,7 +390,7 @@ class Forms extends BaseAdmin
         } else {
 
             $sStatus  = 'error';
-            $sMessage = 'Custom form failed to delete. ' . $this->custom_form_model->last_error();
+            $sMessage = 'Custom form failed to delete. ' . $this->oFormModel->last_error();
         }
 
         $this->session->set_flashdata($sStatus, $sMessage);
@@ -400,7 +407,7 @@ class Forms extends BaseAdmin
         }
 
         $iFormId = (int) $this->uri->segment(5);
-        $this->data['form'] = $this->custom_form_model->get_by_id($iFormId);
+        $this->data['form'] = $this->oFormModel->get_by_id($iFormId);
 
         if (empty($this->data['form'])) {
             show_404();
@@ -415,7 +422,7 @@ class Forms extends BaseAdmin
                   array('form_id', $this->data['form']->id)
               )
             );
-            $this->data['responses'] = $this->custom_form_response_model->get_all(null, null, $aData);
+            $this->data['responses'] = $this->oResponseModel->get_all(null, null, $aData);
 
             Helper::addHeaderButton(
                 'admin/forms/forms/responses/' . $this->data['form']->id . '?dl=1',
@@ -434,7 +441,7 @@ class Forms extends BaseAdmin
 
         } else {
 
-            $this->data['response'] = $this->custom_form_response_model->get_by_id($iResponseId);
+            $this->data['response'] = $this->oResponseModel->get_by_id($iResponseId);
 
             if (!$this->data['response']) {
                 show_404();

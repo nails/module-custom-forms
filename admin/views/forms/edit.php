@@ -199,7 +199,7 @@
                                 );
 
                                 ?>
-                                <a href="#form-field-options-<?=$i?>" class="fancybox awesome small orange">
+                                <a href="#form-field-options-<?=$i?>" class="fancybox btn btn-xs btn-warning">
                                     Manage Options
                                 </a>
                             </td>
@@ -208,7 +208,8 @@
 
                                 echo form_input(
                                     'fields[' . $i . '][label]',
-                                    set_value('fields[' . $i . '][label]', $oField->label)
+                                    set_value('fields[' . $i . '][label]', $oField->label),
+                                    'placeholder="The field\'s label"'
                                 );
 
                                 ?>
@@ -218,7 +219,8 @@
 
                                 echo form_input(
                                     'fields[' . $i . '][sub_label]',
-                                    set_value('fields[' . $i . '][sub_label]', $oField->sub_label)
+                                    set_value('fields[' . $i . '][sub_label]', $oField->sub_label),
+                                    'placeholder="The field\'s sub-label"'
                                 );
 
                                 ?>
@@ -228,7 +230,8 @@
 
                                 echo form_input(
                                     'fields[' . $i . '][placeholder]',
-                                    set_value('fields[' . $i . '][placeholder]', $oField->placeholder)
+                                    set_value('fields[' . $i . '][placeholder]', $oField->placeholder),
+                                    'placeholder="The field\'s placeholder"'
                                 );
 
                                 ?>
@@ -259,7 +262,11 @@
 
                                 echo form_input(
                                     'fields[' . $i . '][default_value_custom]',
-                                    set_value('fields[' . $i . '][default_value_custom]', $oField->default_value_custom)
+                                    set_value(
+                                        'fields[' . $i . '][default_value_custom]',
+                                        $oField->default_value_custom
+                                    ),
+                                    'placeholder="The default value"'
                                 );
 
                                 ?>
@@ -269,7 +276,11 @@
 
                                 echo form_input(
                                     'fields[' . $i . '][custom_attributes]',
-                                    set_value('fields[' . $i . '][custom_attributes]', $oField->custom_attributes)
+                                    set_value(
+                                        'fields[' . $i . '][custom_attributes]',
+                                        $oField->custom_attributes
+                                    ),
+                                    'placeholder="Any custom attributes"'
                                 );
 
                                 ?>
@@ -290,7 +301,7 @@
                 </table>
             </div>
             <p>
-                <a href="#" id="add-field" class="awesome green small">
+                <a href="#" id="add-field" class="btn btn-xs btn-success">
                     Add Field
                 </a>
             </p>
@@ -460,7 +471,7 @@
                 </tbody>
             </table>
             <p>
-                <button type="button" class="awesome small green add-option" data-field-number="<?=$i?>">
+                <button type="button" class="btn btn-xs btn-success add-option" data-field-number="<?=$i?>">
                     Add Option
                 </button>
             </p>
@@ -473,7 +484,7 @@
     ?>
     </div>
     <p>
-        <button type="submit" class="awesome">
+        <button type="submit" class="btn btn-primary">
             Save Changes
         </button>
     </p>
@@ -486,28 +497,56 @@
     </td>
     <td class="type">
         <?=form_dropdown('fields[{{fieldNumber}}][type]', $aTypes, null, 'class="select2 field-type"')?>
-        <a href="#form-field-options-{{fieldNumber}}" class="fancybox awesome small orange">
+        <a href="#form-field-options-{{fieldNumber}}" class="fancybox btn btn-xs btn-warning">
             Manage Options
         </a>
     </td>
     <td class="field-label">
-        <?=form_input('fields[{{fieldNumber}}][label]')?>
+        <?=form_input(
+            'fields[{{fieldNumber}}][label]',
+            null,
+            'placeholder="The field\'s label"'
+        )?>
     </td>
     <td class="field-sub-label">
-        <?=form_input('fields[{{fieldNumber}}][sub_label]')?>
+        <?=form_input(
+            'fields[{{fieldNumber}}][sub_label]',
+            null,
+            'placeholder="The field\'s sub-label"'
+        )?>
     </td>
     <td class="placeholder">
-        <?=form_input('fields[{{fieldNumber}}][placeholder]')?>
+        <?=form_input(
+            'fields[{{fieldNumber}}][placeholder]',
+            null,
+            'placeholder="The field\'s placeholder"'
+        )?>
     </td>
     <td class="required">
-        <?=form_checkbox('fields[{{fieldNumber}}][is_required]', true)?>
+        <?=form_checkbox(
+            'fields[{{fieldNumber}}][is_required]',
+            true
+        )?>
     </td>
     <td class="default">
-        <?=form_dropdown('fields[{{fieldNumber}}][default_value]', $aDefaultValueTypes, null, 'class="select2 field-default"')?>
-        <?=form_input('fields[{{fieldNumber}}][default_value_custom]')?>
+        <?=form_dropdown(
+            'fields[{{fieldNumber}}][default_value]',
+            $aDefaultValueTypes,
+            null,
+            'class="select2 field-default"'
+        )?>
+        <?=form_input(
+            'fields[{{fieldNumber}}][default_value_custom]',
+            null,
+            'placeholder="The default value"'
+        )?>
     </td>
     <td class="attributes">
-        <?=form_input('fields[{{fieldNumber}}][custom_attributes]')?>
+        <?=form_input(
+            'fields[{{fieldNumber}}][custom_attributes]',
+            null,
+            'placeholder="Any custom attributes"'
+        )?>
     </td>
     <td class="remove">
         <a href="#" class="remove-field" data-field-number="{{fieldNumber}}">
@@ -539,7 +578,7 @@
         </tbody>
     </table>
     <p>
-        <button type="button" class="awesome small green add-option" data-field-number="{{fieldNumber}}">
+        <button type="button" class="btn btn-xs btn-success add-option" data-field-number="{{fieldNumber}}">
             Add Option
         </button>
     </p>
@@ -548,13 +587,23 @@
 <script type="template/mustache" id="template-field-option">
 <tr>
     <td class="option-label">
-        <?=form_input('fields[{{fieldNumber}}][options][{{optionNumber}}][label]')?>
+        <?=form_input(
+            'fields[{{fieldNumber}}][options][{{optionNumber}}][label]',
+            null,
+            'placeholder="Option Label"'
+        )?>
     </td>
     <td class="option-selected">
-        <?=form_checkbox('fields[{{fieldNumber}}][options][{{optionNumber}}][is_selected]', true)?>
+        <?=form_checkbox(
+            'fields[{{fieldNumber}}][options][{{optionNumber}}][is_selected]',
+            true
+        )?>
     </td>
     <td class="option-disabled">
-        <?=form_checkbox('fields[{{fieldNumber}}][options][{{optionNumber}}][is_disabled]', true)?>
+        <?=form_checkbox(
+            'fields[{{fieldNumber}}][options][{{optionNumber}}][is_disabled]',
+            true
+        )?>
     </td>
     <td class="option-remove">
         <a href="#" class="remove-option">

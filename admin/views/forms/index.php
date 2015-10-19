@@ -37,7 +37,7 @@
 
                         if (userHasPermission('admin:forms:forms:edit')) {
 
-                            echo anchor('admin/forms/forms/edit/' . $form->id, 'Edit', 'class="awesome small"');
+                            echo anchor('admin/forms/forms/edit/' . $form->id, 'Edit', 'class="btn btn-xs btn-primary"');
                         }
 
                         if (userHasPermission('admin:forms:forms:responses')) {
@@ -45,7 +45,7 @@
                             echo anchor(
                                 'admin/forms/forms/responses/' . $form->id,
                                 'View Responses (' . number_format($form->total_responses) . ')',
-                                'class="awesome orange small"'
+                                'class="btn btn-xs btn-warning"'
                             );
                         }
 
@@ -54,7 +54,7 @@
                             echo anchor(
                                 'admin/forms/forms/delete/' . $form->id,
                                 'Delete',
-                                'data-title="Are you sure?" class="confirm awesome small red"'
+                                'data-title="Are you sure?" class="confirm btn btn-xs btn-danger"'
                             );
                         }
 

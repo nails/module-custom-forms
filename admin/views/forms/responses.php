@@ -35,7 +35,7 @@
                         echo anchor(
                             'admin/forms/forms/responses/' . $form->id . '/' . $oResponse->id,
                             'View',
-                            'class="awesome small"'
+                            'class="btn btn-xs btn-primary"'
                         );
 
                         ?>

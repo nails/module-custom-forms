@@ -10,8 +10,8 @@
  * @link
  */
 
-$oCi->load->model('forms/custom_form_model');
-$aFormsFlat = $oCi->custom_form_model->get_all_flat();
+$oFormModel = \Nails\Factory::model('Form', 'nailsapp/module-custom-forms');
+$aFormsFlat = $oFormModel->get_all_flat();
 
 ?>
 <div class="fieldset">

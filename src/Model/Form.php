@@ -1,11 +1,29 @@
 <?php
 
-class Custom_form_model extends NAILS_Model
+/**
+ * Manage Custom forms
+ *
+ * @package     Nails
+ * @subpackage  module-custom-forms
+ * @category    Model
+ * @author      Nails Dev Team
+ * @link
+ */
+
+namespace Nails\CustomForms\Model;
+
+use Nails\Factory;
+use Nails\Common\Model\Base;
+
+class Form extends Base
 {
+    private $oDb;
     private $tableFields;
     private $tableFieldsPrefix;
     private $tableOptions;
     private $tableOptionsPrefix;
+
+    // --------------------------------------------------------------------------
 
     /**
      * Construct the model
@@ -14,6 +32,7 @@ class Custom_form_model extends NAILS_Model
     {
         parent::__construct();
 
+        $this->oDb                = Factory::service('Database');
         $this->table              = NAILS_DB_PREFIX . 'custom_form';
         $this->tablePrefix        = 'f';
         $this->tableFields        = NAILS_DB_PREFIX . 'custom_form_field';
@@ -43,6 +62,7 @@ class Custom_form_model extends NAILS_Model
 
         $aForms = parent::get_all($page, $perPage, $data, $includeDeleted, $_caller);
 
+        //  @todo: do this in a more query efficient way: copy module-email-drip/Model/Campaign
         if (!empty($aForms)) {
             if (!empty($data['include_fields'])) {
                 foreach ($aForms as $oForm) {
@@ -79,8 +99,8 @@ class Custom_form_model extends NAILS_Model
      **/
     protected function _getcount_common($aData = array(), $_caller = null)
     {
-        $this->db->select('*');
-        $this->db->select('
+        $this->oDb->select('*');
+        $this->oDb->select('
             (
                 SELECT
                     COUNT(*)
@@ -101,11 +121,11 @@ class Custom_form_model extends NAILS_Model
      */
     private function getFieldsForForm($iFormId)
     {
-        $this->db->select('id,type,label,sub_label,,placeholder,is_required');
-        $this->db->select('default_value,default_value_custom,custom_attributes,order');
-        $this->db->where('form_id', $iFormId);
-        $this->db->order_by('order,id');
-        $aFields = $this->db->get($this->tableFields)->result();
+        $this->oDb->select('id,type,label,sub_label,,placeholder,is_required');
+        $this->oDb->select('default_value,default_value_custom,custom_attributes,order');
+        $this->oDb->where('form_id', $iFormId);
+        $this->oDb->order_by('order,id');
+        $aFields = $this->oDb->get($this->tableFields)->result();
 
         if (!empty($aFields)) {
             foreach ($aFields as $oField) {
@@ -135,10 +155,10 @@ class Custom_form_model extends NAILS_Model
      */
     private function getOptionsForField($iFieldId)
     {
-        $this->db->select('id,label,is_disabled,is_selected');
-        $this->db->where('form_field_id', $iFieldId);
-        $this->db->order_by('order,id');
-        $aOptions = $this->db->get($this->tableOptions)->result();
+        $this->oDb->select('id,label,is_disabled,is_selected');
+        $this->oDb->where('form_field_id', $iFieldId);
+        $this->oDb->order_by('order,id');
+        $aOptions = $this->oDb->get($this->tableOptions)->result();
 
         if (!empty($aOptions)) {
             foreach ($aOptions as $oOption) {
@@ -213,7 +233,7 @@ class Custom_form_model extends NAILS_Model
         $aFields = array_key_exists('fields', $aData) ? $aData['fields'] : array();
         unset($aData['fields']);
 
-        $this->db->trans_begin();
+        $this->oDb->trans_begin();
         $mResult = parent::create($aData, $bReturnObject);
 
         if ($mResult) {
@@ -222,19 +242,19 @@ class Custom_form_model extends NAILS_Model
 
             if ($this->updateFields($iFormId, $aFields)) {
 
-                $this->db->trans_commit();
+                $this->oDb->trans_commit();
                 return $mResult;
 
             } else {
 
                 $this->_set_error('Failed to add fields.');
-                $this->db->trans_rollback();
+                $this->oDb->trans_rollback();
                 return false;
             }
 
         } else {
 
-            $this->db->trans_rollback();
+            $this->oDb->trans_rollback();
             return false;
         }
     }
@@ -252,24 +272,24 @@ class Custom_form_model extends NAILS_Model
         $aFields = array_key_exists('fields', $aData) ? $aData['fields'] : array();
         unset($aData['fields']);
 
-        $this->db->trans_begin();
+        $this->oDb->trans_begin();
         if (parent::update($iId, $aData)) {
 
             if ($this->updateFields($iId, $aFields)) {
 
-                $this->db->trans_commit();
+                $this->oDb->trans_commit();
                 return true;
 
             } else {
 
                 $this->_set_error('Failed to update fields.');
-                $this->db->trans_rollback();
+                $this->oDb->trans_rollback();
                 return false;
             }
 
         } else {
 
-            $this->db->trans_rollback();
+            $this->oDb->trans_rollback();
             return false;
         }
     }
@@ -305,24 +325,24 @@ class Custom_form_model extends NAILS_Model
                 'order' => !empty($aField['order']) ? (int) $aField['order'] : 0
             );
 
-            $this->db->set($aFieldData);
+            $this->oDb->set($aFieldData);
 
             if (!empty($iFieldId)) {
 
-                $this->db->where('id', $iFieldId);
+                $this->oDb->where('id', $iFieldId);
                 $sAction = 'update';
 
             } else {
 
-                $this->db->set('form_id', $iFormId);
+                $this->oDb->set('form_id', $iFormId);
                 $sAction = 'insert';
             }
 
-            if ($this->db->{$sAction}($this->tableFields)) {
+            if ($this->oDb->{$sAction}($this->tableFields)) {
 
                 if ($sAction === 'insert') {
 
-                    $iFieldId = $this->db->insert_id();
+                    $iFieldId = $this->oDb->insert_id();
                 }
 
                 $aProcessedIds[] = $iFieldId;
@@ -347,10 +367,10 @@ class Custom_form_model extends NAILS_Model
         //  Remove untouched fields
         if (!empty($aProcessedIds)) {
 
-            $this->db->where_not_in('id', $aProcessedIds);
+            $this->oDb->where_not_in('id', $aProcessedIds);
         }
-        $this->db->where('form_id', $iFormId);
-        if (!$this->db->delete($this->tableFields)) {
+        $this->oDb->where('form_id', $iFormId);
+        if (!$this->oDb->delete($this->tableFields)) {
 
             $this->_set_error('Failed to prune unused fields');
             return false;
@@ -381,24 +401,24 @@ class Custom_form_model extends NAILS_Model
                 'order' => !empty($aOption['order']) ? (int) $aOption['order'] : 0
             );
 
-            $this->db->set($aOptionData);
+            $this->oDb->set($aOptionData);
 
             if (!empty($iOptionId)) {
 
-                $this->db->where('id', $iOptionId);
+                $this->oDb->where('id', $iOptionId);
                 $sAction = 'update';
 
             } else {
 
-                $this->db->set('form_field_id', $iFieldId);
+                $this->oDb->set('form_field_id', $iFieldId);
                 $sAction = 'insert';
             }
 
-            if ($this->db->{$sAction}($this->tableOptions)) {
+            if ($this->oDb->{$sAction}($this->tableOptions)) {
 
                 if ($sAction === 'insert') {
 
-                    $iOptionsId = $this->db->insert_id();
+                    $iOptionsId = $this->oDb->insert_id();
                 }
 
                 $aProcessedIds[] = $iOptionId;
@@ -413,10 +433,10 @@ class Custom_form_model extends NAILS_Model
         //  Remove untouched fields
         if (!empty($aProcessedIds)) {
 
-            $this->db->where_not_in('id', $aProcessedIds);
+            $this->oDb->where_not_in('id', $aProcessedIds);
         }
-        $this->db->where('form_field_id', $iFormId);
-        if (!$this->db->delete($this->tableOptions)) {
+        $this->oDb->where('form_field_id', $iFormId);
+        if (!$this->oDb->delete($this->tableOptions)) {
 
             $this->_set_error('Failed to prune unused options');
             return false;
