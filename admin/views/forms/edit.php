@@ -80,222 +80,220 @@
             </div>
         </div>
         <div class="tab-page fields">
-            <div class="fieldset">
-                <div class="table-responsive">
-                    <table id="form-fields">
-                        <thead>
-                            <tr>
-                                <th class="order">
-                                    Order
-                                </th>
-                                <th class="type">
-                                    Type
-                                </th>
-                                <th class="field-label">
-                                    Label
-                                </th>
-                                <th class="field-sub-label">
-                                    Sub Label
-                                </th>
-                                <th class="placeholder">
-                                    Placeholder
-                                </th>
-                                <th class="required">
-                                    Required
-                                </th>
-                                <th class="default">
-                                    Default Value
-                                </th>
-                                <th class="attributes">
-                                    Custom Field Attributes
-                                </th>
-                                <th class="remove">
-                                    &nbsp;
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <?php
+            <div class="table-responsive">
+                <table id="form-fields">
+                    <thead>
+                        <tr>
+                            <th class="order">
+                                Order
+                            </th>
+                            <th class="type">
+                                Type
+                            </th>
+                            <th class="field-label">
+                                Label
+                            </th>
+                            <th class="field-sub-label">
+                                Sub Label
+                            </th>
+                            <th class="placeholder">
+                                Placeholder
+                            </th>
+                            <th class="required">
+                                Required
+                            </th>
+                            <th class="default">
+                                Default Value
+                            </th>
+                            <th class="attributes">
+                                Custom Field Attributes
+                            </th>
+                            <th class="remove">
+                                &nbsp;
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php
 
-                        if (!empty($_POST['fields'])) {
+                    if (!empty($_POST['fields'])) {
 
-                            $aFields = $_POST['fields'];
+                        $aFields = $_POST['fields'];
 
-                            //  Cast as objects to match database output
-                            foreach ($aFields as &$aField) {
+                        //  Cast as objects to match database output
+                        foreach ($aFields as &$aField) {
 
-                                if (empty($aField['options'])) {
-                                    $aField['options'] = array();
-                                }
+                            if (empty($aField['options'])) {
+                                $aField['options'] = array();
+                            }
 
-                                foreach ($aField['options'] as &$aOption) {
-                                    $aOption = (object) $aOption;
-                                }
-
-
-                                $aField = (object) $aField;
+                            foreach ($aField['options'] as &$aOption) {
+                                $aOption = (object) $aOption;
                             }
 
 
-                        } elseif (!empty($form->fields)) {
-
-                            $aFields = $form->fields;
-
-                        } else {
-
-                            $aFields = array();
+                            $aField = (object) $aField;
                         }
 
-                        $i = 0;
-                        $aTypes = array(
-                            'TEXT' => 'Text',
-                            'NUMBER' => 'Number',
-                            'EMAIL' => 'Email address',
-                            'TEL' => 'Telephone',
-                            'TEXTAREA' => 'Textarea',
-                            'SELECT' => 'Dropdown',
-                            'CHECKBOX' => 'Checkbox',
-                            'RADIO' => 'Radio',
-                            'DATE' => 'Date',
-                            'TIME' => 'Time',
-                            'DATETIME' => 'Datetime',
-                            'HIDDEN' => 'Hidden'
-                        );
 
-                        $aDefaultValueTypes = array(
-                            'None' => 'No default value',
-                            'USER_ID' => 'User ID',
-                            'BUSINESS_ID' => 'Business ID',
-                            'BUSINESS_NAME' => 'Business Name',
-                            'USER_NAME' => 'User Name',
-                            'USER_EMAIL' => 'User Email',
-                            'USER_TELEPHONE' => 'User Telephone',
-                            'CURRENT_TIMESTAMP' => 'Current Timestamp',
-                            'CUSTOM' => 'Custom'
-                        );
+                    } elseif (!empty($form->fields)) {
 
-                        foreach ($aFields as $oField) {
+                        $aFields = $form->fields;
 
-                            ?>
-                            <tr>
-                                <td class="order">
-                                    <b class="fa fa-bars handle"></b>
-                                    <?php
+                    } else {
 
-                                    echo form_hidden(
-                                        'fields[' . $i . '][id]',
-                                        !empty($oField->id) ? $oField->id : ''
-                                    );
+                        $aFields = array();
+                    }
 
-                                    ?>
-                                </td>
-                                <td class="type">
-                                    <?php
+                    $i = 0;
+                    $aTypes = array(
+                        'TEXT' => 'Text',
+                        'NUMBER' => 'Number',
+                        'EMAIL' => 'Email address',
+                        'TEL' => 'Telephone',
+                        'TEXTAREA' => 'Textarea',
+                        'SELECT' => 'Dropdown',
+                        'CHECKBOX' => 'Checkbox',
+                        'RADIO' => 'Radio',
+                        'DATE' => 'Date',
+                        'TIME' => 'Time',
+                        'DATETIME' => 'Datetime',
+                        'HIDDEN' => 'Hidden'
+                    );
 
-                                    echo form_dropdown(
-                                        'fields[' . $i . '][type]',
-                                        $aTypes,
-                                        set_value('fields[' . $i . '][type]', $oField->type),
-                                        'class="select2 field-type"'
-                                    );
+                    $aDefaultValueTypes = array(
+                        'None' => 'No default value',
+                        'USER_ID' => 'User ID',
+                        'BUSINESS_ID' => 'Business ID',
+                        'BUSINESS_NAME' => 'Business Name',
+                        'USER_NAME' => 'User Name',
+                        'USER_EMAIL' => 'User Email',
+                        'USER_TELEPHONE' => 'User Telephone',
+                        'CURRENT_TIMESTAMP' => 'Current Timestamp',
+                        'CUSTOM' => 'Custom'
+                    );
 
-                                    ?>
-                                    <a href="#form-field-options-<?=$i?>" class="fancybox awesome small orange">
-                                        Manage Options
-                                    </a>
-                                </td>
-                                <td class="field-label">
-                                    <?php
-
-                                    echo form_input(
-                                        'fields[' . $i . '][label]',
-                                        set_value('fields[' . $i . '][label]', $oField->label)
-                                    );
-
-                                    ?>
-                                </td>
-                                <td class="field-sub-label">
-                                    <?php
-
-                                    echo form_input(
-                                        'fields[' . $i . '][sub_label]',
-                                        set_value('fields[' . $i . '][sub_label]', $oField->sub_label)
-                                    );
-
-                                    ?>
-                                </td>
-                                <td class="placeholder">
-                                    <?php
-
-                                    echo form_input(
-                                        'fields[' . $i . '][placeholder]',
-                                        set_value('fields[' . $i . '][placeholder]', $oField->placeholder)
-                                    );
-
-                                    ?>
-                                </td>
-                                <td class="required">
-                                    <?php
-
-                                    echo form_checkbox(
-                                        'fields[' . $i . '][is_required]',
-                                        true,
-                                        !empty($oField->is_required)
-                                    );
-
-                                    ?>
-                                </td>
-                                <td class="default">
-                                    <?php
-
-                                    echo form_dropdown(
-                                        'fields[' . $i . '][default_value]',
-                                        $aDefaultValueTypes,
-                                        set_value('fields[' . $i . '][default_value]', $oField->default_value),
-                                        'class="select2 field-default"'
-                                    );
-
-                                    ?>
-                                    <?php
-
-                                    echo form_input(
-                                        'fields[' . $i . '][default_value_custom]',
-                                        set_value('fields[' . $i . '][default_value_custom]', $oField->default_value_custom)
-                                    );
-
-                                    ?>
-                                </td>
-                                <td class="attributes">
-                                    <?php
-
-                                    echo form_input(
-                                        'fields[' . $i . '][custom_attributes]',
-                                        set_value('fields[' . $i . '][custom_attributes]', $oField->custom_attributes)
-                                    );
-
-                                    ?>
-                                </td>
-                                <td class="remove">
-                                    <a href="#" class="remove-field" data-field-number="<?=$i?>">
-                                        <b class="fa fa-times-circle fa-lg"></b>
-                                    </a>
-                                </td>
-                            </tr>
-                            <?php
-
-                            $i++;
-                        }
+                    foreach ($aFields as $oField) {
 
                         ?>
-                        </tbody>
-                    </table>
-                </div>
-                <p>
-                    <a href="#" id="add-field" class="awesome green small">
-                        Add Field
-                    </a>
-                </p>
+                        <tr>
+                            <td class="order">
+                                <b class="fa fa-bars handle"></b>
+                                <?php
+
+                                echo form_hidden(
+                                    'fields[' . $i . '][id]',
+                                    !empty($oField->id) ? $oField->id : ''
+                                );
+
+                                ?>
+                            </td>
+                            <td class="type">
+                                <?php
+
+                                echo form_dropdown(
+                                    'fields[' . $i . '][type]',
+                                    $aTypes,
+                                    set_value('fields[' . $i . '][type]', $oField->type),
+                                    'class="select2 field-type"'
+                                );
+
+                                ?>
+                                <a href="#form-field-options-<?=$i?>" class="fancybox awesome small orange">
+                                    Manage Options
+                                </a>
+                            </td>
+                            <td class="field-label">
+                                <?php
+
+                                echo form_input(
+                                    'fields[' . $i . '][label]',
+                                    set_value('fields[' . $i . '][label]', $oField->label)
+                                );
+
+                                ?>
+                            </td>
+                            <td class="field-sub-label">
+                                <?php
+
+                                echo form_input(
+                                    'fields[' . $i . '][sub_label]',
+                                    set_value('fields[' . $i . '][sub_label]', $oField->sub_label)
+                                );
+
+                                ?>
+                            </td>
+                            <td class="placeholder">
+                                <?php
+
+                                echo form_input(
+                                    'fields[' . $i . '][placeholder]',
+                                    set_value('fields[' . $i . '][placeholder]', $oField->placeholder)
+                                );
+
+                                ?>
+                            </td>
+                            <td class="required">
+                                <?php
+
+                                echo form_checkbox(
+                                    'fields[' . $i . '][is_required]',
+                                    true,
+                                    !empty($oField->is_required)
+                                );
+
+                                ?>
+                            </td>
+                            <td class="default">
+                                <?php
+
+                                echo form_dropdown(
+                                    'fields[' . $i . '][default_value]',
+                                    $aDefaultValueTypes,
+                                    set_value('fields[' . $i . '][default_value]', $oField->default_value),
+                                    'class="select2 field-default"'
+                                );
+
+                                ?>
+                                <?php
+
+                                echo form_input(
+                                    'fields[' . $i . '][default_value_custom]',
+                                    set_value('fields[' . $i . '][default_value_custom]', $oField->default_value_custom)
+                                );
+
+                                ?>
+                            </td>
+                            <td class="attributes">
+                                <?php
+
+                                echo form_input(
+                                    'fields[' . $i . '][custom_attributes]',
+                                    set_value('fields[' . $i . '][custom_attributes]', $oField->custom_attributes)
+                                );
+
+                                ?>
+                            </td>
+                            <td class="remove">
+                                <a href="#" class="remove-field" data-field-number="<?=$i?>">
+                                    <b class="fa fa-times-circle fa-lg"></b>
+                                </a>
+                            </td>
+                        </tr>
+                        <?php
+
+                        $i++;
+                    }
+
+                    ?>
+                    </tbody>
+                </table>
             </div>
+            <p>
+                <a href="#" id="add-field" class="awesome green small">
+                    Add Field
+                </a>
+            </p>
         </div>
         <div class="tab-page submission">
             <div class="fieldset">
