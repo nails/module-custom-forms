@@ -22,6 +22,7 @@ class Customform extends WidgetBase
         parent::__construct();
 
         $this->label       = 'Custom Form';
+        $this->icon        = 'fa-list-alt';
         $this->grouping    = 'Custom Forms';
         $this->description = 'Render a custom form.';
         $this->keywords    = 'custom form, form';
