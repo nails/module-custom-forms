@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This class is the "Custom Forms" CMS widget view
+ * This is the "Custom Forms" CMS widget view
  *
  * @package     Nails
  * @subpackage  module-custom-forms
