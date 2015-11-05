@@ -54,7 +54,7 @@
                             echo anchor(
                                 'admin/forms/forms/delete/' . $form->id,
                                 'Delete',
-                                'data-title="Are you sure?" class="confirm btn btn-xs btn-danger"'
+                                'class="confirm btn btn-xs btn-danger"'
                             );
                         }
 
