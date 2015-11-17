@@ -68,7 +68,7 @@ class Forms extends BaseAdmin
     // --------------------------------------------------------------------------
 
     /**
-     * Browse existing CDN Buckets
+     * Browse existing form
      * @return void
      */
     public function index()
@@ -133,7 +133,7 @@ class Forms extends BaseAdmin
     // --------------------------------------------------------------------------
 
     /**
-     * Create a new CDN Bucket
+     * Create a new Form
      * @return void
      */
     public function create()
@@ -145,9 +145,9 @@ class Forms extends BaseAdmin
 
         if ($this->input->post()) {
 
-            $this->load->library('form_validation');
+            $oFormValidation = Factory::service('FormValidation');
 
-            $this->form_validation->set_rules(
+            $oFormValidation->set_rules(
                 array(
                     array(
                         'field' => 'label',
@@ -160,10 +160,10 @@ class Forms extends BaseAdmin
                 )
             );
 
-            $this->form_validation->set_message('required', lang('fv_required'));
-            $this->form_validation->set_message('valid_emails', lang('fv_valid_emails'));
+            $oFormValidation->set_message('required', lang('fv_required'));
+            $oFormValidation->set_message('valid_emails', lang('fv_valid_emails'));
 
-            if ($this->form_validation->run()) {
+            if ($oFormValidation->run()) {
 
                 $aCreateData = array();
                 $aCreateData['label'] = $this->input->post('label');
@@ -248,7 +248,7 @@ class Forms extends BaseAdmin
     // --------------------------------------------------------------------------
 
     /**
-     * Edit an existing CDN Bucket
+     * Edit an existing Form
      * @return void
      */
     public function edit()
@@ -267,9 +267,9 @@ class Forms extends BaseAdmin
 
         if ($this->input->post()) {
 
-            $this->load->library('form_validation');
+            $oFormValidation = Factory::service('FormValidation');
 
-            $this->form_validation->set_rules(
+            $oFormValidation->set_rules(
                 array(
                     array(
                         'field' => 'label',
@@ -282,9 +282,9 @@ class Forms extends BaseAdmin
                 )
             );
 
-            $this->form_validation->set_message('required', lang('fv_required'));
+            $oFormValidation->set_message('required', lang('fv_required'));
 
-            if ($this->form_validation->run()) {
+            if ($oFormValidation->run()) {
 
                 $aUpdateData = array(
                     'label' => $this->input->post('label'),
