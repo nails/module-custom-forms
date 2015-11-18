@@ -27,8 +27,8 @@
 
                 ?>
                 <tr>
-                    <?=\Nails\Admin\Helper::loadUserCell($oResponse->created_by)?>
-                    <?=\Nails\Admin\Helper::loadDateTimeCell($oResponse->created)?>
+                    <?=adminHelper('loadUserCell', $oResponse->created_by)?>
+                    <?=adminHelper('loadDateTimeCell', $oResponse->created)?>
                     <td class="actions">
                         <?php
 

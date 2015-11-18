@@ -2,8 +2,8 @@
     <p>
         Browse all custom forms.
     </p>
-    <?=\Nails\Admin\Helper::loadSearch($search);?>
-    <?=\Nails\Admin\Helper::loadPagination($pagination);?>
+    <?=adminHelper('loadSearch', $search);?>
+    <?=adminHelper('loadPagination', $pagination);?>
     <div class="table-responsive">
         <table>
             <thead>
@@ -30,8 +30,8 @@
                         <td class="label">
                             <?=$form->label?>
                         </td>
-                        <?=\Nails\Admin\Helper::loadDatetimeCell($form->created)?>
-                        <?=\Nails\Admin\Helper::loadUserCell($form->created_by)?>
+                        <?=adminHelper('loadDatetimeCell', $form->created)?>
+                        <?=adminHelper('loadUserCell', $form->created_by)?>
                         <td class="actions">
                         <?php
 
@@ -80,5 +80,5 @@
             </tbody>
         </table>
     </div>
-    <?=\Nails\Admin\Helper::loadPagination($pagination)?>
+    <?=adminHelper('loadPagination', $pagination)?>
 </div>

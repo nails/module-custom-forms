@@ -31,7 +31,9 @@ class Forms extends BaseAdmin
     {
         if (userHasPermission('admin:forms:forms:browse')) {
 
-            $navGroup = new \Nails\Admin\Nav('Custom Forms', 'fa-list-alt');
+            $navGroup = Factory::factory('Nav', 'nailsapp/module-admin');
+            $navGroup->setLabel('Custom Forms');
+            $navGroup->setIcon('fa-list-alt');
             $navGroup->addAction('Browse Forms');
             return $navGroup;
         }

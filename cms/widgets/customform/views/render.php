@@ -10,11 +10,13 @@
  * @link
  */
 
+use Nails\Factory;
+
 $iFormId = !empty($formId) ? (int) $formId: null;
 
 if (!empty($iFormId)) {
 
-    $oFormModel = \Nails\Factory::model('Form', 'nailsapp/module-custom-forms');
+    $oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
     $oForm      = $oFormModel->get_by_id($iFormId);
 
     ?>

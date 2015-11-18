@@ -10,7 +10,9 @@
  * @link
  */
 
-$oFormModel = \Nails\Factory::model('Form', 'nailsapp/module-custom-forms');
+use Nails\Factory;
+
+$oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
 $aFormsFlat = $oFormModel->get_all_flat();
 
 if (empty($aFormsFlat)) {
