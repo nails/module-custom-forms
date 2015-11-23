@@ -49,18 +49,11 @@ class Form extends Base
      * @param null $perPage The number of objects per page
      * @param array $data Data to pass to _getcount_common
      * @param bool|false $includeDeleted Whether to include deleted results
-     * @param string $_caller Internal flag of calling method
      * @return array
      */
-    public function get_all(
-        $page = null,
-        $perPage = null,
-        $data = array(),
-        $includeDeleted = false,
-        $_caller = 'GET_ALL'
-    ) {
+    public function get_all($page = null, $perPage = null, $data = array(), $includeDeleted = false) {
 
-        $aForms = parent::get_all($page, $perPage, $data, $includeDeleted, $_caller);
+        $aForms = parent::get_all($page, $perPage, $data, $includeDeleted);
 
         //  @todo: do this in a more query efficient way: copy module-email-drip/Model/Campaign
         if (!empty($aForms)) {
@@ -93,11 +86,10 @@ class Form extends Base
     /**
      * This method applies the conditionals which are common across the get_*()
      * methods and the count() method.
-     * @param  array  $data    Data passed from the calling method
-     * @param  string $_caller The name of the calling method
+     * @param  array $data Data passed from the calling method
      * @return void
      **/
-    protected function _getcount_common($aData = array(), $_caller = null)
+    protected function _getcount_common($aData = array())
     {
         $this->oDb->select('*');
         $this->oDb->select('
@@ -109,7 +101,7 @@ class Form extends Base
             ) total_responses
         ');
 
-        parent::_getcount_common($aData, $_caller);
+        parent::_getcount_common($aData);
     }
 
     // --------------------------------------------------------------------------

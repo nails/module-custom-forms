@@ -45,18 +45,11 @@ class Response extends Base
      * @param null $perPage The number of objects per page
      * @param array $data Data to pass to _getcount_common
      * @param bool|false $includeDeleted Whether to include deleted results
-     * @param string $_caller Internal flag of calling method
      * @return array
      */
-    public function get_all(
-        $page = null,
-        $perPage = null,
-        $data = array(),
-        $includeDeleted = false,
-        $_caller = 'GET_ALL'
-    ) {
+    public function get_all($page = null, $perPage = null, $data = array(), $includeDeleted = false) {
 
-        $aResponses = parent::get_all($page, $perPage, $data, $includeDeleted, $_caller);
+        $aResponses = parent::get_all($page, $perPage, $data, $includeDeleted);
 
         if (!empty($aResponses)) {
             if (!empty($data['include_answers'])) {
@@ -88,18 +81,17 @@ class Response extends Base
     /**
      * This method applies the conditionals which are common across the get_*()
      * methods and the count() method.
-     * @param  array  $data    Data passed from the calling method
-     * @param  string $_caller The name of the calling method
+     * @param  array $data Data passed from the calling method
      * @return void
      **/
-    protected function _getcount_common($aData = array(), $_caller = null)
+    protected function _getcount_common($aData = array())
     {
         if (empty($aData['sort'])) {
             $aData['sort'] = array(
                 array($this->tablePrefix . '.created', 'DESC')
             );
         }
-        parent::_getcount_common($aData, $_caller);
+        parent::_getcount_common($aData);
     }
 
     // --------------------------------------------------------------------------
