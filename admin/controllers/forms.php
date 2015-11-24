@@ -114,8 +114,8 @@ class Forms extends BaseAdmin
         );
 
         //  Get the items for the page
-        $totalRows           = $this->oFormModel->count_all($data);
-        $this->data['forms'] = $this->oFormModel->get_all($page, $perPage, $data);
+        $totalRows           = $this->oFormModel->countAll($data);
+        $this->data['forms'] = $this->oFormModel->getAll($page, $perPage, $data);
 
         //  Set Search and Pagination objects for the view
         $this->data['search']     = Helper::searchObject(true, $sortColumns, $sortOn, $sortOrder, $perPage, $keywords);
@@ -261,7 +261,7 @@ class Forms extends BaseAdmin
         }
 
         $iFormId = (int) $this->uri->segment(5);
-        $this->data['form'] = $this->oFormModel->get_by_id($iFormId);
+        $this->data['form'] = $this->oFormModel->getById($iFormId);
 
         if (empty($this->data['form'])) {
             show_404();
@@ -409,7 +409,7 @@ class Forms extends BaseAdmin
         }
 
         $iFormId = (int) $this->uri->segment(5);
-        $this->data['form'] = $this->oFormModel->get_by_id($iFormId);
+        $this->data['form'] = $this->oFormModel->getById($iFormId);
 
         if (empty($this->data['form'])) {
             show_404();
@@ -424,7 +424,7 @@ class Forms extends BaseAdmin
                   array('form_id', $this->data['form']->id)
               )
             );
-            $this->data['responses'] = $this->oResponseModel->get_all(null, null, $aData);
+            $this->data['responses'] = $this->oResponseModel->getAll(null, null, $aData);
 
             Helper::addHeaderButton(
                 'admin/forms/forms/responses/' . $this->data['form']->id . '?dl=1',
@@ -443,7 +443,7 @@ class Forms extends BaseAdmin
 
         } else {
 
-            $this->data['response'] = $this->oResponseModel->get_by_id($iResponseId);
+            $this->data['response'] = $this->oResponseModel->getById($iResponseId);
 
             if (!$this->data['response']) {
                 show_404();

@@ -51,9 +51,9 @@ class Form extends Base
      * @param bool|false $includeDeleted Whether to include deleted results
      * @return array
      */
-    public function get_all($page = null, $perPage = null, $data = array(), $includeDeleted = false) {
-
-        $aForms = parent::get_all($page, $perPage, $data, $includeDeleted);
+    public function getAll($page = null, $perPage = null, $data = array(), $includeDeleted = false)
+    {
+        $aForms = parent::getAll($page, $perPage, $data, $includeDeleted);
 
         //  @todo: do this in a more query efficient way: copy module-email-drip/Model/Campaign
         if (!empty($aForms)) {
@@ -75,10 +75,10 @@ class Form extends Base
      * @param array $aData Data to pass to _getcount_common
      * @return mixed
      */
-    public function get_by_id($iId, $aData = array())
+    public function getById($iId, $aData = array())
     {
         $aData['include_fields'] = true;
-        return parent::get_by_id($iId, $aData);
+        return parent::getById($iId, $aData);
     }
 
     // --------------------------------------------------------------------------
@@ -89,7 +89,7 @@ class Form extends Base
      * @param  array $data Data passed from the calling method
      * @return void
      **/
-    protected function _getcount_common($aData = array())
+    protected function getCountCommon($aData = array())
     {
         $this->oDb->select('*');
         $this->oDb->select('
@@ -101,7 +101,7 @@ class Form extends Base
             ) total_responses
         ');
 
-        parent::_getcount_common($aData);
+        parent::getCountCommon($aData);
     }
 
     // --------------------------------------------------------------------------
@@ -131,7 +131,7 @@ class Form extends Base
                         break;
                 }
 
-                $this->_format_field($oField);
+                $this->formatField($oField);
             }
         }
 
@@ -154,7 +154,7 @@ class Form extends Base
 
         if (!empty($aOptions)) {
             foreach ($aOptions as $oOption) {
-                $this->_format_option($oOption);
+                $this->formatOption($oOption);
             }
         }
 
@@ -171,10 +171,10 @@ class Form extends Base
      * @param array $bools Fields to cast as booleans
      * @param array $floats Fields to cast as floats
      */
-    protected function _format_object(&$obj, $data = array(), $integers = array(), $bools = array(), $floats = array())
+    protected function formatObject(&$obj, $data = array(), $integers = array(), $bools = array(), $floats = array())
     {
         $bools[] = 'is_external';
-        parent::_format_object($obj, $data, $integers, $bools, $floats);
+        parent::formatObject($obj, $data, $integers, $bools, $floats);
         $obj->notification_email = json_decode($obj->notification_email);
     }
 
@@ -188,11 +188,11 @@ class Form extends Base
      * @param array $bools Fields to cast as booleans
      * @param array $floats Fields to cast as floats
      */
-    protected function _format_field(&$obj, $data = array(), $integers = array(), $bools = array(), $floats = array())
+    protected function formatField(&$obj, $data = array(), $integers = array(), $bools = array(), $floats = array())
     {
         $integers[] = 'form_id';
         $bools[] = 'is_required';
-        parent::_format_object($obj, $data, $integers, $bools, $floats);
+        parent::formatObject($obj, $data, $integers, $bools, $floats);
     }
 
     // --------------------------------------------------------------------------
@@ -205,11 +205,11 @@ class Form extends Base
      * @param array $bools Fields to cast as booleans
      * @param array $floats Fields to cast as floats
      */
-    protected function _format_option(&$obj, $data = array(), $integers = array(), $bools = array(), $floats = array())
+    protected function formatOption(&$obj, $data = array(), $integers = array(), $bools = array(), $floats = array())
     {
         $bools[] = 'is_disabled';
         $bools[] = 'is_selected';
-        parent::_format_object($obj, $data, $integers, $bools, $floats);
+        parent::formatObject($obj, $data, $integers, $bools, $floats);
     }
 
     // --------------------------------------------------------------------------

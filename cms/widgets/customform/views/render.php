@@ -17,7 +17,7 @@ $iFormId = !empty($formId) ? (int) $formId: null;
 if (!empty($iFormId)) {
 
     $oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
-    $oForm      = $oFormModel->get_by_id($iFormId);
+    $oForm      = $oFormModel->getById($iFormId);
 
     ?>
     <div class="cms-widget cms-widget-custom-forms">

@@ -47,9 +47,9 @@ class Response extends Base
      * @param bool|false $includeDeleted Whether to include deleted results
      * @return array
      */
-    public function get_all($page = null, $perPage = null, $data = array(), $includeDeleted = false) {
-
-        $aResponses = parent::get_all($page, $perPage, $data, $includeDeleted);
+    public function getAll($page = null, $perPage = null, $data = array(), $includeDeleted = false)
+    {
+        $aResponses = parent::getAll($page, $perPage, $data, $includeDeleted);
 
         if (!empty($aResponses)) {
             if (!empty($data['include_answers'])) {
@@ -70,10 +70,10 @@ class Response extends Base
      * @param array $aData Data to pass to _getcount_common
      * @return mixed
      */
-    public function get_by_id($iId, $aData = array())
+    public function getById($iId, $aData = array())
     {
         $aData['include_answers'] = true;
-        return parent::get_by_id($iId, $aData);
+        return parent::getById($iId, $aData);
     }
 
     // --------------------------------------------------------------------------
@@ -84,14 +84,14 @@ class Response extends Base
      * @param  array $data Data passed from the calling method
      * @return void
      **/
-    protected function _getcount_common($aData = array())
+    protected function getCountCommon($aData = array())
     {
         if (empty($aData['sort'])) {
             $aData['sort'] = array(
                 array($this->tablePrefix . '.created', 'DESC')
             );
         }
-        parent::_getcount_common($aData);
+        parent::getCountCommon($aData);
     }
 
     // --------------------------------------------------------------------------
