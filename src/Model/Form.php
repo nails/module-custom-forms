@@ -239,7 +239,7 @@ class Form extends Base
 
             } else {
 
-                $this->_set_error('Failed to add fields.');
+                $this->setError('Failed to add fields.');
                 $this->oDb->trans_rollback();
                 return false;
             }
@@ -274,7 +274,7 @@ class Form extends Base
 
             } else {
 
-                $this->_set_error('Failed to update fields.');
+                $this->setError('Failed to update fields.');
                 $this->oDb->trans_rollback();
                 return false;
             }
@@ -343,7 +343,7 @@ class Form extends Base
 
                     if (!$this->updateOptions($iFieldId, $aField['options'])) {
 
-                        $this->_set_error('Failed to update options for form field "' . $aFieldData['label'] . '"');
+                        $this->setError('Failed to update options for form field "' . $aFieldData['label'] . '"');
                         return false;
                     }
 
@@ -351,7 +351,7 @@ class Form extends Base
 
             } else {
 
-                $this->_set_error('Failed to ' . $sAction . ' form field "' . $aFieldData['label'] . '"');
+                $this->setError('Failed to ' . $sAction . ' form field "' . $aFieldData['label'] . '"');
                 return false;
             }
         }
@@ -364,7 +364,7 @@ class Form extends Base
         $this->oDb->where('form_id', $iFormId);
         if (!$this->oDb->delete($this->tableFields)) {
 
-            $this->_set_error('Failed to prune unused fields');
+            $this->setError('Failed to prune unused fields');
             return false;
         }
 
@@ -417,7 +417,7 @@ class Form extends Base
 
             } else {
 
-                $this->_set_error('Failed to ' . $sAction . ' form field "' . $aFieldData['label'] . '"');
+                $this->setError('Failed to ' . $sAction . ' form field "' . $aFieldData['label'] . '"');
                 return false;
             }
         }
@@ -430,7 +430,7 @@ class Form extends Base
         $this->oDb->where('form_field_id', $iFormId);
         if (!$this->oDb->delete($this->tableOptions)) {
 
-            $this->_set_error('Failed to prune unused options');
+            $this->setError('Failed to prune unused options');
             return false;
         }
 

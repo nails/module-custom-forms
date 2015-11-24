@@ -230,7 +230,7 @@ class Forms extends BaseAdmin
 
                 } else {
 
-                    $this->data['error'] = 'Failed to create form.' . $this->oFormModel->last_error();
+                    $this->data['error'] = 'Failed to create form.' . $this->oFormModel->lastError();
                 }
 
             } else {
@@ -351,7 +351,7 @@ class Forms extends BaseAdmin
 
                 } else {
 
-                    $this->data['error'] = 'Failed to update form.' . $this->oFormModel->last_error();
+                    $this->data['error'] = 'Failed to update form.' . $this->oFormModel->lastError();
                 }
 
             } else {
@@ -392,7 +392,7 @@ class Forms extends BaseAdmin
         } else {
 
             $sStatus  = 'error';
-            $sMessage = 'Custom form failed to delete. ' . $this->oFormModel->last_error();
+            $sMessage = 'Custom form failed to delete. ' . $this->oFormModel->lastError();
         }
 
         $this->session->set_flashdata($sStatus, $sMessage);
