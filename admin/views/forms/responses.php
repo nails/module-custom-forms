@@ -1,7 +1,7 @@
 <div class="group-custom-forms responses">
     <h2>Overview</h2>
-    <div class="system-alert">
-        Place an overview on form responses here. This like, number of responses, average answer etc.
+    <div class="alert alert-warning">
+        @todo: Place an overview on form responses here. This like, number of responses, average answer etc.
     </div>
     <h2>Individual Responses (<?=number_format($form->total_responses)?>)</h2>
     <table>
