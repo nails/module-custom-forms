@@ -126,7 +126,6 @@ class Form extends Base
                     case 'SELECT' :
                     case 'RADIO' :
                     case 'CHECKBOX' :
-
                         $oField->options = $this->getOptionsForField($oField->id);
                         break;
                 }
@@ -164,18 +163,31 @@ class Form extends Base
     // --------------------------------------------------------------------------
 
     /**
-     * Format a form object
-     * @param object $obj The object to format
-     * @param array $data Data passed to the calling get_* function
-     * @param array $integers Fields to cast as integers
-     * @param array $bools Fields to cast as booleans
-     * @param array $floats Fields to cast as floats
+     * Formats a single object
+     *
+     * The getAll() method iterates over each returned item with this method so as to
+     * correctly format the output. Use this to cast integers and booleans and/or organise data into objects.
+     *
+     * @param  object $oObj      A reference to the object being formatted.
+     * @param  array  $aData     The same data array which is passed to _getcount_common, for reference if needed
+     * @param  array  $aIntegers Fields which should be cast as integers if numerical and not null
+     * @param  array  $aBools    Fields which should be cast as booleans if not null
+     * @param  array  $aFloats   Fields which should be cast as floats if not null
+     * @return void
      */
-    protected function formatObject(&$obj, $data = array(), $integers = array(), $bools = array(), $floats = array())
-    {
-        $bools[] = 'is_external';
-        parent::formatObject($obj, $data, $integers, $bools, $floats);
-        $obj->notification_email = json_decode($obj->notification_email);
+    protected function formatObject(
+        &$oObj,
+        $aData = array(),
+        $aIntegers = array(),
+        $aBools = array(),
+        $aFloats = array()
+    ) {
+
+        $aBools[] = 'is_external';
+
+        parent::formatObject($oObj, $aData, $aIntegers, $aBools, $aFloats);
+
+        $oObj->notification_email = json_decode($oObj->notification_email);
     }
 
     // --------------------------------------------------------------------------
