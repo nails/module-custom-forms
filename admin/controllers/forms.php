@@ -242,7 +242,7 @@ class Forms extends BaseAdmin
         // --------------------------------------------------------------------------
 
         $this->data['page']->title = 'Create Form';
-        $this->asset->load('nails.admin.custom.forms.edit.min.js', 'NAILS');
+        $this->asset->load('admin.form.edit.min.js', 'nailsapp/module-custom-forms');
         $this->asset->library('MUSTACHE');
         Helper::loadView('edit');
     }
@@ -363,7 +363,7 @@ class Forms extends BaseAdmin
         // --------------------------------------------------------------------------
 
         $this->data['page']->title = 'Edit Form';
-        $this->asset->load('nails.admin.custom.forms.edit.min.js', 'NAILS');
+        $this->asset->load('admin.form.edit.min.js', 'nailsapp/module-custom-forms');
         $this->asset->library('MUSTACHE');
         Helper::loadView('edit');
     }
