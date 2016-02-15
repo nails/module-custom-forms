@@ -37,6 +37,27 @@ if (empty($aFormsFlat)) {
 
         echo form_field_dropdown($aField, $aFormsFlat);
 
+        $aField            = array();
+        $aField['key']     = 'showLabel';
+        $aField['label']   = 'Show Label';
+        $aField['default'] = isset(${$aField['key']}) ? ${$aField['key']} : '';
+
+        echo form_field_boolean($aField);
+
+        $aField            = array();
+        $aField['key']     = 'showHeader';
+        $aField['label']   = 'Show Header';
+        $aField['default'] = isset(${$aField['key']}) ? ${$aField['key']} : '';
+
+        echo form_field_boolean($aField);
+
+        $aField            = array();
+        $aField['key']     = 'showFooter';
+        $aField['label']   = 'Show Footer';
+        $aField['default'] = isset(${$aField['key']}) ? ${$aField['key']} : '';
+
+        echo form_field_boolean($aField);
+
         ?>
     </div>
         <?php

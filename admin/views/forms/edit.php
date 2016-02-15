@@ -39,22 +39,20 @@
             // --------------------------------------------------------------------------
 
             $aField = array(
-                'key' => 'header',
-                'label' => 'Header',
-                'placeholder' => 'Define the form\'s header text',
+                'key'     => 'header',
+                'label'   => 'Header',
                 'default' => !empty($form->header) ? $form->header : ''
             );
-            echo form_field_wysiwyg($aField);
+            echo form_field_cms_widgets($aField);
 
             // --------------------------------------------------------------------------
 
             $aField = array(
-                'key' => 'footer',
-                'label' => 'Footer',
-                'placeholder' => 'Define the form\'s footer text',
+                'key'     => 'footer',
+                'label'   => 'Footer',
                 'default' => !empty($form->footer) ? $form->footer : ''
             );
-            echo form_field_wysiwyg($aField);
+            echo form_field_cms_widgets($aField);
 
             // --------------------------------------------------------------------------
 
@@ -151,6 +149,7 @@
                         'NUMBER' => 'Number',
                         'EMAIL' => 'Email address',
                         'TEL' => 'Telephone',
+                        'URL' => 'URL',
                         'TEXTAREA' => 'Textarea',
                         'SELECT' => 'Dropdown',
                         'CHECKBOX' => 'Checkbox',
@@ -158,7 +157,7 @@
                         'DATE' => 'Date',
                         'TIME' => 'Time',
                         'DATETIME' => 'Datetime',
-                        'HIDDEN' => 'Hidden'
+                        'HIDDEN' => 'Hidden',
                     );
 
                     $aDefaultValueTypes = array(
