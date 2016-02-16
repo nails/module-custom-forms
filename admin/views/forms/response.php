@@ -2,10 +2,10 @@
     <table>
         <thead>
             <tr>
-                <th colspan="2">
+                <th class="col-xs-4" colspan="2">
                     Question
                 </th>
-                <th>
+                <th class="col-xs-8">
                     Answer
                 </th>
             </tr>
@@ -13,30 +13,37 @@
         <tbody>
         <?php
 
-        if (!empty($response->questions)) {
+        if ($response->answers) {
 
-            foreach ($response->questions as $iIndex => $oQuestion) {
+            $i = 1;
+            foreach ($response->answers as $oAnswer) {
 
                 ?>
                 <tr>
-                    <td class="number"><?=$oQuestion->number?></td>
-                    <td class="question"><?=$oQuestion->question?></td>
+                    <td class="number">
+                        <?=$i?>
+                    </td>
+                    <td class="question">
+                        <?=$oAnswer->question?>
+                    </td>
                     <td class="answer">
                         <?php
 
-                        if (is_array($oQuestion->answer)) {
+                        if (is_array($oAnswer->answer)) {
 
-                            echo implode('<br />', $oQuestion->answer);
+                            echo implode('<br />', $oAnswer->answer);
 
                         } else {
 
-                            echo $oQuestion->answer;
+                            echo $oAnswer->answer;
                         }
 
                         ?>
                     </td>
                 </tr>
                 <?php
+
+                $i++;
             }
 
 

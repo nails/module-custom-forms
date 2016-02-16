@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Manage Custom forms
+ * Manage forms
  *
  * @package     Nails
  * @subpackage  module-custom-forms
@@ -18,10 +18,6 @@ use Nails\Common\Model\Base;
 class Form extends Base
 {
     private $oDb;
-    private $tableFields;
-    private $tableFieldsPrefix;
-    private $tableOptions;
-    private $tableOptionsPrefix;
 
     // --------------------------------------------------------------------------
 
@@ -32,132 +28,37 @@ class Form extends Base
     {
         parent::__construct();
 
-        $this->oDb                = Factory::service('Database');
-        $this->table              = NAILS_DB_PREFIX . 'custom_form';
-        $this->tablePrefix        = 'f';
-        $this->tableFields        = NAILS_DB_PREFIX . 'custom_form_field';
-        $this->tableFieldsPrefix  = 'ff';
-        $this->tableOptions       = NAILS_DB_PREFIX . 'custom_form_field_option';
-        $this->tableOptionsPrefix = 'ffo';
+        $this->oDb         = Factory::service('Database');
+        $this->table       = NAILS_DB_PREFIX . 'custom_form';
+        $this->tablePrefix = 'f';
     }
 
     // --------------------------------------------------------------------------
 
     /**
      * Returns all form objects
-     * @param null $page The page to return
-     * @param null $perPage The number of objects per page
-     * @param array $data Data to pass to _getcount_common
-     * @param bool|false $includeDeleted Whether to include deleted results
+     * @param null    $iPage            The page to return
+     * @param null    $iPerPage         The number of objects per page
+     * @param array   $aData            Data to pass to _getcount_common
+     * @param boolean $bIncludeDeleted  Whether to include deleted results
      * @return array
      */
-    public function getAll($page = null, $perPage = null, $data = array(), $includeDeleted = false)
+    public function getAll($iPage = null, $iPerPage = null, $aData = array(), $bIncludeDeleted = false)
     {
-        $aForms = parent::getAll($page, $perPage, $data, $includeDeleted);
+        $aItems = parent::getAll($iPage, $iPerPage, $aData, $bIncludeDeleted);
 
-        //  @todo: do this in a more query efficient way: copy module-email-drip/Model/Campaign
-        if (!empty($aForms)) {
-            if (!empty($data['include_fields'])) {
-                foreach ($aForms as $oForm) {
-                    $oForm->fields = $this->getFieldsForForm($oForm->id);
-                }
+        if (!empty($aItems)) {
+
+            if (!empty($aData['includeAll']) || !empty($aData['includeFields'])) {
+                $this->getManyAssociatedItems($aItems, 'fields', 'form_id', 'FormField', 'nailsapp/module-custom-forms');
+            }
+
+            if (!empty($aData['includeAll']) || !empty($aData['includeResponses'])) {
+                $this->getManyAssociatedItems($aItems, 'responses', 'form_id', 'Response', 'nailsapp/module-custom-forms');
             }
         }
 
-        return $aForms;
-    }
-
-    // --------------------------------------------------------------------------
-
-    /**
-     * Returns a form by its ID
-     * @param int $iId The Id of the form to return
-     * @param array $aData Data to pass to _getcount_common
-     * @return mixed
-     */
-    public function getById($iId, $aData = array())
-    {
-        $aData['include_fields'] = true;
-        return parent::getById($iId, $aData);
-    }
-
-    // --------------------------------------------------------------------------
-
-    /**
-     * This method applies the conditionals which are common across the get_*()
-     * methods and the count() method.
-     * @param  array $data Data passed from the calling method
-     * @return void
-     **/
-    protected function getCountCommon($aData = array())
-    {
-        $this->oDb->select('*');
-        $this->oDb->select('
-            (
-                SELECT
-                    COUNT(*)
-                FROM ' . NAILS_DB_PREFIX . 'custom_form_response
-                WHERE form_id = ' . $this->tablePrefix . '.id
-            ) total_responses
-        ');
-
-        parent::getCountCommon($aData);
-    }
-
-    // --------------------------------------------------------------------------
-
-    /**
-     * Returns all fields associated with a particular form
-     * @param int $iFormId The ID of the form
-     * @return mixed
-     */
-    private function getFieldsForForm($iFormId)
-    {
-        $this->oDb->select('id,type,label,sub_label,,placeholder,is_required');
-        $this->oDb->select('default_value,default_value_custom,custom_attributes,order');
-        $this->oDb->where('form_id', $iFormId);
-        $this->oDb->order_by('order,id');
-        $aFields = $this->oDb->get($this->tableFields)->result();
-
-        if (!empty($aFields)) {
-            foreach ($aFields as $oField) {
-                switch ($oField->type) {
-
-                    case 'SELECT' :
-                    case 'RADIO' :
-                    case 'CHECKBOX' :
-                        $oField->options = $this->getOptionsForField($oField->id);
-                        break;
-                }
-
-                $this->formatField($oField);
-            }
-        }
-
-        return $aFields;
-    }
-
-    // --------------------------------------------------------------------------
-
-    /**
-     * Returns all options for a particular field
-     * @param int $iFieldId the field ID
-     * @return mixed
-     */
-    private function getOptionsForField($iFieldId)
-    {
-        $this->oDb->select('id,label,is_disabled,is_selected');
-        $this->oDb->where('form_field_id', $iFieldId);
-        $this->oDb->order_by('order,id');
-        $aOptions = $this->oDb->get($this->tableOptions)->result();
-
-        if (!empty($aOptions)) {
-            foreach ($aOptions as $oOption) {
-                $this->formatOption($oOption);
-            }
-        }
-
-        return $aOptions;
+        return $aItems;
     }
 
     // --------------------------------------------------------------------------
@@ -183,52 +84,64 @@ class Form extends Base
         $aFloats = array()
     ) {
 
-        $aBools[] = 'is_external';
+        $aBools[] = 'has_captcha';
+        $aBools[] = 'thankyou_email';
 
         parent::formatObject($oObj, $aData, $aIntegers, $aBools, $aFloats);
 
+        // --------------------------------------------------------------------------
+
+        $oObj->url = site_url('forms/' . $oObj->id);
+
+        // --------------------------------------------------------------------------
+
+        $oObj->header             = json_decode($oObj->header);
+        $oObj->footer             = json_decode($oObj->footer);
         $oObj->notification_email = json_decode($oObj->notification_email);
-    }
 
-    // --------------------------------------------------------------------------
+        // --------------------------------------------------------------------------
 
-    /**
-     * Format a field object
-     * @param object $obj The object to format
-     * @param array $data Data passed to the calling get_* function
-     * @param array $integers Fields to cast as integers
-     * @param array $bools Fields to cast as booleans
-     * @param array $floats Fields to cast as floats
-     */
-    protected function formatField(&$obj, $data = array(), $integers = array(), $bools = array(), $floats = array())
-    {
-        $integers[] = 'form_id';
-        $bools[] = 'is_required';
-        parent::formatObject($obj, $data, $integers, $bools, $floats);
-    }
+        $oObj->form             = new \stdClass();
+        $oObj->form->attributes = $oObj->form_attributes;
 
-    // --------------------------------------------------------------------------
+        unset($oObj->form_attributes);
 
-    /**
-     * Format an option object
-     * @param object $obj The object to format
-     * @param array $data Data passed to the calling get_* function
-     * @param array $integers Fields to cast as integers
-     * @param array $bools Fields to cast as booleans
-     * @param array $floats Fields to cast as floats
-     */
-    protected function formatOption(&$obj, $data = array(), $integers = array(), $bools = array(), $floats = array())
-    {
-        $bools[] = 'is_disabled';
-        $bools[] = 'is_selected';
-        parent::formatObject($obj, $data, $integers, $bools, $floats);
+        // --------------------------------------------------------------------------
+
+        $oObj->cta             = new \stdClass();
+        $oObj->cta->label      = $oObj->cta_label;
+        $oObj->cta->attributes = $oObj->cta_attributes;
+
+        unset($oObj->cta_label);
+        unset($oObj->cta_attributes);
+
+        // --------------------------------------------------------------------------
+
+        $bSendThankYouEmail = $oObj->thankyou_email;
+
+        $oObj->thankyou_email          = new \stdClass();
+        $oObj->thankyou_email->send    = $bSendThankYouEmail;
+        $oObj->thankyou_email->subject = $oObj->thankyou_email_subject;
+        $oObj->thankyou_email->body    = $oObj->thankyou_email_body;
+
+        unset($oObj->thankyou_email_subject);
+        unset($oObj->thankyou_email_body);
+
+        // --------------------------------------------------------------------------
+
+        $oObj->thankyou_page        = new \stdClass();
+        $oObj->thankyou_page->title = $oObj->thankyou_page_title;
+        $oObj->thankyou_page->body  = $oObj->thankyou_page_body;
+
+        unset($oObj->thankyou_page_title);
+        unset($oObj->thankyou_page_body);
     }
 
     // --------------------------------------------------------------------------
 
     /**
      * Creates a new form
-     * @param array $aData The data to create the object with
+     * @param array   $aData         The data to create the object with
      * @param boolean $bReturnObject Whether to return just the new ID or the full object
      * @return mixed
      */
@@ -237,28 +150,31 @@ class Form extends Base
         $aFields = array_key_exists('fields', $aData) ? $aData['fields'] : array();
         unset($aData['fields']);
 
-        $this->oDb->trans_begin();
-        $mResult = parent::create($aData, $bReturnObject);
+        try {
 
-        if ($mResult) {
+            $this->oDb->trans_begin();
 
-            $iFormId = $bReturnObject ? $mResult->id : $mResult;
+            $mResult = parent::create($aData, $bReturnObject);
 
-            if ($this->updateFields($iFormId, $aFields)) {
+            if ($mResult) {
 
-                $this->oDb->trans_commit();
-                return $mResult;
+                $iFormId = $bReturnObject ? $mResult->id : $mResult;
+
+                if (!$this->saveAsscociatedItems($iFormId, $aFields, 'form_id', 'FormField', 'nailsapp/module-custom-forms')) {
+                    throw new \Exception('Failed to update fields.', 1);
+                }
 
             } else {
-
-                $this->setError('Failed to add fields.');
-                $this->oDb->trans_rollback();
-                return false;
+                throw new \Exception('Failed to create form. ' . $this->lastError(), 1);
             }
 
-        } else {
+            $this->oDb->trans_commit();
+            return $mResult;
+
+        } catch (\Exception $e) {
 
             $this->oDb->trans_rollback();
+            $this->setError($e->getMessage());
             return false;
         }
     }
@@ -267,7 +183,7 @@ class Form extends Base
 
     /**
      * Update an existing form
-     * @param int $iId The ID of the form to update
+     * @param int   $iId   The ID of the form to update
      * @param array $aData The data to update the form with
      * @return mixed
      */
@@ -276,176 +192,26 @@ class Form extends Base
         $aFields = array_key_exists('fields', $aData) ? $aData['fields'] : array();
         unset($aData['fields']);
 
-        $this->oDb->trans_begin();
-        if (parent::update($iId, $aData)) {
+        try {
 
-            if ($this->updateFields($iId, $aFields)) {
+            $this->oDb->trans_begin();
 
-                $this->oDb->trans_commit();
-                return true;
-
+            if (parent::update($iId, $aData)) {
+                if (!$this->saveAsscociatedItems($iId, $aFields, 'form_id', 'FormField', 'nailsapp/module-custom-forms')) {
+                    throw new \Exception('Failed to update fields.', 1);
+                }
             } else {
-
-                $this->setError('Failed to update fields.');
-                $this->oDb->trans_rollback();
-                return false;
+                throw new \Exception('Failed to update form. ' . $this->lastError(), 1);
             }
 
-        } else {
+            $this->oDb->trans_commit();
+            return true;
+
+        } catch (\Exception $e) {
 
             $this->oDb->trans_rollback();
+            $this->setError($e->getMessage());
             return false;
         }
-    }
-
-    // --------------------------------------------------------------------------
-
-    /**
-     * @param array $iFormId The ID of the form to which the fields belong
-     * @param array $aFields The fields to update or insert
-     */
-    private function updateFields($iFormId, $aFields)
-    {
-        /**
-         * This array will hold all the IDs we've processed, we'll delete items which
-         * aren't created or updated.
-         */
-
-        $aProcessedIds = array();
-
-        foreach ($aFields as $aField) {
-
-            $iFieldId = !empty($aField['id']) ? (int) $aField['id'] : null;
-
-            $aFieldData = array(
-                'type' => !empty($aField['type']) ? $aField['type'] : 'TEXT',
-                'label' => !empty($aField['label']) ? $aField['label'] : '',
-                'sub_label' => !empty($aField['sub_label']) ? $aField['sub_label'] : '',
-                'placeholder' => !empty($aField['placeholder']) ? $aField['placeholder'] : '',
-                'is_required' => !empty($aField['is_required']) ? (bool) $aField['is_required'] : false,
-                'default_value' => !empty($aField['default_value']) ? $aField['default_value'] : '',
-                'default_value_custom' => !empty($aField['default_value_custom']) ? $aField['default_value_custom'] : '',
-                'custom_attributes' => !empty($aField['custom_attributes']) ? $aField['custom_attributes'] : '',
-                'order' => !empty($aField['order']) ? (int) $aField['order'] : 0
-            );
-
-            $this->oDb->set($aFieldData);
-
-            if (!empty($iFieldId)) {
-
-                $this->oDb->where('id', $iFieldId);
-                $sAction = 'update';
-
-            } else {
-
-                $this->oDb->set('form_id', $iFormId);
-                $sAction = 'insert';
-            }
-
-            if ($this->oDb->{$sAction}($this->tableFields)) {
-
-                if ($sAction === 'insert') {
-
-                    $iFieldId = $this->oDb->insert_id();
-                }
-
-                $aProcessedIds[] = $iFieldId;
-
-                if (!empty($aField['options'])) {
-
-                    if (!$this->updateOptions($iFieldId, $aField['options'])) {
-
-                        $this->setError('Failed to update options for form field "' . $aFieldData['label'] . '"');
-                        return false;
-                    }
-
-                }
-
-            } else {
-
-                $this->setError('Failed to ' . $sAction . ' form field "' . $aFieldData['label'] . '"');
-                return false;
-            }
-        }
-
-        //  Remove untouched fields
-        if (!empty($aProcessedIds)) {
-
-            $this->oDb->where_not_in('id', $aProcessedIds);
-        }
-        $this->oDb->where('form_id', $iFormId);
-        if (!$this->oDb->delete($this->tableFields)) {
-
-            $this->setError('Failed to prune unused fields');
-            return false;
-        }
-
-        return true;
-    }
-
-    // --------------------------------------------------------------------------
-
-    private function updateOptions($iFieldId, $aOptions)
-    {
-        /**
-         * This array will hold all the IDs we've processed, we'll delete items which
-         * aren't created or updated.
-         */
-
-        $aProcessedIds = array();
-
-        foreach ($aOptions as $aOption) {
-
-            $iOptionId = !empty($aOption['id']) ? (int) $aOption['id'] : null;
-
-            $aOptionData = array(
-                'label' => !empty($aOption['label']) ? $aOption['label'] : '',
-                'is_selected' => !empty($aOption['is_selected']) ? (bool) $aOption['is_selected'] : false,
-                'is_disabled' => !empty($aOption['is_disabled']) ? (bool) $aOption['is_disabled'] : false,
-                'order' => !empty($aOption['order']) ? (int) $aOption['order'] : 0
-            );
-
-            $this->oDb->set($aOptionData);
-
-            if (!empty($iOptionId)) {
-
-                $this->oDb->where('id', $iOptionId);
-                $sAction = 'update';
-
-            } else {
-
-                $this->oDb->set('form_field_id', $iFieldId);
-                $sAction = 'insert';
-            }
-
-            if ($this->oDb->{$sAction}($this->tableOptions)) {
-
-                if ($sAction === 'insert') {
-
-                    $iOptionsId = $this->oDb->insert_id();
-                }
-
-                $aProcessedIds[] = $iOptionId;
-
-            } else {
-
-                $this->setError('Failed to ' . $sAction . ' form field "' . $aFieldData['label'] . '"');
-                return false;
-            }
-        }
-
-        //  Remove untouched fields
-        if (!empty($aProcessedIds)) {
-
-            $this->oDb->where_not_in('id', $aProcessedIds);
-        }
-        $this->oDb->where('form_field_id', $iFormId);
-        if (!$this->oDb->delete($this->tableOptions)) {
-
-            $this->setError('Failed to prune unused options');
-            return false;
-        }
-
-        return true;
     }
 }

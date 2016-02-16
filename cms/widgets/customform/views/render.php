@@ -12,6 +12,7 @@
 
 use Nails\Factory;
 
+$bShowWidget = true;
 $sUuid       = md5(microtime(true));
 $iFormId     = !empty($formId) ? (int) $formId: null;
 $bShowLabel  = !empty($showLabel);
@@ -21,147 +22,74 @@ $bShowFooter = !empty($showFooter);
 if (!empty($iFormId)) {
 
     $oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
-    $oForm      = $oFormModel->getById($iFormId);
+    $oForm      = $oFormModel->getById($iFormId, array('includeFields' => true));
+
+} elseif (!empty($form)) {
+
+    $oForm = $form;
+
+} else {
+
+    $bShowWidget = false;
+}
+
+if ($bShowWidget) {
+
+    $oFormFieldModel = Factory::model('FormField', 'nailsapp/module-custom-forms');
 
     ?>
     <div class="cms-widget cms-widget-custom-forms">
         <?php
 
+        if ($bShowLabel) {
+            echo '<h2>' . $oForm->label . '</h2>';
+        }
+
         if ($bShowHeader) {
             echo cmsAreaWithData($oForm->header);
         }
 
-        echo form_open('forms/' . $oForm->id, $oForm->form_attributes);
+        echo form_open_multipart('forms/' . $oForm->id, $oForm->form->attributes);
 
         $iCounter = 0;
 
-        foreach ($oForm->fields as $oField) {
+        foreach ($oForm->fields->data as $oField) {
 
-            $sId          = 'custom-form-' . $sUuid . '-' . $iCounter;
-            $sFieldName   = 'field[' . $oField->id . ']';
-            $sType        = $oField->type;
-            $sLabel       = $oField->label;
-            $sPlaceholder = $oField->placeholder;
-            $sDefault     = $oField->default_value;
-            $bRequired    = $oField->is_required;
+            $oFieldType = $oFormFieldModel->getType($oField->type);
 
-            //  Prepare default value
-            //  @todo
+            $sId   = 'custom-form-' . $sUuid . '-' . $iCounter;
+            $aAttr = array(
+                $sId ? 'id="' . $sId . '"' : '',
+                $oField->placeholder ? 'placeholder="' . $oField->placeholder . '"' : '',
+                $oField->is_required ? 'required="required"' : '',
+                $oField->custom_attributes
+            );
 
-            ?>
-            <div class="form-group">
-                <label for="<?=$sId?>"><?=$sLabel?></label>
-                <?php
-
-                $aAttr = array(
-                    'name=""',
-                    'class="form-control"',
-                    'id="' . $sId . '"',
-                    'placeholder="' . $sPlaceholder . '"',
-                    $bRequired ? 'required="required"' : ''
-
+            if (!empty($oFieldType)) {
+                echo $oFieldType->render(
+                    array(
+                        'id'          => $sId,
+                        'key'         => 'field[' . $oField->id . ']',
+                        'label'       => $oField->label,
+                        'sub_label'   => $oField->sub_label,
+                        'default'     => $oField->default_value_processed,
+                        'value'       => isset($_POST['field'][$oField->id]) ? $_POST['field'][$oField->id] : $oField->default_value_processed,
+                        'required'    => $oField->is_required,
+                        'class'       => 'form-control',
+                        'attributes'  => implode(' ', $aAttr),
+                        'options'     => $oField->options->data,
+                        'error'       => !empty($oField->error) ? $oField->error : null
+                    )
                 );
-
-                $aAttr = array_filter($aAttr);
-                $aAttr = array_unique($aAttr);
-                $sAttr = implode(' ', $aAttr);
-
-                switch ($sType) {
-                    case 'TEXTAREA':
-                        echo form_textarea(
-                            $sFieldName,
-                            set_value($sFieldName, $sDefault),
-                            $sAttr
-                        );
-                        break;
-
-                    case 'EMAIL':
-                        echo form_email(
-                            $sFieldName,
-                            set_value($sFieldName, $sDefault),
-                            $sAttr
-                        );
-                        break;
-
-                    case 'NUMBER':
-                        echo form_number(
-                            $sFieldName,
-                            set_value($sFieldName, $sDefault),
-                            $sAttr
-                        );
-                        break;
-
-                    case 'TEL':
-                        echo form_tel(
-                            $sFieldName,
-                            set_value($sFieldName, $sDefault),
-                            $sAttr
-                        );
-                        break;
-
-                    case 'URL':
-                        echo form_url(
-                            $sFieldName,
-                            set_value($sFieldName, $sDefault),
-                            $sAttr
-                        );
-                        break;
-
-                    case 'SELECT':
-                        echo form_dropdown(
-                            $sFieldName,
-                            array('@todo', '@todo'),
-                            set_value($sFieldName, $sDefault),
-                            $sAttr
-                        );
-                        break;
-
-                    case 'CHECKBOX':
-                    case 'RADIO':
-                        dump('@todo - checkbox and radio fields');
-                        break;
-
-                    case 'DATE':
-                        dump('@todo - date and time fields');
-                        break;
-
-                    case 'TIME':
-                        dump('@todo - date and time fields');
-                        break;
-
-                    case 'DATETIME':
-                        dump('@todo - date and time fields');
-                        break;
-
-                    case 'HIDDEN':
-                        echo form_hidden(
-                            $sFieldName,
-                            set_value($sFieldName, $sDefault)
-                        );
-                        break;
-
-                    case 'TEXT':
-                    default:
-                        echo form_input(
-                            $sFieldName,
-                            set_value($sFieldName, $sDefault),
-                            $sAttr
-                        );
-                        break;
-                }
-
-
-                ?>
-            </div>
-            <?php
+            }
 
             $iCounter++;
         }
 
         ?>
         <p>
-            <button type="submit" class="btn btn-primary">
-                <?=$oForm->cta_label ?: 'Submit'?>
+            <button type="submit" class="btn btn-primary" <?=$oForm->cta->attributes?>>
+                <?=$oForm->cta->label ?: 'Submit'?>
             </button>
         </p>
         <?php
@@ -175,5 +103,4 @@ if (!empty($iFormId)) {
         ?>
     </div>
     <?php
-
 }

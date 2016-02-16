@@ -4,7 +4,7 @@
     echo cmsWidget(
         'customform',
         array(
-            'formId'     => $oForm->id,
+            'form'       => $oForm,
             'showLabel'  => false,
             'showHeader' => true,
             'showFooter' => true

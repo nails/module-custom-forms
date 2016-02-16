@@ -1,0 +1,1 @@
+<?=form_password($key, $value, 'class="' . $class . '" ' . $attributes)?>

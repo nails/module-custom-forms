@@ -1,9 +1,5 @@
 <div class="group-custom-forms responses">
-    <h2>Overview</h2>
-    <div class="alert alert-warning">
-        @todo: Place an overview on form responses here. This like, number of responses, average answer etc.
-    </div>
-    <h2>Individual Responses (<?=number_format($form->total_responses)?>)</h2>
+    <h2>Individual Responses (<?=number_format($form->responses->count)?>)</h2>
     <table>
         <thead>
             <tr>
@@ -37,6 +33,15 @@
                             'View',
                             'class="btn btn-xs btn-primary"'
                         );
+
+                        if (userHasPermission('admin:forms:forms:browse')) {
+
+                            echo anchor(
+                                'admin/forms/forms/responses/' . $form->id . '/' . $oResponse->id . '/delete',
+                                'Delete',
+                                'class="btn btn-xs btn-danger confirm" data-body="This action is also not undoable." data-title="Confirm Delete"'
+                            );
+                        }
 
                         ?>
                     </td>

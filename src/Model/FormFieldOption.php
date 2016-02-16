@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Manage Custom form responses
+ * Manage form fields' options
  *
  * @package     Nails
  * @subpackage  module-custom-forms
@@ -15,14 +15,8 @@ namespace Nails\CustomForms\Model;
 use Nails\Factory;
 use Nails\Common\Model\Base;
 
-class Response extends Base
+class FormFieldOption extends Base
 {
-    private $oDb;
-    private $tableAnswer;
-    private $tableAnswerPrefix;
-
-    // --------------------------------------------------------------------------
-
     /**
      * Construct the model
      */
@@ -30,12 +24,8 @@ class Response extends Base
     {
         parent::__construct();
 
-        $this->oDb               = Factory::service('Database');
-        $this->table             = NAILS_DB_PREFIX . 'custom_form_response';
-        $this->tablePrefix       = 'fr';
-        $this->destructiveDelete = false;
-        $this->defaultSortColumn = 'created';
-        $this->defaultSortOrder  = 'desc';
+        $this->table       = NAILS_DB_PREFIX . 'custom_form_field_option';
+        $this->tablePrefix = 'ffo';
     }
 
     // --------------------------------------------------------------------------
@@ -60,8 +50,10 @@ class Response extends Base
         $aBools = array(),
         $aFloats = array()
     ) {
-        parent::formatObject($oObj, $aData, $aIntegers, $aBools, $aFloats);
 
-        $oObj->answers = json_decode($oObj->answers);
+        $aBools[] = 'is_disabled';
+        $aBools[] = 'is_selected';
+
+        parent::formatObject($oObj, $aData, $aIntegers, $aBools, $aFloats);
     }
 }

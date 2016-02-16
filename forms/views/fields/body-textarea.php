@@ -1,0 +1,1 @@
+<?=form_textarea($key, $value, 'class="' . $class . '" ' . $attributes)?>

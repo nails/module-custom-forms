@@ -10,8 +10,8 @@
                 <tr>
                     <th class="id">ID</th>
                     <th class="label">Label</th>
-                    <th class="datetime">Created</th>
-                    <th class="user">Created By</th>
+                    <th class="datetime">Modified</th>
+                    <th class="user">Modified By</th>
                     <th class="actions">Actions</th>
                 </tr>
             </thead>
@@ -30,10 +30,12 @@
                         <td class="label">
                             <?=$form->label?>
                         </td>
-                        <?=adminHelper('loadDatetimeCell', $form->created)?>
-                        <?=adminHelper('loadUserCell', $form->created_by)?>
+                        <?=adminHelper('loadDatetimeCell', $form->modified)?>
+                        <?=adminHelper('loadUserCell', $form->modified_by)?>
                         <td class="actions">
                         <?php
+
+                        echo anchor($form->url, 'View', 'class="btn btn-xs btn-default" target="_blank"');
 
                         if (userHasPermission('admin:forms:forms:edit')) {
 
@@ -44,7 +46,7 @@
 
                             echo anchor(
                                 'admin/forms/forms/responses/' . $form->id,
-                                'View Responses (' . number_format($form->total_responses) . ')',
+                                'View Responses (' . number_format($form->responses->count) . ')',
                                 'class="btn btn-xs btn-warning"'
                             );
                         }
@@ -54,7 +56,7 @@
                             echo anchor(
                                 'admin/forms/forms/delete/' . $form->id,
                                 'Delete',
-                                'class="confirm btn btn-xs btn-danger"'
+                                'class="btn btn-xs btn-danger confirm" data-body="This action is also not undoable." data-title="Confirm Delete"'
                             );
                         }
 

@@ -23,81 +23,143 @@ class Forms extends NAILS_Controller
             show_404();
         }
 
-        $oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
-        $oForm      = $oFormModel->getById($iFormId);
+        $oFormModel      = Factory::model('Form', 'nailsapp/module-custom-forms');
+        $oFormFieldModel = Factory::model('FormField', 'nailsapp/module-custom-forms');
+        $oForm           = $oFormModel->getById($iFormId, array('includeFields' => true));
 
         if (!empty($oForm)) {
 
-            $this->data['oForm'] = $oForm;
-
             if ($this->input->post()) {
 
-                //  Validate
-                $oFormValidation = Factory::service('FormValidation');
-                $aRules          = array();
+                $bIsValid = true;
 
-                foreach ($oForm->fields as $oField) {
+                foreach ($oForm->fields->data as &$oField) {
 
-                    $aTemp   = array();
-                    $aTemp[] = 'xss_clean';
+                    $oFieldType = $oFormFieldModel->getType($oField->type);
+                    if (!empty($oFieldType)) {
 
-                    if ($oField->is_required) {
-                        $aTemp[] = 'required';
+                        try {
+
+                            $oFieldType->validate(
+                                !empty($_POST['field'][$oField->id]) ? $_POST['field'][$oField->id] : null,
+                                $oField
+                            );
+
+                        } catch(\Exception $e) {
+
+                            $oField->error = $e->getMessage();
+                            $bIsValid      = false;
+                        }
                     }
-
-                    switch ($oField->type) {
-
-                        case 'EMAIL':
-                            $aTemp[] = 'valid_email';
-                            break;
-
-                        case 'NUMBER':
-                            $aTemp[] = 'is_numeric';
-                            break;
-
-                        case 'URL':
-                            $aTemp[] = 'prep_url';
-                            break;
-
-                        case 'DATE':
-                            $aTemp[] = 'valid_date';
-                            break;
-
-                        case 'TIME':
-                            $aTemp[] = 'valid_time';
-                            break;
-
-                        case 'DATETIME':
-                            $aTemp[] = 'valid_datetime';
-                            break;
-                    }
-
-                    $aRules['field[' . $oField->id . ']'] = implode('|', $aTemp);
                 }
 
-                foreach ($aRules as $sField => $sRules) {
-                    $oFormValidation->set_rules($sField, '', $sRules);
-                }
-
-                //  Set all the messages
-                $oFormValidation->set_message('required', lang('fv_required'));
-
-                if ($oFormValidation->run()) {
+                if ($bIsValid) {
 
                     //  Save the response
-                    //  @todo
+                    $aData = array(
+                        'form_id'   => $oForm->id,
+                        'answers' => array()
+                    );
 
-                    //  Show the thanks page
-                    $this->load->view('structure/header', $this->data);
-                    $this->load->view('forms/thanks', $this->data);
-                    $this->load->view('structure/footer', $this->data);
-                    return;
+                    /**
+                     * Build the answer array; this should contain the text equivilents of all fields so that
+                     * should the parent form change, the answers won't be affected
+                     */
+                    foreach ($oForm->fields->data as &$oField) {
+
+                        $oFieldType = $oFormFieldModel->getType($oField->type);
+                        if (!empty($oFieldType)) {
+
+                            try {
+
+                                $mAnswer = !empty($_POST['field'][$oField->id]) ? $_POST['field'][$oField->id] : null;
+
+                                $aData['answers'][$oField->id] = array(
+                                    'question' => $oField->label,
+                                    'answer'   => null
+                                );
+
+                                /**
+                                 * If the field supports options then we need to find the appropriate fields
+                                 */
+
+                                if ($oFieldType::SUPPORTS_OPTIONS) {
+
+                                    /**
+                                     * Cast the response to an array so that fields which accept multiple values
+                                     * (e.g checkboxes) validate in the same way.
+                                     */
+
+                                    $aAnswer = (array) $mAnswer;
+
+                                    $aData['answers'][$oField->id]['answer'] = array();
+
+                                    foreach ($aAnswer as $sAnswer) {
+                                        foreach ($oField->options->data as $oOption) {
+                                            if ($oOption->id == $sAnswer) {
+                                                $aData['answers'][$oField->id]['answer'][] = $oOption->label;
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                } else {
+
+                                    $aData['answers'][$oField->id]['answer'] = $oFieldType->clean($mAnswer, $oField);
+                                }
+
+                            } catch(\Exception $e) {
+
+                                $oField->error = $e->getMessage();
+                                $bIsValid      = false;
+                            }
+                        }
+                    }
+
+                    if ($bIsValid)  {
+
+                        //  Encode the answers into a string
+                        $aData['answers'] = json_encode(array_values($aData['answers']));
+
+                        $oResponseModel = Factory::model('Response', 'nailsapp/module-custom-forms');
+
+                        if ($oResponseModel->create($aData)) {
+
+                            //  Send notification email?
+                            if ($oForm->notification_email) {
+                                //  @todo
+                            }
+
+                            //  Send thank you email?
+                            if ($oForm->thankyou_email->send) {
+                                //  @todo
+                            }
+
+                            $this->data['oForm'] = $oForm;
+
+                            //  Show the thanks page
+                            $this->load->view('structure/header', $this->data);
+                            $this->load->view('forms/thanks', $this->data);
+                            $this->load->view('structure/footer', $this->data);
+                            return;
+
+                        } else {
+
+                            $this->data['error'] = 'Failed to save your responses. ' . $oResponseModel->lastError();
+                        }
+
+                    } else {
+
+                        $this->data['error'] = lang('fv_there_were_errors');
+                    }
 
                 } else {
 
                     $this->data['error'] = lang('fv_there_were_errors');
                 }
             }
+
+            $this->data['oForm'] = $oForm;
 
             $this->load->view('structure/header', $this->data);
             $this->load->view('forms/form', $this->data);

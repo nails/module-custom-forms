@@ -1,0 +1,1 @@
+<?=form_date($key, $value, 'class="' . $class . '" ' . $attributes)?>

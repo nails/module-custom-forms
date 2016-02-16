@@ -1,0 +1,1 @@
+<?=form_number($key, $value, 'class="' . $class . '" ' . $attributes)?>

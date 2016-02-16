@@ -21,6 +21,11 @@
                 Thank You Page
             </a>
         </li>
+        <li class="tab">
+            <a href="#" data-tab="advanced">
+                Advanced
+            </a>
+        </li>
     </ul>
     <section class="tabs">
         <div class="tab-page form active">
@@ -28,11 +33,11 @@
             <?php
 
             $aField = array(
-                'key' => 'label',
-                'label' => 'Label',
+                'key'         => 'label',
+                'label'       => 'Label',
                 'placeholder' => 'Define the form\'s label',
-                'required' => true,
-                'default' => !empty($form->label) ? $form->label : ''
+                'required'    => true,
+                'default'     => !empty($form->label) ? $form->label : ''
             );
             echo form_field($aField);
 
@@ -57,22 +62,21 @@
             // --------------------------------------------------------------------------
 
             $aField = array(
-                'key' => 'cta_label',
-                'label' => 'Call To Action',
+                'key'         => 'cta_label',
+                'label'       => 'Button Label',
                 'placeholder' => 'Define the text on the form\'s submit button, defaults to "Submit".',
-                'default' => !empty($form->cta_label) ? $form->cta_label : ''
+                'default'     => !empty($form->cta->label) ? $form->cta->label : ''
             );
             echo form_field($aField);
 
             // --------------------------------------------------------------------------
 
             $aField = array(
-                'key' => 'form_attributes',
-                'label' => 'Form Attributes',
-                'placeholder' => 'Define any custom attribtues which should be attached to the form.',
-                'default' => !empty($form->form_attributes) ? $form->form_attributes : ''
+                'key'     => 'has_captcha',
+                'label'   => 'Captcha',
+                'default' => !empty($form->has_captcha)
             );
-            echo form_field($aField);
+            echo form_field_boolean($aField);
 
             ?>
             </div>
@@ -129,14 +133,13 @@
                                 $aOption = (object) $aOption;
                             }
 
-
                             $aField = (object) $aField;
                         }
 
 
-                    } elseif (!empty($form->fields)) {
+                    } elseif (!empty($form->fields->data)) {
 
-                        $aFields = $form->fields;
+                        $aFields = $form->fields->data;
 
                     } else {
 
@@ -144,33 +147,6 @@
                     }
 
                     $i = 0;
-                    $aTypes = array(
-                        'TEXT' => 'Text',
-                        'NUMBER' => 'Number',
-                        'EMAIL' => 'Email address',
-                        'TEL' => 'Telephone',
-                        'URL' => 'URL',
-                        'TEXTAREA' => 'Textarea',
-                        'SELECT' => 'Dropdown',
-                        'CHECKBOX' => 'Checkbox',
-                        'RADIO' => 'Radio',
-                        'DATE' => 'Date',
-                        'TIME' => 'Time',
-                        'DATETIME' => 'Datetime',
-                        'HIDDEN' => 'Hidden',
-                    );
-
-                    $aDefaultValueTypes = array(
-                        'None' => 'No default value',
-                        'USER_ID' => 'User ID',
-                        'BUSINESS_ID' => 'Business ID',
-                        'BUSINESS_NAME' => 'Business Name',
-                        'USER_NAME' => 'User Name',
-                        'USER_EMAIL' => 'User Email',
-                        'USER_TELEPHONE' => 'User Telephone',
-                        'CURRENT_TIMESTAMP' => 'Current Timestamp',
-                        'CUSTOM' => 'Custom'
-                    );
 
                     foreach ($aFields as $oField) {
 
@@ -192,7 +168,7 @@
 
                                 echo form_dropdown(
                                     'fields[' . $i . '][type]',
-                                    $aTypes,
+                                    $aFieldTypes,
                                     set_value('fields[' . $i . '][type]', $oField->type),
                                     'class="select2 field-type"'
                                 );
@@ -249,15 +225,13 @@
                             <td class="default">
                                 <?php
 
+                                echo '<div class="js-supports-default-value" style="display: none;">';
                                 echo form_dropdown(
                                     'fields[' . $i . '][default_value]',
-                                    $aDefaultValueTypes,
+                                    $aFieldDefaultValues,
                                     set_value('fields[' . $i . '][default_value]', $oField->default_value),
                                     'class="select2 field-default"'
                                 );
-
-                                ?>
-                                <?php
 
                                 echo form_input(
                                     'fields[' . $i . '][default_value_custom]',
@@ -267,6 +241,11 @@
                                     ),
                                     'placeholder="The default value"'
                                 );
+                                echo '</div>';
+
+                                echo '<div class="js-no-default-value text-muted" style="display: none;">';
+                                echo 'Field type does not support default values';
+                                echo '</div>';
 
                                 ?>
                             </td>
@@ -310,10 +289,10 @@
                 <?php
 
                 $aField = array(
-                    'key' => 'notification_email',
-                    'label' => 'Notify',
+                    'key'         => 'notification_email',
+                    'label'       => 'Notify',
                     'placeholder' => 'A comma separated list of email addresses to notify when a form is submitted.',
-                    'default' => !empty($form->notification_email) ? implode(',', $form->notification_email) : ''
+                    'default'     => !empty($form->notification_email) ? implode(',', $form->notification_email) : ''
                 );
 
                 echo form_field($aField);
@@ -321,11 +300,11 @@
                 // --------------------------------------------------------------------------
 
                 $aField = array(
-                    'key' => 'thankyou_email',
-                    'label' => 'Email',
-                    'info' => 'Send the user a thank you email',
-                    'id' => 'do-send-thankyou',
-                    'default' => !empty($form->thankyou_email) ? $form->thankyou_email : false
+                    'key'     => 'thankyou_email',
+                    'label'   => 'Email',
+                    'info'    => 'Send the user a thank you email',
+                    'id'      => 'do-send-thankyou',
+                    'default' => !empty($form->thankyou_email->send)
                 );
 
                 echo form_field_boolean($aField);
@@ -334,20 +313,20 @@
 
                 echo '<div id="send-thankyou-options">';
                 $aField = array(
-                    'key' => 'thankyou_email_subject',
-                    'label' => 'Subject',
+                    'key'         => 'thankyou_email_subject',
+                    'label'       => 'Subject',
                     'placeholder' => 'Define the subject of the thank you email',
-                    'default' => !empty($form->thankyou_email_subject) ? $form->thankyou_email_subject : ''
+                    'default'     => !empty($form->thankyou_email->subject) ? $form->thankyou_email->subject : ''
                 );
                 echo form_field($aField);
 
                 // --------------------------------------------------------------------------
 
                 $aField = array(
-                    'key' => 'thankyou_email_body',
-                    'label' => 'Body',
+                    'key'         => 'thankyou_email_body',
+                    'label'       => 'Body',
                     'placeholder' => 'Define the body of the thank you email',
-                    'default' => !empty($form->thankyou_email_body) ? $form->thankyou_email_body : ''
+                    'default'     => !empty($form->thankyou_email->body) ? $form->thankyou_email->body : ''
                 );
                 echo form_field_wysiwyg($aField);
                 echo '</div>';
@@ -360,22 +339,47 @@
                 <?php
 
                 $aField = array(
-                    'key' => 'thankyou_page_title',
-                    'label' => 'Subject',
+                    'key'         => 'thankyou_page_title',
+                    'label'       => 'Title',
                     'placeholder' => 'Define the title of the thank you page',
-                    'default' => !empty($form->thankyou_page_title) ? $form->thankyou_page_title : ''
+                    'required'    => true,
+                    'default'     => !empty($form->thankyou_page->title) ? $form->thankyou_page->title : ''
                 );
                 echo form_field($aField);
 
                 // --------------------------------------------------------------------------
 
                 $aField = array(
-                    'key' => 'thankyou_page_body',
-                    'label' => 'Body',
+                    'key'         => 'thankyou_page_body',
+                    'label'       => 'Body',
                     'placeholder' => 'Define the body of the thank you page',
-                    'default' => !empty($form->thankyou_page_body) ? $form->thankyou_page_body : ''
+                    'default'     => !empty($form->thankyou_page->body) ? $form->thankyou_page->body : ''
                 );
-                echo form_field_wysiwyg($aField);
+                echo form_field_cms_widgets($aField);
+
+                ?>
+            </div>
+        </div>
+        <div class="tab-page advanced">
+            <div class="fieldset">
+                <?php
+
+                $aField = array(
+                    'key'         => 'cta_attributes',
+                    'label'       => 'Button Attributes',
+                    'default'     => !empty($form->cta->attributes) ? $form->cta->attributes : ''
+                );
+                echo form_field($aField);
+
+                // --------------------------------------------------------------------------
+
+                $aField = array(
+                    'key'         => 'form_attributes',
+                    'label'       => 'Form Attributes',
+                    'placeholder' => 'Define any custom attributes which should be attached to the form.',
+                    'default'     => !empty($form->form->attributes) ? $form->form->attributes : ''
+                );
+                echo form_field($aField);
 
                 ?>
             </div>
@@ -413,7 +417,7 @@
 
                         $x = 0;
 
-                        foreach ($oField->options as $oOption) {
+                        foreach ($oField->options->data as $oOption) {
 
                             ?>
                             <tr>
@@ -495,7 +499,7 @@
         <b class="fa fa-bars handle"></b>
     </td>
     <td class="type">
-        <?=form_dropdown('fields[{{fieldNumber}}][type]', $aTypes, null, 'class="select2 field-type"')?>
+        <?=form_dropdown('fields[{{fieldNumber}}][type]', $aFieldTypes, null, 'class="select2 field-type"')?>
         <a href="#form-field-options-{{fieldNumber}}" class="fancybox btn btn-xs btn-warning">
             Manage Options
         </a>
@@ -530,7 +534,7 @@
     <td class="default">
         <?=form_dropdown(
             'fields[{{fieldNumber}}][default_value]',
-            $aDefaultValueTypes,
+            $aFieldDefaultValues,
             null,
             'class="select2 field-default"'
         )?>

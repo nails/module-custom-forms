@@ -1,6 +1,6 @@
 /* globals _nails, Mustache */
 var _ADMIN_CUSTOM_FORMS_EDIT;
-_ADMIN_CUSTOM_FORMS_EDIT = function()
+_ADMIN_CUSTOM_FORMS_EDIT = function(typeWithOptions, typeWithDefaultValue)
 {
     /**
      * Avoid scope issues in callbacks and anonymous functions by referring to `this` as `base`
@@ -16,7 +16,9 @@ _ADMIN_CUSTOM_FORMS_EDIT = function()
 
     // --------------------------------------------------------------------------
 
-    base.fieldCount = 0;
+    base.fieldCount           = 0;
+    base.typeWithOptions      = typeWithOptions || [];
+    base.typeWithDefaultValue = typeWithDefaultValue || [];
 
     // --------------------------------------------------------------------------
 
@@ -27,47 +29,39 @@ _ADMIN_CUSTOM_FORMS_EDIT = function()
     base.__construct = function()
     {
         //  Basic bindings
-        $('#field-do-send-thankyou').on('toggle', function(event, toggled)
-        {
+        $('#field-do-send-thankyou').on('toggle', function(event, toggled) {
             base.fieldDoSendThankYou(toggled);
         });
 
         //  Field bindings
-        $('#form-fields').on('change', '.field-type', function()
-        {
+        $('#form-fields').on('change', '.field-type', function() {
             base.fieldTypeChanged($(this));
         });
 
-        $('#form-fields').on('change', '.field-default', function()
-        {
+        $('#form-fields').on('change', '.field-default', function() {
             base.fieldDefaultChanged($(this));
         });
 
-        $('#add-field').on('click', function()
-        {
+        $('#add-field').on('click', function() {
             base.addField();
             return false;
         });
 
-        $('#form-fields').on('click', '.remove-field', function()
-        {
+        $('#form-fields').on('click', '.remove-field', function() {
             base.removeField($(this));
             return false;
         });
 
-        $(document).on('click', '.add-option', function()
-        {
+        $(document).on('click', '.add-option', function() {
             base.addOption($(this));
         });
 
-        $(document).on('click', '.remove-option', function()
-        {
+        $(document).on('click', '.remove-option', function() {
             base.removeOption($(this));
             return false;
         });
 
-        $('#main-form').on('submit', function()
-        {
+        $('#main-form').on('submit', function() {
             return base.validate();
         });
 
@@ -76,8 +70,7 @@ _ADMIN_CUSTOM_FORMS_EDIT = function()
         //  Initial states
         base.fieldDoSendThankYou($('#field-do-send-thankyou input[type=checkbox]').is(':checked'));
 
-        $('#form-fields td.type .field-type, #form-fields td.default .field-default').each(function()
-        {
+        $('#form-fields td.type .field-type, #form-fields td.default .field-default').each(function() {
             $(this).trigger('change');
         });
 
@@ -91,12 +84,12 @@ _ADMIN_CUSTOM_FORMS_EDIT = function()
             'axis': 'y',
             'containment': 'parent',
             'placeholder': 'placeholder',
-            'helper': function(e, tr)
-            {
+            'helper': function(e, tr) {
+
                 var $originals = tr.children();
                 var $helper = tr.clone();
-                $helper.children().each(function(index)
-                {
+                $helper.children().each(function(index) {
+
                     // Set helper cell sizes to match the original sizes
                     $(this).width($originals.eq(index).outerWidth());
                 });
@@ -106,8 +99,8 @@ _ADMIN_CUSTOM_FORMS_EDIT = function()
                 });
                 return $helper;
             },
-            'start': function(e, ui)
-            {
+            'start': function(e, ui) {
+
                 ui.placeholder.height(ui.helper.outerHeight());
             }
         });
@@ -115,8 +108,8 @@ _ADMIN_CUSTOM_FORMS_EDIT = function()
 
     // --------------------------------------------------------------------------
 
-    base.fieldDoSendThankYou = function(toggled)
-    {
+    base.fieldDoSendThankYou = function(toggled) {
+
         if (toggled) {
 
             $('#send-thankyou-options').show();
@@ -133,8 +126,8 @@ _ADMIN_CUSTOM_FORMS_EDIT = function()
 
     // --------------------------------------------------------------------------
 
-    base.addField = function()
-    {
+    base.addField = function() {
+
         base.fieldCount++;
 
         var tpl, tplData;
@@ -153,8 +146,8 @@ _ADMIN_CUSTOM_FORMS_EDIT = function()
 
     // --------------------------------------------------------------------------
 
-    base.removeField = function(elem)
-    {
+    base.removeField = function(elem) {
+
         var fieldNumber = elem.data('field-number');
         elem.closest('tr').remove();
         $('#form-field-options-' + fieldNumber).remove();
@@ -162,8 +155,8 @@ _ADMIN_CUSTOM_FORMS_EDIT = function()
 
     // --------------------------------------------------------------------------
 
-    base.addOption = function(elem)
-    {
+    base.addOption = function(elem) {
+
         var table, tpl, tplData;
         table = elem.parent().parent().find('table');
         tplData = {
@@ -179,45 +172,44 @@ _ADMIN_CUSTOM_FORMS_EDIT = function()
 
     // --------------------------------------------------------------------------
 
-    base.removeOption = function(elem)
-    {
+    base.removeOption = function(elem) {
+
         elem.closest('tr').remove();
         $.fancybox.update();
     };
 
     // --------------------------------------------------------------------------
 
-    base.fieldTypeChanged = function(elem)
-    {
-        switch (elem.val())
-        {
-            case 'SELECT' :
-            case 'RADIOS' :
-            case 'CHECKBOX' :
+    base.fieldTypeChanged = function(elem) {
 
-                elem.siblings('a').addClass('is-active');
-                break;
+        //  Supports options?
+        if ($.inArray(elem.val(), base.typeWithOptions) >= 0) {
+            elem.siblings('a').addClass('is-active');
+        } else {
+            elem.siblings('a').removeClass('is-active');
+        }
 
-            default :
-
-                elem.siblings('a').removeClass('is-active');
-                break;
+        //  Supports default value?
+        if ($.inArray(elem.val(), base.typeWithDefaultValue) >= 0) {
+            elem.closest('tr').find('td.default .js-supports-default-value').show();
+            elem.closest('tr').find('td.default .js-no-default-value').hide();
+        } else {
+            elem.closest('tr').find('td.default .js-supports-default-value').hide();
+            elem.closest('tr').find('td.default .js-no-default-value').show();
         }
     };
 
     // --------------------------------------------------------------------------
 
-    base.fieldDefaultChanged = function(elem)
-    {
-        switch (elem.val())
-        {
-            case 'CUSTOM' :
+    base.fieldDefaultChanged = function(elem) {
 
+        switch (elem.val()) {
+
+            case 'CUSTOM' :
                 elem.siblings('input').addClass('is-active');
                 break;
 
             default :
-
                 elem.siblings('input').removeClass('is-active');
                 break;
         }
@@ -225,12 +217,11 @@ _ADMIN_CUSTOM_FORMS_EDIT = function()
 
     // --------------------------------------------------------------------------
 
-    base.validate = function()
-    {
+    base.validate = function() {
         return true;
     };
 
     // --------------------------------------------------------------------------
 
     return base.__construct();
-}();
+};

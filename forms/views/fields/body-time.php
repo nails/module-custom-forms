@@ -1,0 +1,1 @@
+<?=form_time($key, $value, 'class="' . $class . '" ' . $attributes)?>

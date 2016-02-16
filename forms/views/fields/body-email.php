@@ -1,0 +1,1 @@
+<?=form_email($key, $value, 'class="' . $class . '" ' . $attributes)?>
