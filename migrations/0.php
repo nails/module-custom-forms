@@ -12,11 +12,11 @@
  * @link
  */
 
-namespace Nails\Database\Migration\Nailsapp\CustomForms;
+namespace Nails\Database\Migration\Nailsapp\ModuleCustomForms;
 
 use Nails\Common\Console\Migrate\Base;
 
-class Migration1 extends Base
+class Migration0 extends Base
 {
     /**
      * Execute the migration
