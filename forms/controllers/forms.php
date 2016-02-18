@@ -53,6 +53,10 @@ class Forms extends NAILS_Controller
                     }
                 }
 
+                if ($oForm->has_captcha) {
+                    dumpanddie('validate captcha');
+                }
+
                 if ($bIsValid) {
 
                     //  Save the response

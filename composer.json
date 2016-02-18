@@ -21,7 +21,8 @@
     "prefer-stable": true,
     "require":
     {
-        "nailsapp/common": "dev-develop"
+        "nailsapp/common": "dev-develop",
+        "nailsapp/module-captcha": "dev-develop"
     },
     "require-dev":
     {

@@ -86,6 +86,14 @@ if ($bShowWidget) {
             $iCounter++;
         }
 
+        // --------------------------------------------------------------------------
+
+        if ($oForm->has_captcha) {
+
+            nailsFactory('helper', 'captcha', 'nailsapp/module-captcha');
+            echo captchaGenerate();
+        }
+
         ?>
         <p>
             <button type="submit" class="btn btn-primary" <?=$oForm->cta->attributes?>>

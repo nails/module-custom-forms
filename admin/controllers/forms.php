@@ -282,6 +282,7 @@ class Forms extends BaseAdmin
             'cta_label'              => $this->input->post('cta_label'),
             'cta_attributes'         => $this->input->post('cta_attributes'),
             'form_attributes'        => $this->input->post('form_attributes'),
+            'has_captcha'            => (bool) $this->input->post('has_captcha'),
             'thankyou_email'         => (bool) $this->input->post('thankyou_email'),
             'thankyou_email_subject' => $this->input->post('thankyou_email_subject'),
             'thankyou_email_body'    => $this->input->post('thankyou_email_body'),
