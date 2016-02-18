@@ -4,10 +4,11 @@
     echo cmsWidget(
         'customform',
         array(
-            'form'       => $oForm,
-            'showLabel'  => false,
-            'showHeader' => true,
-            'showFooter' => true
+            'form'         => $oForm,
+            'showLabel'    => false,
+            'showHeader'   => true,
+            'showFooter'   => true,
+            'captchaError' => !empty($captchaError)
         )
     );
 

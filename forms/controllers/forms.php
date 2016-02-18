@@ -54,7 +54,14 @@ class Forms extends NAILS_Controller
                 }
 
                 if ($oForm->has_captcha) {
-                    dumpanddie('validate captcha');
+
+                    $oCaptcha = Factory::model('Captcha', 'nailsapp/module-captcha');
+
+                    if (!$oCaptcha->verify()) {
+
+                        $bIsValid = false;
+                        $this->data['captchaError'] = true;
+                    }
                 }
 
                 if ($bIsValid) {
