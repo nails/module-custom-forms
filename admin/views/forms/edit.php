@@ -292,7 +292,7 @@
                     'key'         => 'notification_email',
                     'label'       => 'Notify',
                     'placeholder' => 'A comma separated list of email addresses to notify when a form is submitted.',
-                    'default'     => !empty($form->notification_email) ? implode(',', $form->notification_email) : ''
+                    'default'     => !empty($form->notification_email) ? implode(', ', $form->notification_email) : ''
                 );
 
                 echo form_field($aField);
@@ -326,6 +326,7 @@
                     'key'         => 'thankyou_email_body',
                     'label'       => 'Body',
                     'placeholder' => 'Define the body of the thank you email',
+                    'class'       => 'wysiwyg-basic',
                     'default'     => !empty($form->thankyou_email->body) ? $form->thankyou_email->body : ''
                 );
                 echo form_field_wysiwyg($aField);

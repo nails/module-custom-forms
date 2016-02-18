@@ -126,13 +126,35 @@ class Forms extends NAILS_Controller
                         if ($oResponseModel->create($aData)) {
 
                             //  Send notification email?
-                            if ($oForm->notification_email) {
-                                //  @todo
+                            if (!empty($oForm->notification_email)) {
+
+                                foreach ($oForm->notification_email as $sEmail) {
+
+                                    $oEmail                = new \stdClass();
+                                    $oEmail->to_email      = $sEmail;
+                                    $oEmail->type          = 'custom_form_submitted';
+                                    $oEmail->data          = new \stdClass();
+                                    $oEmail->data->label   = $oForm->label;
+                                    $oEmail->data->answers = json_decode($aData['answers']);
+
+                                    $this->emailer->send($oEmail);
+                                }
                             }
 
                             //  Send thank you email?
-                            if ($oForm->thankyou_email->send) {
-                                //  @todo
+                            $sSubject = $oForm->thankyou_email->subject;
+                            $sBody    = $oForm->thankyou_email->body;
+
+                            if (isLoggedIn() && $oForm->thankyou_email->send && !empty($sSubject) && !empty($sBody)) {
+
+                                    $oEmail                = new \stdClass();
+                                    $oEmail->to_id         = activeUser('id');
+                                    $oEmail->type          = 'custom_form_submitted_thanks';
+                                    $oEmail->data          = new \stdClass();
+                                    $oEmail->data->subject = $sSubject;
+                                    $oEmail->data->body    = $sBody;
+
+                                    $this->emailer->send($oEmail);
                             }
 
                             $this->data['oForm'] = $oForm;

@@ -282,7 +282,6 @@ class Forms extends BaseAdmin
             'cta_label'              => $this->input->post('cta_label'),
             'cta_attributes'         => $this->input->post('cta_attributes'),
             'form_attributes'        => $this->input->post('form_attributes'),
-            'notification_email'     => $this->input->post('notification_email'),
             'thankyou_email'         => (bool) $this->input->post('thankyou_email'),
             'thankyou_email_subject' => $this->input->post('thankyou_email_subject'),
             'thankyou_email_body'    => $this->input->post('thankyou_email_body'),
@@ -332,6 +331,14 @@ class Forms extends BaseAdmin
             $aData['fields'][] = $aTemp;
             $iFieldOrder++;
         }
+
+        //  Format the emails
+        $aEmails = explode(',', $this->input->post('notification_email'));
+        $aEmails = array_map('trim', $aEmails);
+        $aEmails = array_unique($aEmails);
+        $aEmails = array_filter($aEmails);
+
+        $aData['notification_email'] = json_encode($aEmails);
 
         return $aData;
     }
