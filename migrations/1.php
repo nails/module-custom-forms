@@ -39,7 +39,7 @@ class Migration1 extends Base
         $this->query("ALTER TABLE `{{NAILS_DB_PREFIX}}custom_form_field_option` ADD `modified` DATETIME  NOT NULL  AFTER `created_by`;");
         $this->query("ALTER TABLE `{{NAILS_DB_PREFIX}}custom_form_field_option` ADD `modified_by` INT(11)  UNSIGNED  NULL  DEFAULT NULL  AFTER `modified`;");
         $this->query("ALTER TABLE `{{NAILS_DB_PREFIX}}custom_form_field_option` ADD FOREIGN KEY (`created_by`) REFERENCES `{{NAILS_DB_PREFIX}}user` (`id`) ON DELETE SET NULL;");
-        $this->query("ALTER TABLE `{{NAILS_DB_PREFIX}}custom_form_field_option` ADD FOREIGN KEY (`modified_by`) REFERENCES `advice` (`id`) ON UPDATE SET NULL;");
+        $this->query("ALTER TABLE `{{NAILS_DB_PREFIX}}custom_form_field_option` ADD FOREIGN KEY (`modified_by`) REFERENCES `{{NAILS_DB_PREFIX}}user` (`id`) ON UPDATE SET NULL;");
         $this->query("ALTER TABLE `{{NAILS_DB_PREFIX}}custom_form_response` ADD `answers` TEXT  NULL  AFTER `form_id`;");
         $this->query("ALTER TABLE `{{NAILS_DB_PREFIX}}custom_form_response` ADD `is_deleted` TINYINT(1)  UNSIGNED  NOT NULL  DEFAULT '0'  AFTER `answers`;");
         $this->query("DROP TABLE `{{NAILS_DB_PREFIX}}custom_form_response_answer`;");
