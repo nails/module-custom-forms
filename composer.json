@@ -37,7 +37,8 @@
         "nails" :
         {
             "moduleName": "forms",
-            "type": "module"
+            "type": "module",
+            "namespace": "Nails\\CustomForms\\"
         }
     }
 }
