@@ -106,6 +106,14 @@ if ($bShowWidget) {
 
                 get_instance()->load->view('forms/fields/body-captcha', $aData);
 
+            } elseif (nailsEnvironment('not', 'PRODUCTION')) {
+
+                ?>
+                <p class="alert alert-danger">
+                    <strong>Failed to generate captcha</strong>
+                    <br /><?=captchaError()?>
+                </p>
+                <?php
             }
         }
 
