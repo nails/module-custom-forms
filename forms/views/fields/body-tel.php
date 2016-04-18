@@ -1,1 +1,0 @@
-<?=form_tel($key, $value, 'class="' . $class . '" ' . $attributes)?>

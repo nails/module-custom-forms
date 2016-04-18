@@ -18,8 +18,6 @@ use Nails\Common\Model\Base;
 class FormField extends Base
 {
     protected $oDb;
-    protected $aTypes;
-    protected $aDefaults;
 
     // --------------------------------------------------------------------------
 
@@ -34,108 +32,6 @@ class FormField extends Base
         $this->table             = NAILS_DB_PREFIX . 'custom_form_field';
         $this->tablePrefix       = 'ff';
         $this->defaultSortColumn = 'order';
-
-        // --------------------------------------------------------------------------
-
-        //  Define additional types which can be set (in addition to TEXT and hidden)
-        $this->aTypes = array(
-            'TEXT' => (object) array(
-                'model'    => 'FieldTypeText',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'PASSWORD' => (object) array(
-                'model'    => 'FieldTypePassword',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'NUMBER' => (object) array(
-                'model'    => 'FieldTypeNumber',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'EMAIL' => (object) array(
-                'model'    => 'FieldTypeEmail',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'TEL' => (object) array(
-                'model'    => 'FieldTypeTel',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'URL' => (object) array(
-                'model'    => 'FieldTypeUrl',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'TEXTAREA' => (object) array(
-                'model'    => 'FieldTypeTextarea',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'SELECT' => (object) array(
-                'model'    => 'FieldTypeSelect',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'CHECKBOX' => (object) array(
-                'model'    => 'FieldTypeCheckbox',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'RADIO' => (object) array(
-                'model'    => 'FieldTypeRadio',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'DATE' => (object) array(
-                'model'    => 'FieldTypeDate',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'TIME' => (object) array(
-                'model'    => 'FieldTypeTime',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'DATETIME' => (object) array(
-                'model'    => 'FieldTypeDateTime',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'FILE' => (object) array(
-                'model'    => 'FieldTypeFile',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'HIDDEN' => (object) array(
-                'model'    => 'FieldTypeHidden',
-                'provider' => 'nailsapp/module-custom-forms'
-            )
-        );
-
-        //  Set up the default values array
-        $this->aDefaults = array(
-            'NONE' => (object) array(
-                'model'    => 'DefaultValueNone',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'USER_ID' => (object) array(
-                'model'    => 'DefaultValueUserId',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'USER_NAME' => (object) array(
-                'model'    => 'DefaultValueUserName',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'USER_FIRST_NAME' => (object) array(
-                'model'    => 'DefaultValueUserFirstName',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'USER_LAST_NAME' => (object) array(
-                'model'    => 'DefaultValueUserLastName',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'USER_EMAIL' => (object) array(
-                'model'    => 'DefaultValueUserEmail',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'TIMESTAMP' => (object) array(
-                'model'    => 'DefaultValueTimestamp',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-            'CUSTOM' => (object) array(
-                'model'    => 'DefaultValueCustom',
-                'provider' => 'nailsapp/module-custom-forms'
-            ),
-        );
     }
 
     // --------------------------------------------------------------------------
@@ -196,182 +92,21 @@ class FormField extends Base
         // --------------------------------------------------------------------------
 
         //  Work out the default value
-        $oObj->default_value_processed = '';
+        // $oObj->default_value_processed = '';
 
-        if ($oObj->default_value === 'CUSTOM') {
+        // if ($oObj->default_value === 'CUSTOM') {
 
-            $oObj->default_value_processed = $oObj->default_value_custom;
+        //     $oObj->default_value_processed = $oObj->default_value_custom;
 
-        } else {
+        // } else {
 
-            $aDefaults = $this->getDefaultValues();
-            foreach ($aDefaults as $sKey => $oDefault) {
-                if ($sKey == $oObj->default_value) {
-                    $oObj->default_value_processed = $oDefault->instance->defaultValue();
-                }
-            }
-        }
-    }
-
-    // --------------------------------------------------------------------------
-
-    /**
-     * Return all the available types of field which can be created
-     * @return array
-     */
-    public function getTypes()
-    {
-        foreach ($this->aTypes as $oType) {
-            if (!isset($oType->instance)) {
-                $oType->instance = Factory::model($oType->model, $oType->provider);
-            }
-        }
-
-        return $this->aTypes;
-    }
-
-    // --------------------------------------------------------------------------
-
-    /**
-     * Get an individual field type instance by it's slug
-     * @param  string $sSlug The Field Type's slug
-     * @return object
-     */
-    public function getType($sSlug) {
-
-        $aTypes = $this->getTypes();
-
-        foreach ($aTypes as $sTypeSlug => $oType) {
-            if ($sTypeSlug == $sSlug) {
-                return $oType->instance;
-            }
-        }
-
-        return null;
-    }
-
-    // --------------------------------------------------------------------------
-
-    /**
-     * Return all the available types of field which can be created as a flat array
-     * @return array
-     */
-    public function getTypesFlat()
-    {
-        $aTypes = $this->getTypes();
-        $aOut   = array();
-
-        foreach ($aTypes as $sKey => $oType) {
-
-            $oInstance   = $oType->instance;
-            $aOut[$sKey] = $oInstance::LABEL;
-        }
-
-        return $aOut;
-    }
-
-    // --------------------------------------------------------------------------
-
-    /**
-     * Returns the types which support defining multiple options
-     * @return array
-     */
-    public function getTypesWithOptions()
-    {
-        $aTypes = $this->getTypes();
-        $aOut   = array();
-
-        foreach ($aTypes as $sKey => $oType) {
-
-            $oInstance = $oType->instance;
-
-            if ($oInstance::SUPPORTS_OPTIONS) {
-                $aOut[] = $sKey;
-            }
-        }
-
-        return $aOut;
-    }
-
-    // --------------------------------------------------------------------------
-
-    /**
-     * Returns the types which support a default value
-     * @return array
-     */
-    public function getTypesWithDefaultValue()
-    {
-        $aTypes = $this->getTypes();
-        $aOut   = array();
-
-        foreach ($aTypes as $sKey => $oType) {
-
-            $oInstance = $oType->instance;
-
-            if ($oInstance::SUPPORTS_DEFAULTS) {
-                $aOut[] = $sKey;
-            }
-        }
-
-        return $aOut;
-    }
-
-
-    // --------------------------------------------------------------------------
-
-
-    /**
-     * Returns the various default values which a field can have
-     * @return array
-     */
-    public function getDefaultValues()
-    {
-        foreach ($this->aDefaults as $oDefault) {
-            if (!isset($oDefault->instance)) {
-                $oDefault->instance = Factory::model($oDefault->model, $oDefault->provider);
-            }
-        }
-
-        return $this->aDefaults;
-    }
-
-    // --------------------------------------------------------------------------
-
-    /**
-     * Get an individual default value instance by it's slug
-     * @param  string $sSlug The Default Value's slug
-     * @return object
-     */
-    public function getDefaultValue($sSlug) {
-
-        $aDefaultValues = $this->getDefaultValues();
-
-        foreach ($aDefaultValues as $sDefaultValueSlug => $oDefaultValue) {
-            if ($sDefaultValueSlug == $sSlug) {
-                return $oDefaultValue->instance;
-            }
-        }
-
-        return null;
-    }
-
-    // --------------------------------------------------------------------------
-
-    /**
-     * Returns the various default values which a field can have as a flat array
-     * @return array
-     */
-    public function getDefaultValuesFlat()
-    {
-        $aDefaults = $this->getDefaultValues();
-        $aOut      = array();
-
-        foreach ($aDefaults as $sKey => $oDefault) {
-            $oInstance   = $oDefault->instance;
-            $aOut[$sKey] = $oInstance::LABEL;
-        }
-
-        return $aOut;
+        //     $aDefaults = $this->getDefaultValues();
+        //     foreach ($aDefaults as $sKey => $oDefault) {
+        //         if ($sKey == $oObj->default_value) {
+        //             $oObj->default_value_processed = $oDefault->instance->defaultValue();
+        //         }
+        //     }
+        // }
     }
 
     // --------------------------------------------------------------------------

@@ -1,1 +1,0 @@
-<?=form_datetime($key, $value, 'class="' . $class . '" ' . $attributes)?>

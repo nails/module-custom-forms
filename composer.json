@@ -22,7 +22,7 @@
     "require":
     {
         "nailsapp/common": "dev-develop",
-        "nailsapp/module-captcha": "dev-develop"
+        "nailsapp/module-form-builder": "dev-develop"
     },
     "require-dev":
     {

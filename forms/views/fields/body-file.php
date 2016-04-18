@@ -1,1 +1,0 @@
-<?=form_upload($key, $value, 'class="' . $class . '" ' . $attributes)?>
