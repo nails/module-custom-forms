@@ -22,8 +22,8 @@ class Routes
      */
     public function getRoutes()
     {
-        $aRoutes = array();
-        $aRoutes['forms/(.*)'] = 'forms/index/$1';
-        return $aRoutes;
+        return array(
+            'forms/(.*)' => 'forms/index/$1'
+        );
     }
 }

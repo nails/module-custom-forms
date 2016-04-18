@@ -17,15 +17,18 @@ class Forms extends NAILS_Controller
 {
     public function index()
     {
-        $iFormId = (int) $this->uri->rsegment(3);
+        $sFormSlug = $this->uri->rsegment(3);
 
-        if (empty($iFormId)) {
+        if (empty($sFormSlug)) {
             show_404();
         }
 
-        $oFormModel      = Factory::model('Form', 'nailsapp/module-custom-forms');
-        $oFormFieldModel = Factory::model('FormField', 'nailsapp/module-custom-forms');
-        $oForm           = $oFormModel->getById($iFormId, array('includeFields' => true));
+        $oFormModel         = Factory::model('Form', 'nailsapp/module-custom-forms');
+        $oFormFieldModel    = Factory::model('FormField', 'nailsapp/module-form-builder');
+        $oFieldTypeModel    = Factory::model('FieldType', 'nailsapp/module-form-builder');
+        $oDefaultValueModel = Factory::model('FieldType', 'nailsapp/module-form-builder');
+
+        $oForm = $oFormModel->getBySlug($sFormSlug, array('includeForm' => true));
 
         if (!empty($oForm)) {
 
@@ -35,7 +38,7 @@ class Forms extends NAILS_Controller
 
                 foreach ($oForm->fields->data as &$oField) {
 
-                    $oFieldType = $oFormFieldModel->getType($oField->type);
+                    $oFieldType = $oFieldTypeModel->getBySlug($oField->type);
                     if (!empty($oFieldType)) {
 
                         try {
@@ -68,7 +71,7 @@ class Forms extends NAILS_Controller
 
                     //  Save the response
                     $aData = array(
-                        'form_id'   => $oForm->id,
+                        'form_id' => $oForm->id,
                         'answers' => array()
                     );
 
@@ -78,7 +81,7 @@ class Forms extends NAILS_Controller
                      */
                     foreach ($oForm->fields->data as &$oField) {
 
-                        $oFieldType = $oFormFieldModel->getType($oField->type);
+                        $oFieldType = $oFieldTypeModel->getByType($oField->type);
                         if (!empty($oFieldType)) {
 
                             try {

@@ -65,7 +65,6 @@ class Forms extends BaseAdmin
     {
         parent::__construct();
         $this->oFormModel      = Factory::model('Form', 'nailsapp/module-custom-forms');
-        $this->oFormFieldModel = Factory::model('FormField', 'nailsapp/module-custom-forms');
         $this->oResponseModel  = Factory::model('Response', 'nailsapp/module-custom-forms');
     }
 
@@ -113,8 +112,8 @@ class Forms extends BaseAdmin
             'sort' => array(
                 array($sortOn, $sortOrder)
             ),
-            'keywords'         => $keywords,
-            'includeResponses' => true
+            'keywords'       => $keywords,
+            'countResponses' => true
         );
 
         //  Get the items for the page
@@ -152,7 +151,8 @@ class Forms extends BaseAdmin
             if ($this->runFormValidation()) {
                 if ($this->oFormModel->create($this->getPostObject())) {
 
-                    $this->session->set_flashdata('success', 'Form created successfully.');
+                    $oSession = Factory::service('Session', 'nailsapp/module-auth');
+                    $oSession->set_flashdata('success', 'Form created successfully.');
                     redirect('admin/forms/forms');
 
                 } else {
@@ -186,7 +186,7 @@ class Forms extends BaseAdmin
         }
 
         $iFormId = (int) $this->uri->segment(5);
-        $this->data['form'] = $this->oFormModel->getById($iFormId, array('includeFields' => true));
+        $this->data['form'] = $this->oFormModel->getById($iFormId, array('includeForm' => true));
 
         if (empty($this->data['form'])) {
             show_404();
@@ -196,12 +196,13 @@ class Forms extends BaseAdmin
             if ($this->runFormValidation()) {
                 if ($this->oFormModel->update($iFormId, $this->getPostObject())) {
 
-                    $this->session->set_flashdata('success', 'Form updated successfully.');
+                    $oSession = Factory::service('Session', 'nailsapp/module-auth');
+                    $oSession->set_flashdata('success', 'Form updated successfully.');
                     redirect('admin/forms/forms');
 
                 } else {
 
-                    $this->data['error'] = 'Failed to update form.' . $this->oFormModel->lastError();
+                    $this->data['error'] = 'Failed to update form. ' . $this->oFormModel->lastError();
                 }
 
             } else {
@@ -221,20 +222,14 @@ class Forms extends BaseAdmin
 
     protected function loadViewData()
     {
-        $this->data['aFieldTypes']            = $this->oFormFieldModel->getTypesFlat();
-        $this->data['aFieldDefaultValues']    = $this->oFormFieldModel->getDefaultValuesFlat();
-
         $oAsset = Factory::service('Asset');
         $oAsset->load('admin.form.edit.min.js', 'nailsapp/module-custom-forms');
-        $oAsset->inline(
-            '
-                var _admin_custom_forms_edit = new _ADMIN_CUSTOM_FORMS_EDIT(
-                    ' . json_encode($this->oFormFieldModel->getTypesWithOptions()) . ',
-                    ' . json_encode($this->oFormFieldModel->getTypesWithDefaultValue()) . '
-                );
-            ',
-            'JS'
-        );
+
+        Factory::helper('formbuilder', 'nailsapp/module-form-builder');
+        adminLoadFormBuilderAssets('#custom-form-fields');
+
+        $oCaptchaModel = Factory::model('Captcha', 'nailsapp/module-captcha');
+        $this->data['isCaptchaEnabled'] = $oCaptchaModel->isEnabled();
     }
 
     // --------------------------------------------------------------------------
@@ -242,6 +237,7 @@ class Forms extends BaseAdmin
     protected function runFormValidation()
     {
         $oFormValidation = Factory::service('FormValidation');
+        $oInput          = Factory::service('Input');
 
         //  Define the rules
         $aRules = array(
@@ -268,14 +264,23 @@ class Forms extends BaseAdmin
         $oFormValidation->set_message('required', lang('fv_required'));
         $oFormValidation->set_message('valid_emails', lang('fv_valid_emails'));
 
-        return $oFormValidation->run();
+        $bValidForm = $oFormValidation->run();
+
+        //  Validate fields
+        Factory::helper('formbuilder', 'nailsapp/module-form-builder');
+        $bValidFields = adminValidateFormData($oInput->post('fields'));
+
+        return $bValidForm && $bValidFields;
     }
 
     // --------------------------------------------------------------------------
 
     protected function getPostObject()
     {
-        $aData = array(
+        Factory::helper('formbuilder', 'nailsapp/module-form-builder');
+        $oInput  = Factory::service('Input');
+        $iFormId = !empty($this->data['form']->form->id) ? $this->data['form']->form->id : null;
+        $aData   = array(
             'label'                  => $this->input->post('label'),
             'header'                 => $this->input->post('header'),
             'footer'                 => $this->input->post('footer'),
@@ -288,50 +293,11 @@ class Forms extends BaseAdmin
             'thankyou_email_body'    => $this->input->post('thankyou_email_body'),
             'thankyou_page_title'    => $this->input->post('thankyou_page_title'),
             'thankyou_page_body'     => $this->input->post('thankyou_page_body'),
-            'fields'                 => array()
+            'form'                   => adminNormalizeFormData(
+                $iFormId,
+                $oInput->post('fields')
+            )
         );
-
-        //  Build up fields
-        $iFieldOrder = 0;
-        $aFields     = $this->input->post('fields') ?: array();
-
-        foreach ($aFields as $aField) {
-
-            $aTemp = array(
-                'id'                   => !empty($aField['id']) ? (int) $aField['id'] : null,
-                'type'                 => !empty($aField['type']) ? $aField['type'] : 'TEXT',
-                'label'                => !empty($aField['label']) ? $aField['label'] : '',
-                'sub_label'            => !empty($aField['sub_label']) ? $aField['sub_label'] : '',
-                'placeholder'          => !empty($aField['placeholder']) ? $aField['placeholder'] : '',
-                'is_required'          => !empty($aField['is_required']) ? (bool) $aField['is_required'] : false,
-                'default_value'        => !empty($aField['default_value']) ? $aField['default_value'] : '',
-                'default_value_custom' => !empty($aField['default_value_custom']) ? $aField['default_value_custom'] : '',
-                'custom_attributes'    => !empty($aField['custom_attributes']) ? $aField['custom_attributes'] : '',
-                'order'                => $iFieldOrder,
-                'options'              => array()
-            );
-
-            if (!empty($aField['options'])) {
-
-                $iOptionOrder = 0;
-
-                foreach ($aField['options'] as $aOption) {
-
-                    $aTemp['options'][] = array(
-                        'id'          => !empty($aOption['id']) ? (int) $aOption['id'] : null,
-                        'label'       => !empty($aOption['label']) ? $aOption['label'] : '',
-                        'is_selected' => !empty($aOption['is_selected']) ? $aOption['is_selected'] : false,
-                        'is_disabled' => !empty($aOption['is_disabled']) ? $aOption['is_disabled'] : false,
-                        'order'       => $iOptionOrder
-                    );
-
-                    $iOptionOrder++;
-                }
-            }
-
-            $aData['fields'][] = $aTemp;
-            $iFieldOrder++;
-        }
 
         //  Format the emails
         $aEmails = explode(',', $this->input->post('notification_email'));
@@ -353,7 +319,6 @@ class Forms extends BaseAdmin
     public function delete()
     {
         if (!userHasPermission('admin:forms:forms:delete')) {
-
             unauthorised();
         }
 
@@ -371,7 +336,8 @@ class Forms extends BaseAdmin
             $sMessage = 'Custom form failed to delete. ' . $this->oFormModel->lastError();
         }
 
-        $this->session->set_flashdata($sStatus, $sMessage);
+        $oSession = Factory::service('Session', 'nailsapp/module-auth');
+        $oSession->set_flashdata($sStatus, $sMessage);
         redirect($sReturn);
     }
 
@@ -380,7 +346,6 @@ class Forms extends BaseAdmin
     public function responses()
     {
         if (!userHasPermission('admin:forms:forms:responses')) {
-
             unauthorised();
         }
 

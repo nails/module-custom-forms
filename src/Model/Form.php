@@ -4,7 +4,7 @@
  * Manage forms
  *
  * @package     Nails
- * @subpackage  module-custom-forms
+ * @subpackage  module-form-builder
  * @category    Model
  * @author      Nails Dev Team
  * @link
@@ -17,10 +17,6 @@ use Nails\Common\Model\Base;
 
 class Form extends Base
 {
-    private $oDb;
-
-    // --------------------------------------------------------------------------
-
     /**
      * Construct the model
      */
@@ -28,9 +24,10 @@ class Form extends Base
     {
         parent::__construct();
 
-        $this->oDb         = Factory::service('Database');
-        $this->table       = NAILS_DB_PREFIX . 'custom_form';
-        $this->tablePrefix = 'f';
+        $this->table             = NAILS_DB_PREFIX . 'custom_form';
+        $this->tablePrefix       = 'fbf';
+        $this->destructiveDelete = false;
+        $this->tableAutoSetSlugs = true;
     }
 
     // --------------------------------------------------------------------------
@@ -49,12 +46,37 @@ class Form extends Base
 
         if (!empty($aItems)) {
 
-            if (!empty($aData['includeAll']) || !empty($aData['includeFields'])) {
-                $this->getManyAssociatedItems($aItems, 'fields', 'form_id', 'FormField', 'nailsapp/module-custom-forms');
+            if (!empty($aData['includeAll']) || !empty($aData['includeForm'])) {
+                $this->getSingleAssociatedItem(
+                    $aItems,
+                    'form_id',
+                    'form',
+                    'Form',
+                    'nailsapp/module-form-builder',
+                    array(
+                        'includeFields' => true
+                    )
+                );
             }
 
             if (!empty($aData['includeAll']) || !empty($aData['includeResponses'])) {
-                $this->getManyAssociatedItems($aItems, 'responses', 'form_id', 'Response', 'nailsapp/module-custom-forms');
+                $this->getManyAssociatedItems(
+                    $aItems,
+                    'responses',
+                    'form_id',
+                    'Response',
+                    'nailsapp/module-custom-forms'
+                );
+            }
+
+            if (!empty($aData['includeAll']) || !empty($aData['countResponses'])) {
+                $this->countManyAssociatedItems(
+                    $aItems,
+                    'responses_count',
+                    'form_id',
+                    'Response',
+                    'nailsapp/module-custom-forms'
+                );
             }
         }
 
@@ -91,20 +113,13 @@ class Form extends Base
 
         // --------------------------------------------------------------------------
 
-        $oObj->url = site_url('forms/' . $oObj->id);
+        $oObj->url = site_url('forms/' . $oObj->slug);
 
         // --------------------------------------------------------------------------
 
         $oObj->header             = json_decode($oObj->header);
         $oObj->footer             = json_decode($oObj->footer);
         $oObj->notification_email = json_decode($oObj->notification_email);
-
-        // --------------------------------------------------------------------------
-
-        $oObj->form             = new \stdClass();
-        $oObj->form->attributes = $oObj->form_attributes;
-
-        unset($oObj->form_attributes);
 
         // --------------------------------------------------------------------------
 
@@ -147,33 +162,43 @@ class Form extends Base
      */
     public function create($aData = array(), $bReturnObject = false)
     {
-        $aFields = array_key_exists('fields', $aData) ? $aData['fields'] : array();
-        unset($aData['fields']);
+        //  Extract the form
+        $aForm = array_key_exists('form', $aData) ? $aData['form'] : null;
+        unset($aData['form']);
 
         try {
 
-            $this->oDb->trans_begin();
+            $oDb = Factory::service('Database');
 
-            $mResult = parent::create($aData, $bReturnObject);
+            $oDb->trans_begin();
 
-            if ($mResult) {
+            //  Create the associated form (if no ID supplied)
+            if (empty($aForm['id'])) {
 
-                $iFormId = $bReturnObject ? $mResult->id : $mResult;
+                $oFormModel       = Factory::model('Form', 'nailsapp/module-form-builder');
+                $aData['form_id'] = $oFormModel->create($aForm);
 
-                if (!$this->saveAsscociatedItems($iFormId, $aFields, 'form_id', 'FormField', 'nailsapp/module-custom-forms')) {
-                    throw new \Exception('Failed to update fields.', 1);
+                if (!$aData['form_id']) {
+                    throw new \Exception('Failed to create associated form.', 1);
                 }
 
             } else {
+
+                $aData['form_id'] = $aForm['id'];
+            }
+
+            $mResult = parent::create($aData, $bReturnObject);
+
+            if (!$mResult) {
                 throw new \Exception('Failed to create form. ' . $this->lastError(), 1);
             }
 
-            $this->oDb->trans_commit();
+            $oDb->trans_commit();
             return $mResult;
 
         } catch (\Exception $e) {
 
-            $this->oDb->trans_rollback();
+            $oDb->trans_rollback();
             $this->setError($e->getMessage());
             return false;
         }
@@ -189,27 +214,36 @@ class Form extends Base
      */
     public function update($iId, $aData = array())
     {
-        $aFields = array_key_exists('fields', $aData) ? $aData['fields'] : array();
-        unset($aData['fields']);
+        //  Extract the form
+        $aForm = array_key_exists('form', $aData) ? $aData['form'] : null;
+        unset($aData['form']);
 
         try {
 
-            $this->oDb->trans_begin();
+            $oDb = Factory::service('Database');
 
-            if (parent::update($iId, $aData)) {
-                if (!$this->saveAsscociatedItems($iId, $aFields, 'form_id', 'FormField', 'nailsapp/module-custom-forms')) {
-                    throw new \Exception('Failed to update fields.', 1);
+            $oDb->trans_begin();
+
+            //  Update the associated form (if no ID supplied)
+            if (!empty($aForm['id'])) {
+
+                $oFormModel = Factory::model('Form', 'nailsapp/module-form-builder');
+
+                if (!$oFormModel->update($aForm['id'], $aForm)) {
+                    throw new \Exception('Failed to update associated form.', 1);
                 }
-            } else {
+            }
+
+            if (!parent::update($iId, $aData)) {
                 throw new \Exception('Failed to update form. ' . $this->lastError(), 1);
             }
 
-            $this->oDb->trans_commit();
+            $oDb->trans_commit();
             return true;
 
         } catch (\Exception $e) {
 
-            $this->oDb->trans_rollback();
+            $oDb->trans_rollback();
             $this->setError($e->getMessage());
             return false;
         }
