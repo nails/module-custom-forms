@@ -27,10 +27,17 @@ class Forms extends NAILS_Controller
         $oFormFieldModel    = Factory::model('FormField', 'nailsapp/module-form-builder');
         $oFieldTypeModel    = Factory::model('FieldType', 'nailsapp/module-form-builder');
         $oDefaultValueModel = Factory::model('FieldType', 'nailsapp/module-form-builder');
+        Factory::helper('formbuilder', 'nailsapp/module-form-builder');
 
         $oForm = $oFormModel->getBySlug($sFormSlug, array('includeForm' => true));
 
         if (!empty($oForm)) {
+
+            $oAsset = Factory::service('Asset');
+            $oAsset->load('form.css', 'nailsapp/module-custom-forms');
+
+            $this->data['headerOverride'] = 'structure/header/blank';
+            $this->data['footerOverride'] = 'structure/footer/blank';
 
             if ($this->input->post()) {
 

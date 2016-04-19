@@ -248,7 +248,6 @@ class Forms extends BaseAdmin
             'cta_attributes'         => 'xss_clean',
             'form_attributes'        => 'xss_clean',
             'has_captcha'            => '',
-            'fields'                 => 'required',
             'notification_email'     => 'valid_emails',
             'thankyou_email'         => '',
             'thankyou_email_subject' => 'xss_clean',
