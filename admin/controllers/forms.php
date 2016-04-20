@@ -18,7 +18,6 @@ use Nails\CustomForms\Controller\BaseAdmin;
 
 class Forms extends BaseAdmin
 {
-    private $oFormModel;
     private $oResponseModel;
 
     // --------------------------------------------------------------------------
@@ -64,8 +63,7 @@ class Forms extends BaseAdmin
     public function __construct()
     {
         parent::__construct();
-        $this->oFormModel      = Factory::model('Form', 'nailsapp/module-custom-forms');
-        $this->oResponseModel  = Factory::model('Response', 'nailsapp/module-custom-forms');
+        $oResponseModel = Factory::model('Response', 'nailsapp/module-custom-forms');
     }
 
     // --------------------------------------------------------------------------
@@ -77,9 +75,12 @@ class Forms extends BaseAdmin
     public function index()
     {
         if (!userHasPermission('admin:forms:forms:browse')) {
-
             unauthorised();
         }
+
+        // --------------------------------------------------------------------------
+
+        $oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
 
         // --------------------------------------------------------------------------
 
@@ -89,7 +90,7 @@ class Forms extends BaseAdmin
         // --------------------------------------------------------------------------
 
         //  Get pagination and search/sort variables
-        $tablePrefix = $this->oFormModel->getTablePrefix();
+        $tablePrefix = $oFormModel->getTablePrefix();
         $page        = $this->input->get('page')      ? $this->input->get('page')      : 0;
         $perPage     = $this->input->get('perPage')   ? $this->input->get('perPage')   : 50;
         $sortOn      = $this->input->get('sortOn')    ? $this->input->get('sortOn')    : $tablePrefix . '.label';
@@ -117,8 +118,8 @@ class Forms extends BaseAdmin
         );
 
         //  Get the items for the page
-        $totalRows           = $this->oFormModel->countAll($data);
-        $this->data['forms'] = $this->oFormModel->getAll($page, $perPage, $data);
+        $totalRows           = $oFormModel->countAll($data);
+        $this->data['forms'] = $oFormModel->getAll($page, $perPage, $data);
 
         //  Set Search and Pagination objects for the view
         $this->data['search']     = Helper::searchObject(true, $sortColumns, $sortOn, $sortOrder, $perPage, $keywords);
@@ -149,7 +150,10 @@ class Forms extends BaseAdmin
 
         if ($this->input->post()) {
             if ($this->runFormValidation()) {
-                if ($this->oFormModel->create($this->getPostObject())) {
+
+                $oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
+
+                if ($oFormModel->create($this->getPostObject())) {
 
                     $oSession = Factory::service('Session', 'nailsapp/module-auth');
                     $oSession->set_flashdata('success', 'Form created successfully.');
@@ -157,7 +161,7 @@ class Forms extends BaseAdmin
 
                 } else {
 
-                    $this->data['error'] = 'Failed to create form.' . $this->oFormModel->lastError();
+                    $this->data['error'] = 'Failed to create form.' . $oFormModel->lastError();
                 }
 
             } else {
@@ -185,8 +189,10 @@ class Forms extends BaseAdmin
             unauthorised();
         }
 
+        $oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
+
         $iFormId = (int) $this->uri->segment(5);
-        $this->data['form'] = $this->oFormModel->getById($iFormId, array('includeForm' => true));
+        $this->data['form'] = $oFormModel->getById($iFormId, array('includeForm' => true));
 
         if (empty($this->data['form'])) {
             show_404();
@@ -194,7 +200,7 @@ class Forms extends BaseAdmin
 
         if ($this->input->post()) {
             if ($this->runFormValidation()) {
-                if ($this->oFormModel->update($iFormId, $this->getPostObject())) {
+                if ($oFormModel->update($iFormId, $this->getPostObject())) {
 
                     $oSession = Factory::service('Session', 'nailsapp/module-auth');
                     $oSession->set_flashdata('success', 'Form updated successfully.');
@@ -202,7 +208,7 @@ class Forms extends BaseAdmin
 
                 } else {
 
-                    $this->data['error'] = 'Failed to update form. ' . $this->oFormModel->lastError();
+                    $this->data['error'] = 'Failed to update form. ' . $oFormModel->lastError();
                 }
 
             } else {
@@ -247,6 +253,7 @@ class Forms extends BaseAdmin
             'cta_label'              => 'xss_clean',
             'cta_attributes'         => 'xss_clean',
             'form_attributes'        => 'xss_clean',
+            'is_minimal'             => '',
             'has_captcha'            => '',
             'notification_email'     => 'valid_emails',
             'thankyou_email'         => '',
@@ -286,6 +293,7 @@ class Forms extends BaseAdmin
             'cta_label'              => $this->input->post('cta_label'),
             'cta_attributes'         => $this->input->post('cta_attributes'),
             'form_attributes'        => $this->input->post('form_attributes'),
+            'is_minimal'             => (bool) $this->input->post('is_minimal'),
             'has_captcha'            => (bool) $this->input->post('has_captcha'),
             'thankyou_email'         => (bool) $this->input->post('thankyou_email'),
             'thankyou_email_subject' => $this->input->post('thankyou_email_subject'),
@@ -321,10 +329,12 @@ class Forms extends BaseAdmin
             unauthorised();
         }
 
+        $oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
+
         $iFormId = (int) $this->uri->segment(5);
         $sReturn = $this->input->get('return') ? $this->input->get('return') : 'admin/forms/forms/index';
 
-        if ($this->oFormModel->delete($iFormId)) {
+        if ($oFormModel->delete($iFormId)) {
 
             $sStatus  = 'success';
             $sMessage = 'Custom form was deleted successfully.';
@@ -332,7 +342,7 @@ class Forms extends BaseAdmin
         } else {
 
             $sStatus  = 'error';
-            $sMessage = 'Custom form failed to delete. ' . $this->oFormModel->lastError();
+            $sMessage = 'Custom form failed to delete. ' . $oFormModel->lastError();
         }
 
         $oSession = Factory::service('Session', 'nailsapp/module-auth');
@@ -348,8 +358,10 @@ class Forms extends BaseAdmin
             unauthorised();
         }
 
+        $oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
+
         $iFormId = (int) $this->uri->segment(5);
-        $this->data['form'] = $this->oFormModel->getById($iFormId, array('includeResponses' => true));
+        $this->data['form'] = $oFormModel->getById($iFormId, array('includeResponses' => true));
 
         if (empty($this->data['form'])) {
             show_404();
@@ -364,7 +376,9 @@ class Forms extends BaseAdmin
 
         } else {
 
-            $this->data['response'] = $this->oResponseModel->getById($iResponseId);
+            $oResponseModel = Factory::model('Response', 'nailsapp/module-custom-forms');
+
+            $this->data['response'] = $oResponseModel->getById($iResponseId);
 
             if (!$this->data['response']) {
                 show_404();
@@ -388,12 +402,14 @@ class Forms extends BaseAdmin
 
     protected function responsesList()
     {
+        $oResponseModel = Factory::model('Response', 'nailsapp/module-custom-forms');
+
         $aData = array(
           'where' => array(
               array('form_id', $this->data['form']->id)
           )
         );
-        $this->data['responses'] = $this->oResponseModel->getAll(null, null, $aData);
+        $this->data['responses'] = $oResponseModel->getAll(null, null, $aData);
 
         Helper::addHeaderButton(
             'admin/forms/forms/responses/' . $this->data['form']->id . '?dl=1',

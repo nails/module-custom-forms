@@ -32,7 +32,7 @@ class Response extends Base
 
         $this->oDb               = Factory::service('Database');
         $this->table             = NAILS_DB_PREFIX . 'custom_form_response';
-        $this->tablePrefix       = 'fr';
+        $this->tablePrefix       = 'cfr';
         $this->destructiveDelete = false;
         $this->defaultSortColumn = 'created';
         $this->defaultSortOrder  = 'desc';

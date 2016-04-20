@@ -18,7 +18,6 @@ class Forms extends NAILS_Controller
     public function index()
     {
         $sFormSlug = $this->uri->rsegment(3);
-
         if (empty($sFormSlug)) {
             show_404();
         }
@@ -27,23 +26,23 @@ class Forms extends NAILS_Controller
         $oFormFieldModel    = Factory::model('FormField', 'nailsapp/module-form-builder');
         $oFieldTypeModel    = Factory::model('FieldType', 'nailsapp/module-form-builder');
         $oDefaultValueModel = Factory::model('FieldType', 'nailsapp/module-form-builder');
+
         Factory::helper('formbuilder', 'nailsapp/module-form-builder');
 
         $oForm = $oFormModel->getBySlug($sFormSlug, array('includeForm' => true));
 
         if (!empty($oForm)) {
 
-            $oAsset = Factory::service('Asset');
-            $oAsset->load('form.css', 'nailsapp/module-custom-forms');
-
-            $this->data['headerOverride'] = 'structure/header/blank';
-            $this->data['footerOverride'] = 'structure/footer/blank';
+            if ($oForm->is_minimal) {
+                $this->data['headerOverride'] = 'structure/header/blank';
+                $this->data['footerOverride'] = 'structure/footer/blank';
+            }
 
             if ($this->input->post()) {
 
                 $bIsValid = true;
 
-                foreach ($oForm->fields->data as &$oField) {
+                foreach ($oForm->form->fields->data as &$oField) {
 
                     $oFieldType = $oFieldTypeModel->getBySlug($oField->type);
                     if (!empty($oFieldType)) {
@@ -70,7 +69,7 @@ class Forms extends NAILS_Controller
                     if (!$oCaptcha->verify()) {
 
                         $bIsValid = false;
-                        $this->data['captchaError'] = true;
+                        $this->data['captchaError'] = 'You failed the captcha test.';
                     }
                 }
 
@@ -86,9 +85,9 @@ class Forms extends NAILS_Controller
                      * Build the answer array; this should contain the text equivilents of all fields so that
                      * should the parent form change, the answers won't be affected
                      */
-                    foreach ($oForm->fields->data as &$oField) {
+                    foreach ($oForm->form->fields->data as &$oField) {
 
-                        $oFieldType = $oFieldTypeModel->getByType($oField->type);
+                        $oFieldType = $oFieldTypeModel->getBySlug($oField->type);
                         if (!empty($oFieldType)) {
 
                             try {

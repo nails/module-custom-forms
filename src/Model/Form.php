@@ -25,7 +25,7 @@ class Form extends Base
         parent::__construct();
 
         $this->table             = NAILS_DB_PREFIX . 'custom_form';
-        $this->tablePrefix       = 'fbf';
+        $this->tablePrefix       = 'cff';
         $this->destructiveDelete = false;
         $this->tableAutoSetSlugs = true;
     }
@@ -105,9 +105,9 @@ class Form extends Base
         $aBools = array(),
         $aFloats = array()
     ) {
-
         $aBools[] = 'has_captcha';
         $aBools[] = 'thankyou_email';
+        $aBools[] = 'is_minimal';
 
         parent::formatObject($oObj, $aData, $aIntegers, $aBools, $aFloats);
 

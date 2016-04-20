@@ -49,41 +49,10 @@ if ($bShowWidget) {
             echo cmsAreaWithData($oForm->header);
         }
 
-        //  Inject a captcha at the end of the fields, if required
-        //  @todo
-        /*
-        if ($oForm->has_captcha) {
-
-            nailsFactory('helper', 'captcha', 'nailsapp/module-captcha');
-            $oCaptcha = captchaGenerate();
-
-            if (!empty($oCaptcha)) {
-
-                $aData = array(
-                    'uuid'      => $sUuid,
-                    'label'     => $oCaptcha->label,
-                    'sub_label' => !empty($oCaptcha->sub_label) ? $oCaptcha->sub_label : null,
-                    'html'      => $oCaptcha->html,
-                    'error'     => $bCaptchaError
-                );
-
-                get_instance()->load->view('formbuilder/fields/body-captcha', $aData);
-
-            } elseif (nailsEnvironment('not', 'PRODUCTION')) {
-
-                ?>
-                <p class="alert alert-danger">
-                    <strong>Failed to generate captcha</strong>
-                    <br /><?=captchaError()?>
-                </p>
-                <?php
-            }
-        }
-        */
-
         $aFormConfig = array(
             'form_action' => $oForm->url,
             'form_attr'   => $oForm->form_attributes,
+            'has_captcha' => $oForm->has_captcha,
             'fields'      => $oForm->form->fields->data,
             'buttons'     => array(
                 array(

@@ -72,11 +72,21 @@
             // --------------------------------------------------------------------------
 
             $aField = array(
-                'key'     => 'has_captcha',
-                'label'   => 'Captcha',
-                'default' => !empty($form->has_captcha),
+                'key'        => 'has_captcha',
+                'label'      => 'Captcha',
+                'default'    => !empty($form->has_captcha),
                 'info'       => $isCaptchaEnabled ? '' : 'Captcha Module has not been configured; this field will be ignored until Captcha is configured.',
                 'info_class' => $isCaptchaEnabled ? '' : 'alert alert-warning'
+            );
+            echo form_field_boolean($aField);
+
+            // --------------------------------------------------------------------------
+
+            $aField = array(
+                'key'     => 'is_minimal',
+                'label'   => 'Minimal Layout',
+                'default' => !empty($form->is_minimal),
+                'info'    => 'When minimal, the form will not feature the site\'s header and footer.',
             );
             echo form_field_boolean($aField);
 
