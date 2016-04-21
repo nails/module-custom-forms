@@ -146,7 +146,7 @@ class Form extends Base
 
         $oObj->thankyou_page        = new \stdClass();
         $oObj->thankyou_page->title = $oObj->thankyou_page_title;
-        $oObj->thankyou_page->body  = $oObj->thankyou_page_body;
+        $oObj->thankyou_page->body  = json_decode($oObj->thankyou_page_body);
 
         unset($oObj->thankyou_page_title);
         unset($oObj->thankyou_page_body);
