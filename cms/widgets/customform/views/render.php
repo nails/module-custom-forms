@@ -52,7 +52,7 @@ if ($bShowWidget) {
         $aFormConfig = array(
             'form_action' => $oForm->url,
             'form_attr'   => $oForm->form_attributes,
-            'has_captcha' => $oForm->has_captcha,
+            'has_captcha' => $oForm->form->has_captcha,
             'fields'      => $oForm->form->fields->data,
             'buttons'     => array(
                 array(

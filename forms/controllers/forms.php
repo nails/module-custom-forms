@@ -26,12 +26,16 @@ class Forms extends NAILS_Controller
         $oFormFieldModel    = Factory::model('FormField', 'nailsapp/module-form-builder');
         $oFieldTypeModel    = Factory::model('FieldType', 'nailsapp/module-form-builder');
         $oDefaultValueModel = Factory::model('FieldType', 'nailsapp/module-form-builder');
+        $oCaptchaModel      = Factory::model('Captcha', 'nailsapp/module-captcha');
 
         Factory::helper('formbuilder', 'nailsapp/module-form-builder');
 
         $oForm = $oFormModel->getBySlug($sFormSlug, array('includeForm' => true));
 
         if (!empty($oForm)) {
+
+            $this->data['oForm']             = $oForm;
+            $this->data['bIsCaptchaEnabled'] = $oCaptchaModel->isEnabled();
 
             if ($oForm->is_minimal) {
                 $this->data['headerOverride'] = 'structure/header/blank';
@@ -62,9 +66,7 @@ class Forms extends NAILS_Controller
                     }
                 }
 
-                if ($oForm->has_captcha) {
-
-                    $oCaptcha = Factory::model('Captcha', 'nailsapp/module-captcha');
+                if ($oForm->form->has_captcha && $this->data['bIsCaptchaEnabled']) {
 
                     if (!$oCaptcha->verify()) {
 
@@ -200,8 +202,6 @@ class Forms extends NAILS_Controller
                     $this->data['error'] = lang('fv_there_were_errors');
                 }
             }
-
-            $this->data['oForm'] = $oForm;
 
             $this->load->view('structure/header', $this->data);
             $this->load->view('forms/form', $this->data);

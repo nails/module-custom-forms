@@ -74,9 +74,9 @@
             $aField = array(
                 'key'        => 'has_captcha',
                 'label'      => 'Captcha',
-                'default'    => !empty($form->has_captcha),
-                'info'       => $isCaptchaEnabled ? '' : 'Captcha Module has not been configured; this field will be ignored until Captcha is configured.',
-                'info_class' => $isCaptchaEnabled ? '' : 'alert alert-warning'
+                'default'    => !empty($form->form->has_captcha),
+                'info'       => $bIsCaptchaEnabled ? '' : 'Captcha Module has not been configured; this field will silently be ignored until Captcha is configured.',
+                'info_class' => $bIsCaptchaEnabled ? '' : 'alert alert-warning'
             );
             echo form_field_boolean($aField);
 

@@ -105,7 +105,7 @@ class Form extends Base
         $aBools = array(),
         $aFloats = array()
     ) {
-        $aBools[] = 'has_captcha';
+
         $aBools[] = 'thankyou_email';
         $aBools[] = 'is_minimal';
 
