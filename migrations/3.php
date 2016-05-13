@@ -24,6 +24,6 @@ class Migration3 extends Base
      */
     public function execute()
     {
-        $this->query("ALTER TABLE `{{NAILS_DB_PREFIX}}survey_survey` DROP `has_captcha`;");
+        $this->query("ALTER TABLE `{{NAILS_DB_PREFIX}}custom_form` DROP `has_captcha`;");
     }
 }
