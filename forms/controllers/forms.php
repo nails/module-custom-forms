@@ -44,38 +44,24 @@ class Forms extends NAILS_Controller
 
             if ($this->input->post()) {
 
-                $bIsValid = true;
-
-                foreach ($oForm->form->fields->data as &$oField) {
-
-                    $oFieldType = $oFieldTypeModel->getBySlug($oField->type);
-                    if (!empty($oFieldType)) {
-
-                        try {
-
-                            $oFieldType->validate(
-                                !empty($_POST['field'][$oField->id]) ? $_POST['field'][$oField->id] : null,
-                                $oField
-                            );
-
-                        } catch(\Exception $e) {
-
-                            $oField->error = $e->getMessage();
-                            $bIsValid      = false;
-                        }
-                    }
-                }
+                $bisFormValid = formBuilderValidate(
+                    $oForm->form->fields->data,
+                    $this->input->post('field')
+                );
 
                 if ($oForm->form->has_captcha && $this->data['bIsCaptchaEnabled']) {
 
-                    if (!$oCaptcha->verify()) {
-
+                    if (!$oCaptchaModel->verify()) {
                         $bIsValid = false;
                         $this->data['captchaError'] = 'You failed the captcha test.';
                     }
+
+                } else {
+
+                    $bIsCaptchaValid = true;
                 }
 
-                if ($bIsValid) {
+                if ($bisFormValid && $bIsCaptchaValid) {
 
                     //  Save the response
                     $aData = array(
