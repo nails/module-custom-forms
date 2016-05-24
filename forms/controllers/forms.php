@@ -44,38 +44,24 @@ class Forms extends NAILS_Controller
 
             if ($this->input->post()) {
 
-                $bIsValid = true;
-
-                foreach ($oForm->form->fields->data as &$oField) {
-
-                    $oFieldType = $oFieldTypeModel->getBySlug($oField->type);
-                    if (!empty($oFieldType)) {
-
-                        try {
-
-                            $oFieldType->validate(
-                                !empty($_POST['field'][$oField->id]) ? $_POST['field'][$oField->id] : null,
-                                $oField
-                            );
-
-                        } catch(\Exception $e) {
-
-                            $oField->error = $e->getMessage();
-                            $bIsValid      = false;
-                        }
-                    }
-                }
+                $bisFormValid = formBuilderValidate(
+                    $oForm->form->fields->data,
+                    $this->input->post('field')
+                );
 
                 if ($oForm->form->has_captcha && $this->data['bIsCaptchaEnabled']) {
 
-                    if (!$oCaptcha->verify()) {
-
-                        $bIsValid = false;
+                    if (!$oCaptchaModel->verify()) {
+                        $bIsCaptchaValid            = false;
                         $this->data['captchaError'] = 'You failed the captcha test.';
                     }
+
+                } else {
+
+                    $bIsCaptchaValid = true;
                 }
 
-                if ($bIsValid) {
+                if ($bisFormValid && $bIsCaptchaValid) {
 
                     //  Save the response
                     $aData = array(
@@ -127,23 +113,22 @@ class Forms extends NAILS_Controller
 
                                 } else {
 
-                                    $aData['answers'][$oField->id]['answer'] = $oFieldType->clean($mAnswer, $oField);
+                                    $aData['answers'][$oField->id]['answer'] = $oFieldType->validate($mAnswer, $oField);
                                 }
 
-                            } catch(\Exception $e) {
+                            } catch (\Exception $e) {
 
                                 $oField->error = $e->getMessage();
-                                $bIsValid      = false;
+                                $bisFormValid  = false;
                             }
                         }
                     }
 
-                    if ($bIsValid)  {
+                    if ($bisFormValid) {
 
                         //  Encode the answers into a string
                         $aData['answers'] = json_encode(array_values($aData['answers']));
-
-                        $oResponseModel = Factory::model('Response', 'nailsapp/module-custom-forms');
+                        $oResponseModel   = Factory::model('Response', 'nailsapp/module-custom-forms');
 
                         if ($oResponseModel->create($aData)) {
 
