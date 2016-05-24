@@ -52,7 +52,7 @@ class Forms extends NAILS_Controller
                 if ($oForm->form->has_captcha && $this->data['bIsCaptchaEnabled']) {
 
                     if (!$oCaptchaModel->verify()) {
-                        $bIsValid = false;
+                        $bIsCaptchaValid            = false;
                         $this->data['captchaError'] = 'You failed the captcha test.';
                     }
 
@@ -113,23 +113,22 @@ class Forms extends NAILS_Controller
 
                                 } else {
 
-                                    $aData['answers'][$oField->id]['answer'] = $oFieldType->clean($mAnswer, $oField);
+                                    $aData['answers'][$oField->id]['answer'] = $oFieldType->validate($mAnswer, $oField);
                                 }
 
-                            } catch(\Exception $e) {
+                            } catch (\Exception $e) {
 
                                 $oField->error = $e->getMessage();
-                                $bIsValid      = false;
+                                $bisFormValid  = false;
                             }
                         }
                     }
 
-                    if ($bIsValid)  {
+                    if ($bisFormValid) {
 
                         //  Encode the answers into a string
                         $aData['answers'] = json_encode(array_values($aData['answers']));
-
-                        $oResponseModel = Factory::model('Response', 'nailsapp/module-custom-forms');
+                        $oResponseModel   = Factory::model('Response', 'nailsapp/module-custom-forms');
 
                         if ($oResponseModel->create($aData)) {
 
