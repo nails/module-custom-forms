@@ -90,10 +90,10 @@ class Forms extends BaseAdmin
         // --------------------------------------------------------------------------
 
         //  Get pagination and search/sort variables
-        $tablePrefix = $oFormModel->getTableAlias();
+        $tableAlias = $oFormModel->getTableAlias();
         $page        = $this->input->get('page')      ? $this->input->get('page')      : 0;
         $perPage     = $this->input->get('perPage')   ? $this->input->get('perPage')   : 50;
-        $sortOn      = $this->input->get('sortOn')    ? $this->input->get('sortOn')    : $tablePrefix . '.label';
+        $sortOn      = $this->input->get('sortOn')    ? $this->input->get('sortOn')    : $tableAlias . '.label';
         $sortOrder   = $this->input->get('sortOrder') ? $this->input->get('sortOrder') : 'asc';
         $keywords    = $this->input->get('keywords')  ? $this->input->get('keywords')  : '';
 
@@ -101,9 +101,9 @@ class Forms extends BaseAdmin
 
         //  Define the sortable columns
         $sortColumns = array(
-            $tablePrefix . '.id'       => 'Form ID',
-            $tablePrefix . '.label'    => 'Label',
-            $tablePrefix . '.modified' => 'Modified Date'
+            $tableAlias . '.id'       => 'Form ID',
+            $tableAlias . '.label'    => 'Label',
+            $tableAlias . '.modified' => 'Modified Date'
         );
 
         // --------------------------------------------------------------------------

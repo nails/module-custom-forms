@@ -25,7 +25,7 @@ class Form extends Base
         parent::__construct();
 
         $this->table             = NAILS_DB_PREFIX . 'custom_form';
-        $this->tablePrefix       = 'cff';
+        $this->tableAlias       = 'cff';
         $this->destructiveDelete = false;
         $this->tableAutoSetSlugs = true;
     }
