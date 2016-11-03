@@ -11,9 +11,10 @@
  */
 
 use Nails\Factory;
+use App\Controller\Base;
 use Nails\Cms\Exception\RenderException;
 
-class Forms extends NAILS_Controller
+class Forms extends Base
 {
     public function index()
     {
