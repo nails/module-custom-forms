@@ -61,7 +61,8 @@ class Response extends Base
         $aFloats = array()
     ) {
         parent::formatObject($oObj, $aData, $aIntegers, $aBools, $aFloats);
-
-        $oObj->answers = json_decode($oObj->answers);
+        if (property_exists($oObj, 'answers')) {
+            $oObj->answers = json_decode($oObj->answers);
+        }
     }
 }
