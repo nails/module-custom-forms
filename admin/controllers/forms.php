@@ -409,20 +409,42 @@ class Forms extends BaseAdmin
               array('form_id', $this->data['form']->id)
           )
         );
+
         $this->data['responses'] = $oResponseModel->getAll(null, null, $aData);
 
-        Helper::addHeaderButton(
-            'admin/forms/forms/responses/' . $this->data['form']->id . '?dl=1',
-            'Download as CSV'
-        );
-
         if ($this->input->get('dl')) {
+            // FILE
+            $aResult = array();
 
-            $oSession = Factory::service('Session', 'nailsapp/module-auth');
-            $oSession->set_flashdata('warning', '@todo - Download as CSV');
-            redirect('admin/forms/forms/responses/' . $this->data['form']->id);
+            // header
+            $aRow = array('Created');
+            $oHeader = reset($this->data['responses']);
+
+            foreach ($oHeader->answers as $oColumn) {
+                $aRow[] = $oColumn->question;
+            }
+
+            $aResult[] = $aRow;
+
+            // answers
+            foreach ($this->data['responses'] as $oResponse) {
+                $aRow = array($oResponse->created);
+
+                foreach ($oResponse->answers as $oColumn) {
+                    $aRow[] = is_array($oColumn->answer) ? implode('|', $oColumn->answer) : $oColumn->answer;
+                }
+
+                $aResult[] = $aRow;
+            }
+
+            Helper::loadCsv($aResult, $this->data['form']->slug .'.csv');
 
         } else {
+            // PAGE
+            Helper::addHeaderButton(
+                'admin/forms/forms/responses/' . $this->data['form']->id . '?dl=1',
+                'Download as CSV'
+            );
 
             $this->data['page']->title = 'Responses for form: ' . $this->data['form']->label;
             Helper::loadView('responses');
