@@ -12,9 +12,9 @@
 
 namespace Nails\Routes\Forms;
 
-use Nails\Factory;
+use Nails\Common\Model\BaseRoutes;
 
-class Routes
+class Routes extends BaseRoutes
 {
     /**
      * Returns an array of routes for this module
@@ -24,7 +24,7 @@ class Routes
     public function getRoutes()
     {
         return [
-            'forms/(.*)' => 'forms/index/$1'
+            'forms/(.*)' => 'forms/index/$1',
         ];
     }
 }
