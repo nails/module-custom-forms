@@ -18,12 +18,13 @@ class Routes
 {
     /**
      * Returns an array of routes for this module
+     *
      * @return array
      */
     public function getRoutes()
     {
-        return array(
+        return [
             'forms/(.*)' => 'forms/index/$1'
-        );
+        ];
     }
 }
