@@ -10,18 +10,17 @@
  * @link
  */
 
-namespace Nails\Routes\Forms;
+namespace Nails\Forms;
 
-use Nails\Common\Model\BaseRoutes;
+use Nails\Common\Interfaces\RouteGenerator;
 
-class Routes extends BaseRoutes
+class Routes implements RouteGenerator
 {
     /**
      * Returns an array of routes for this module
-     *
      * @return array
      */
-    public function getRoutes()
+    public static function generate()
     {
         return [
             'forms/(.*)' => 'forms/index/$1',
