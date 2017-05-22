@@ -168,9 +168,10 @@ class Forms extends Base
                             $this->data['oForm'] = $oForm;
 
                             //  Show the thanks page
-                            $this->load->view('structure/header', $this->data);
-                            $this->load->view('forms/thanks', $this->data);
-                            $this->load->view('structure/footer', $this->data);
+                            $oView = Factory::service('View');
+                            $oView->load('structure/header', $this->data);
+                            $oView->load('forms/thanks', $this->data);
+                            $oView->load('structure/footer', $this->data);
                             return;
 
                         } else {
@@ -189,9 +190,10 @@ class Forms extends Base
                 }
             }
 
-            $this->load->view('structure/header', $this->data);
-            $this->load->view('forms/form', $this->data);
-            $this->load->view('structure/footer', $this->data);
+            $oView = Factory::service('View');
+            $oView->load('structure/header', $this->data);
+            $oView->load('forms/form', $this->data);
+            $oView->load('structure/footer', $this->data);
 
         } else {
 

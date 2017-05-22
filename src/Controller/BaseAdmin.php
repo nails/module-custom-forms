@@ -13,12 +13,14 @@
 namespace Nails\CustomForms\Controller;
 
 use Nails\Admin\Controller\Base;
+use Nails\Factory;
 
 class BaseAdmin extends Base
 {
     public function __construct()
     {
         parent::__construct();
-        $this->asset->load('admin.css', 'nailsapp/module-custom-forms');
+        $oAsset = Factory::service('Asset');
+        $oAsset->load('admin.css', 'nailsapp/module-custom-forms');
     }
 }
