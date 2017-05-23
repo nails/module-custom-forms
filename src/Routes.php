@@ -10,7 +10,7 @@
  * @link
  */
 
-namespace Nails\Forms;
+namespace Nails\CustomForms;
 
 use Nails\Common\Interfaces\RouteGenerator;
 
