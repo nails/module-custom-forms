@@ -12,6 +12,8 @@
 
 namespace Nails\CustomForms\Cms\Widget;
 
+use Nails\Cms\Widget\WidgetBase;
+
 class Customform extends WidgetBase
 {
     /**
