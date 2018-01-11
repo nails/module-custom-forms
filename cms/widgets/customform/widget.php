@@ -10,7 +10,7 @@
  * @link
  */
 
-namespace Nails\Cms\Widget;
+namespace Nails\CustomForms\Cms\Widget;
 
 class Customform extends WidgetBase
 {
