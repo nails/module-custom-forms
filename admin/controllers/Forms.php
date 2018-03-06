@@ -247,19 +247,19 @@ class Forms extends BaseAdmin
 
         //  Define the rules
         $aRules = array(
-            'label'                  => 'xss_clean|required',
+            'label'                  => 'required',
             'header'                 => '',
             'footer'                 => '',
-            'cta_label'              => 'xss_clean',
-            'cta_attributes'         => 'xss_clean',
-            'form_attributes'        => 'xss_clean',
+            'cta_label'              => '',
+            'cta_attributes'         => '',
+            'form_attributes'        => '',
             'is_minimal'             => '',
             'has_captcha'            => '',
             'notification_email'     => 'valid_emails',
             'thankyou_email'         => '',
-            'thankyou_email_subject' => 'xss_clean',
-            'thankyou_email_body'    => 'xss_clean',
-            'thankyou_page_title'    => 'xss_clean|required',
+            'thankyou_email_subject' => '',
+            'thankyou_email_body'    => '',
+            'thankyou_page_title'    => 'required',
             'thankyou_page_body'     => '',
         );
 

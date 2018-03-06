@@ -23,7 +23,7 @@ class Routes implements RouteGenerator
     public static function generate()
     {
         return [
-            'forms/(.*)' => 'forms/index/$1',
+            'forms(/(.+))?' => 'forms/index/$1',
         ];
     }
 }
