@@ -27,7 +27,7 @@ class Forms extends Base
         $oFormFieldModel    = Factory::model('FormField', 'nailsapp/module-form-builder');
         $oFieldTypeModel    = Factory::model('FieldType', 'nailsapp/module-form-builder');
         $oDefaultValueModel = Factory::model('FieldType', 'nailsapp/module-form-builder');
-        $oCaptchaModel      = Factory::model('Captcha', 'nailsapp/module-captcha');
+        $oCaptcha           = Factory::service('Captcha', 'nailsapp/module-captcha');
 
         Factory::helper('formbuilder', 'nailsapp/module-form-builder');
 
@@ -36,7 +36,7 @@ class Forms extends Base
         if (!empty($oForm)) {
 
             $this->data['oForm']             = $oForm;
-            $this->data['bIsCaptchaEnabled'] = $oCaptchaModel->isEnabled();
+            $this->data['bIsCaptchaEnabled'] = $oCaptcha->isEnabled();
 
             if ($oForm->is_minimal) {
                 $this->data['headerOverride'] = 'structure/header/blank';
@@ -52,7 +52,7 @@ class Forms extends Base
 
                 if ($oForm->form->has_captcha && $this->data['bIsCaptchaEnabled']) {
 
-                    if (!$oCaptchaModel->verify()) {
+                    if (!$oCaptcha->verify()) {
                         $bIsCaptchaValid            = false;
                         $this->data['captchaError'] = 'You failed the captcha test.';
                     }

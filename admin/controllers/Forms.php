@@ -234,8 +234,8 @@ class Forms extends BaseAdmin
         Factory::helper('formbuilder', 'nailsapp/module-form-builder');
         adminLoadFormBuilderAssets('#custom-form-fields');
 
-        $oCaptchaModel = Factory::model('Captcha', 'nailsapp/module-captcha');
-        $this->data['bIsCaptchaEnabled'] = $oCaptchaModel->isEnabled();
+        $oCaptcha                        = Factory::service('Captcha', 'nailsapp/module-captcha');
+        $this->data['bIsCaptchaEnabled'] = $oCaptcha->isEnabled();
     }
 
     // --------------------------------------------------------------------------
