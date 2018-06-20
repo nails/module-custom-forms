@@ -156,7 +156,7 @@ class Forms extends BaseAdmin
                 if ($oFormModel->create($this->getPostObject())) {
 
                     $oSession = Factory::service('Session', 'nailsapp/module-auth');
-                    $oSession->set_flashdata('success', 'Form created successfully.');
+                    $oSession->setFlashData('success', 'Form created successfully.');
                     redirect('admin/forms/forms');
 
                 } else {
@@ -203,7 +203,7 @@ class Forms extends BaseAdmin
                 if ($oFormModel->update($iFormId, $this->getPostObject())) {
 
                     $oSession = Factory::service('Session', 'nailsapp/module-auth');
-                    $oSession->set_flashdata('success', 'Form updated successfully.');
+                    $oSession->setFlashData('success', 'Form updated successfully.');
                     redirect('admin/forms/forms');
 
                 } else {
@@ -346,7 +346,7 @@ class Forms extends BaseAdmin
         }
 
         $oSession = Factory::service('Session', 'nailsapp/module-auth');
-        $oSession->set_flashdata($sStatus, $sMessage);
+        $oSession->setFlashData($sStatus, $sMessage);
         redirect($sReturn);
     }
 
@@ -465,7 +465,7 @@ class Forms extends BaseAdmin
         if ($this->input->get('dl')) {
 
             $oSession = Factory::service('Session', 'nailsapp/module-auth');
-            $oSession->set_flashdata('warning', '@todo - Download as CSV');
+            $oSession->setFlashData('warning', '@todo - Download as CSV');
             redirect('admin/forms/forms/responses/' . $this->data['form']->id . '/' . $this->data['response']->id);
 
         } else {
@@ -480,7 +480,7 @@ class Forms extends BaseAdmin
     protected function responseDelete()
     {
         $oSession = Factory::service('Session', 'nailsapp/module-auth');
-        $oSession->set_flashdata('warning', '@todo - delete individual responses');
+        $oSession->setFlashData('warning', '@todo - delete individual responses');
         redirect('admin/forms/forms/responses/' . $this->data['form']->id);
     }
 }
