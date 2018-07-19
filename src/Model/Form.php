@@ -40,7 +40,7 @@ class Form extends Base
      * @param boolean $bIncludeDeleted  Whether to include deleted results
      * @return array
      */
-    public function getAll($iPage = null, $iPerPage = null, $aData = array(), $bIncludeDeleted = false)
+    public function getAll($iPage = null, $iPerPage = null, array $aData = array(), $bIncludeDeleted = false)
     {
         //  If the first value is an array then treat as if called with getAll(null, null, $aData);
         //  @todo (Pablo - 2017-11-09) - Convert these to expandable fields
@@ -107,10 +107,10 @@ class Form extends Base
      */
     protected function formatObject(
         &$oObj,
-        $aData = array(),
-        $aIntegers = array(),
-        $aBools = array(),
-        $aFloats = array()
+        array $aData = [],
+        array $aIntegers = [],
+        array $aBools = [],
+        array $aFloats = []
     ) {
 
         $aBools[] = 'thankyou_email';
@@ -167,7 +167,7 @@ class Form extends Base
      * @param boolean $bReturnObject Whether to return just the new ID or the full object
      * @return mixed
      */
-    public function create($aData = array(), $bReturnObject = false)
+    public function create(array $aData = array(), $bReturnObject = false)
     {
         //  Extract the form
         $aForm = array_key_exists('form', $aData) ? $aData['form'] : null;
@@ -219,7 +219,7 @@ class Form extends Base
      * @param array $aData The data to update the form with
      * @return mixed
      */
-    public function update($iId, $aData = array())
+    public function update($iId, array $aData = array())
     {
         //  Extract the form
         $aForm = array_key_exists('form', $aData) ? $aData['form'] : null;
