@@ -11,54 +11,45 @@
             </tr>
         </thead>
         <tbody>
-        <?php
+            <?php
 
-        if ($response->answers) {
+            if ($response->answers) {
+                $i = 1;
+                foreach ($response->answers as $oAnswer) {
+                    ?>
+                    <tr>
+                        <td class="number">
+                            <?=$i?>
+                        </td>
+                        <td class="question">
+                            <?=$oAnswer->question?>
+                        </td>
+                        <td class="answer">
+                            <?php
 
-            $i = 1;
-            foreach ($response->answers as $oAnswer) {
+                            if (is_array($oAnswer->answer)) {
+                                echo implode('<br />', $oAnswer->answer);
+                            } else {
+                                echo $oAnswer->answer;
+                            }
 
+                            ?>
+                        </td>
+                    </tr>
+                    <?php
+                    $i++;
+                }
+            } else {
                 ?>
                 <tr>
-                    <td class="number">
-                        <?=$i?>
-                    </td>
-                    <td class="question">
-                        <?=$oAnswer->question?>
-                    </td>
-                    <td class="answer">
-                        <?php
-
-                        if (is_array($oAnswer->answer)) {
-
-                            echo implode('<br />', $oAnswer->answer);
-
-                        } else {
-
-                            echo $oAnswer->answer;
-                        }
-
-                        ?>
+                    <td colspan="3" class="no-data">
+                        No Data
                     </td>
                 </tr>
                 <?php
-
-                $i++;
             }
 
-
-        } else {
-
             ?>
-            <tr>
-                <td colspan="3" class="no-data">
-                    No Data
-                </td>
-            </tr>
-            <?php
-        }
-
-        ?>
         </tbody>
     </table>
 </div>
