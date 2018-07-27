@@ -22,7 +22,7 @@ $bCaptchaError = !empty($captchaError);
 if (!empty($iFormId)) {
 
     $oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
-    $oForm      = $oFormModel->getById($iFormId, array('includeForm' => true));
+    $oForm      = $oFormModel->getById($iFormId, ['expand' => ['form']]);
 
 } elseif (!empty($form)) {
 

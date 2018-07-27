@@ -12,8 +12,8 @@
 
 namespace Nails\CustomForms\Model;
 
-use Nails\Factory;
 use Nails\Common\Model\Base;
+use Nails\Factory;
 
 class Form extends Base
 {
@@ -25,69 +25,27 @@ class Form extends Base
         parent::__construct();
 
         $this->table             = NAILS_DB_PREFIX . 'custom_form';
-        $this->tableAlias       = 'cff';
         $this->destructiveDelete = false;
         $this->tableAutoSetSlugs = true;
-    }
-
-    // --------------------------------------------------------------------------
-
-    /**
-     * Returns all form objects
-     * @param null    $iPage            The page to return
-     * @param null    $iPerPage         The number of objects per page
-     * @param array   $aData            Data to pass to _getcount_common
-     * @param boolean $bIncludeDeleted  Whether to include deleted results
-     * @return array
-     */
-    public function getAll($iPage = null, $iPerPage = null, array $aData = array(), $bIncludeDeleted = false)
-    {
-        //  If the first value is an array then treat as if called with getAll(null, null, $aData);
-        //  @todo (Pablo - 2017-11-09) - Convert these to expandable fields
-        if (is_array($iPage)) {
-            $aData = $iPage;
-            $iPage = null;
-        }
-
-        $aItems = parent::getAll($iPage, $iPerPage, $aData, $bIncludeDeleted);
-
-        if (!empty($aItems)) {
-
-            if (!empty($aData['includeAll']) || !empty($aData['includeForm'])) {
-                $this->getSingleAssociatedItem(
-                    $aItems,
-                    'form_id',
-                    'form',
-                    'Form',
-                    'nailsapp/module-form-builder',
-                    array(
-                        'includeFields' => true
-                    )
-                );
-            }
-
-            if (!empty($aData['includeAll']) || !empty($aData['includeResponses'])) {
-                $this->getManyAssociatedItems(
-                    $aItems,
-                    'responses',
-                    'form_id',
-                    'Response',
-                    'nailsapp/module-custom-forms'
-                );
-            }
-
-            if (!empty($aData['includeAll']) || !empty($aData['countResponses'])) {
-                $this->countManyAssociatedItems(
-                    $aItems,
-                    'responses_count',
-                    'form_id',
-                    'Response',
-                    'nailsapp/module-custom-forms'
-                );
-            }
-        }
-
-        return $aItems;
+        $this->addExpandableField([
+            'trigger'   => 'form',
+            'type'      => self::EXPANDABLE_TYPE_SINGLE,
+            'property'  => 'form',
+            'model'     => 'Form',
+            'provider'  => 'nailsapp/module-form-builder',
+            'id_column' => 'form_id',
+            'data'      => [
+                'expand' => ['fields'],
+            ],
+        ]);
+        $this->addExpandableField([
+            'trigger'   => 'responses',
+            'type'      => self::EXPANDABLE_TYPE_MANY,
+            'property'  => 'responses',
+            'model'     => 'Response',
+            'provider'  => 'nailsapp/module-custom-forms',
+            'id_column' => 'form_id',
+        ]);
     }
 
     // --------------------------------------------------------------------------
@@ -103,6 +61,7 @@ class Form extends Base
      * @param  array  $aIntegers Fields which should be cast as integers if numerical and not null
      * @param  array  $aBools    Fields which should be cast as booleans if not null
      * @param  array  $aFloats   Fields which should be cast as floats if not null
+     *
      * @return void
      */
     protected function formatObject(
@@ -112,7 +71,6 @@ class Form extends Base
         array $aBools = [],
         array $aFloats = []
     ) {
-
         $aBools[] = 'thankyou_email';
         $aBools[] = 'is_minimal';
 
@@ -130,30 +88,32 @@ class Form extends Base
 
         // --------------------------------------------------------------------------
 
-        $oObj->cta             = new \stdClass();
-        $oObj->cta->label      = $oObj->cta_label;
-        $oObj->cta->attributes = $oObj->cta_attributes;
+        $oObj->cta = (object) [
+            'label'      => $oObj->cta_label,
+            'attributes' => $oObj->cta_attributes,
+        ];
 
         unset($oObj->cta_label);
         unset($oObj->cta_attributes);
 
         // --------------------------------------------------------------------------
 
-        $bSendThankYouEmail = $oObj->thankyou_email;
-
-        $oObj->thankyou_email          = new \stdClass();
-        $oObj->thankyou_email->send    = $bSendThankYouEmail;
-        $oObj->thankyou_email->subject = $oObj->thankyou_email_subject;
-        $oObj->thankyou_email->body    = $oObj->thankyou_email_body;
+        $bSendThankYouEmail   = $oObj->thankyou_email;
+        $oObj->thankyou_email = (object) [
+            'send'    => $bSendThankYouEmail,
+            'subject' => $oObj->thankyou_email_subject,
+            'body'    => $oObj->thankyou_email_body,
+        ];
 
         unset($oObj->thankyou_email_subject);
         unset($oObj->thankyou_email_body);
 
         // --------------------------------------------------------------------------
 
-        $oObj->thankyou_page        = new \stdClass();
-        $oObj->thankyou_page->title = $oObj->thankyou_page_title;
-        $oObj->thankyou_page->body  = json_decode($oObj->thankyou_page_body);
+        $oObj->thankyou_page = (object) [
+            'title' => $oObj->thankyou_page_title,
+            'body'  => json_decode($oObj->thankyou_page_body),
+        ];
 
         unset($oObj->thankyou_page_title);
         unset($oObj->thankyou_page_body);
@@ -163,11 +123,13 @@ class Form extends Base
 
     /**
      * Creates a new form
+     *
      * @param array   $aData         The data to create the object with
      * @param boolean $bReturnObject Whether to return just the new ID or the full object
+     *
      * @return mixed
      */
-    public function create(array $aData = array(), $bReturnObject = false)
+    public function create(array $aData = [], $bReturnObject = false)
     {
         //  Extract the form
         $aForm = array_key_exists('form', $aData) ? $aData['form'] : null;
@@ -215,11 +177,13 @@ class Form extends Base
 
     /**
      * Update an existing form
+     *
      * @param int   $iId   The ID of the form to update
      * @param array $aData The data to update the form with
+     *
      * @return mixed
      */
-    public function update($iId, array $aData = array())
+    public function update($iId, array $aData = [])
     {
         //  Extract the form
         $aForm = array_key_exists('form', $aData) ? $aData['form'] : null;

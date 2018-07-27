@@ -12,14 +12,11 @@
 
 namespace Nails\CustomForms\Model;
 
-use Nails\Factory;
 use Nails\Common\Model\Base;
 
 class Response extends Base
 {
     private $oDb;
-    private $tableAnswer;
-    private $tableAnswerPrefix;
 
     // --------------------------------------------------------------------------
 
@@ -29,10 +26,7 @@ class Response extends Base
     public function __construct()
     {
         parent::__construct();
-
-        $this->oDb               = Factory::service('Database');
         $this->table             = NAILS_DB_PREFIX . 'custom_form_response';
-        $this->tableAlias       = 'cfr';
         $this->destructiveDelete = false;
         $this->defaultSortColumn = 'created';
         $this->defaultSortOrder  = 'desc';
@@ -51,6 +45,7 @@ class Response extends Base
      * @param  array  $aIntegers Fields which should be cast as integers if numerical and not null
      * @param  array  $aBools    Fields which should be cast as booleans if not null
      * @param  array  $aFloats   Fields which should be cast as floats if not null
+     *
      * @return void
      */
     protected function formatObject(

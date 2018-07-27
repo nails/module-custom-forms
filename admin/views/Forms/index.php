@@ -41,7 +41,7 @@
                                 if (userHasPermission('admin:forms:forms:responses')) {
                                     echo anchor(
                                         'admin/forms/forms/responses/' . $form->id,
-                                        'View Responses (' . number_format($form->responses_count) . ')',
+                                        'View Responses (' . number_format($form->responses->count) . ')',
                                         'class="btn btn-xs btn-warning"'
                                     );
                                 }

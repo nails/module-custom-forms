@@ -29,7 +29,7 @@ class Forms extends Base
         Factory::helper('formbuilder', 'nailsapp/module-form-builder');
 
         $sFormSlug         = $oUri->rsegment(3);
-        $oForm             = $oFormModel->getBySlug($sFormSlug, ['includeForm' => true]);
+        $oForm             = $oFormModel->getBySlug($sFormSlug, ['expand' => ['form']]);
         $bIsCaptchaEnabled = $oCaptcha->isEnabled();
 
         if (empty($oForm)) {
