@@ -180,7 +180,24 @@ class Forms extends BaseAdmin
         $oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
 
         $iFormId            = (int) $oUri->segment(5);
-        $this->data['form'] = $oFormModel->getById($iFormId, ['expand' => ['form']]);
+        $this->data['form'] = $oFormModel->getById(
+            $iFormId,
+            [
+                'expand' => [
+                    [
+                        'form',
+                        [
+                            'expand' => [
+                                [
+                                    'fields',
+                                    ['expand' => ['options']],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ]
+        );
 
         if (empty($this->data['form'])) {
             show404();

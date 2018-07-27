@@ -23,7 +23,6 @@ class Form extends Base
     public function __construct()
     {
         parent::__construct();
-
         $this->table             = NAILS_DB_PREFIX . 'custom_form';
         $this->destructiveDelete = false;
         $this->tableAutoSetSlugs = true;
@@ -34,9 +33,6 @@ class Form extends Base
             'model'     => 'Form',
             'provider'  => 'nailsapp/module-form-builder',
             'id_column' => 'form_id',
-            'data'      => [
-                'expand' => ['fields'],
-            ],
         ]);
         $this->addExpandableField([
             'trigger'   => 'responses',

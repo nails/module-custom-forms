@@ -13,7 +13,7 @@
 use Nails\Factory;
 
 $bShowWidget   = true;
-$iFormId       = !empty($formId) ? (int) $formId: null;
+$iFormId       = !empty($formId) ? (int) $formId : null;
 $bShowLabel    = !empty($showLabel);
 $bShowHeader   = !empty($showHeader);
 $bShowFooter   = !empty($showFooter);
@@ -22,7 +22,24 @@ $bCaptchaError = !empty($captchaError);
 if (!empty($iFormId)) {
 
     $oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
-    $oForm      = $oFormModel->getById($iFormId, ['expand' => ['form']]);
+    $oForm      = $oFormModel->getById(
+        $iFormId,
+        [
+            'expand' => [
+                [
+                    'form',
+                    [
+                        'expand' => [
+                            [
+                                'fields',
+                                ['expand' => ['options']],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]
+    );
 
 } elseif (!empty($form)) {
 
@@ -49,18 +66,18 @@ if ($bShowWidget) {
             echo cmsAreaWithData($oForm->header);
         }
 
-        $aFormConfig = array(
+        $aFormConfig = [
             'form_action' => $oForm->url,
             'form_attr'   => $oForm->form_attributes,
             'has_captcha' => $oForm->form->has_captcha,
             'fields'      => $oForm->form->fields->data,
-            'buttons'     => array(
-                array(
+            'buttons'     => [
+                [
                     'label' => $oForm->cta->label,
-                    'attr'  => $oForm->cta->attributes
-                )
-            )
-        );
+                    'attr'  => $oForm->cta->attributes,
+                ],
+            ],
+        ];
         echo formBuilderRender($aFormConfig);
 
         if ($bShowFooter) {
