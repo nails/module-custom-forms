@@ -16,12 +16,9 @@ use Nails\Common\Model\Base;
 
 class Response extends Base
 {
-    private $oDb;
-
-    // --------------------------------------------------------------------------
-
     /**
-     * Construct the model
+     * Response constructor.
+     * @throws \Nails\Common\Exception\ModelException
      */
     public function __construct()
     {

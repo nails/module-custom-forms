@@ -18,13 +18,11 @@ class Forms extends Base
 {
     public function index()
     {
-        $oUri               = Factory::service('Uri');
-        $oInput             = Factory::service('Input');
-        $oFormModel         = Factory::model('Form', 'nailsapp/module-custom-forms');
-        $oFormFieldModel    = Factory::model('FormField', 'nailsapp/module-form-builder');
-        $oFieldTypeModel    = Factory::model('FieldType', 'nailsapp/module-form-builder');
-        $oDefaultValueModel = Factory::model('FieldType', 'nailsapp/module-form-builder');
-        $oCaptcha           = Factory::service('Captcha', 'nailsapp/module-captcha');
+        $oUri            = Factory::service('Uri');
+        $oInput          = Factory::service('Input');
+        $oFormModel      = Factory::model('Form', 'nailsapp/module-custom-forms');
+        $oFieldTypeModel = Factory::model('FieldType', 'nailsapp/module-form-builder');
+        $oCaptcha        = Factory::service('Captcha', 'nailsapp/module-captcha');
 
         Factory::helper('formbuilder', 'nailsapp/module-form-builder');
 

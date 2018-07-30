@@ -375,7 +375,7 @@ class Forms extends BaseAdmin
 
         if (empty($iResponseId)) {
 
-            return $this->responsesList($oForm);
+            $this->responsesList($oForm);
 
         } else {
 
@@ -389,12 +389,12 @@ class Forms extends BaseAdmin
             switch ($sResponseMethod) {
 
                 case 'delete':
-                    return $this->responseDelete($oResponse, $oForm);
+                    $this->responseDelete($oResponse, $oForm);
                     break;
 
-                default:
                 case 'view':
-                    return $this->responseView($oResponse, $oForm);
+                default:
+                    $this->responseView($oResponse, $oForm);
                     break;
             }
         }
@@ -404,7 +404,6 @@ class Forms extends BaseAdmin
 
     protected function responsesList($oForm)
     {
-        $oInput         = Factory::service('Input');
         $oResponseModel = Factory::model('Response', 'nailsapp/module-custom-forms');
 
         $this->data['page']->title = 'Responses for form: ' . $oForm->label;

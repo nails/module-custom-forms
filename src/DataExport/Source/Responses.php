@@ -54,7 +54,6 @@ class Responses implements Source
 
     public function execute($aOptions = [])
     {
-        $oDb            = Factory::service('Database');
         $oFormModel     = Factory::model('Form', 'nailsapp/module-custom-forms');
         $oResponseModel = Factory::model('Response', 'nailsapp/module-custom-forms');
 
