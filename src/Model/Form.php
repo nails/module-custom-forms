@@ -47,6 +47,100 @@ class Form extends Base
     // --------------------------------------------------------------------------
 
     /**
+     * Creates a new form
+     *
+     * @param array   $aData         The data to create the object with
+     * @param boolean $bReturnObject Whether to return just the new ID or the full object
+     *
+     * @return mixed
+     */
+    public function create(array $aData = [], $bReturnObject = false)
+    {
+        //  Extract the form
+        $aForm = array_key_exists('form', $aData) ? $aData['form'] : null;
+        unset($aData['form']);
+
+        try {
+
+            $oDb = Factory::service('Database');
+            $oDb->trans_begin();
+
+            //  Create the associated form (if no ID supplied)
+            if (empty($aForm['id'])) {
+
+                $oFormModel       = Factory::model('Form', 'nailsapp/module-form-builder');
+                $aData['form_id'] = $oFormModel->create($aForm);
+
+                if (!$aData['form_id']) {
+                    throw new \Exception('Failed to create associated form.', 1);
+                }
+
+            } else {
+                $aData['form_id'] = $aForm['id'];
+            }
+
+            $mResult = parent::create($aData, $bReturnObject);
+            if (!$mResult) {
+                throw new \Exception('Failed to create form. ' . $this->lastError(), 1);
+            }
+
+            $oDb->trans_commit();
+            return $mResult;
+
+        } catch (\Exception $e) {
+            $oDb->trans_rollback();
+            $this->setError($e->getMessage());
+            return false;
+        }
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Update an existing form
+     *
+     * @param int   $iId   The ID of the form to update
+     * @param array $aData The data to update the form with
+     *
+     * @return mixed
+     */
+    public function update($iId, array $aData = [])
+    {
+        //  Extract the form
+        $aForm = array_key_exists('form', $aData) ? $aData['form'] : null;
+        unset($aData['form']);
+
+        try {
+
+            $oDb = Factory::service('Database');
+
+            $oDb->trans_begin();
+
+            //  Update the associated form (if no ID supplied)
+            if (!empty($aForm['id'])) {
+                $oFormModel = Factory::model('Form', 'nailsapp/module-form-builder');
+                if (!$oFormModel->update($aForm['id'], $aForm)) {
+                    throw new \Exception('Failed to update associated form.', 1);
+                }
+            }
+
+            if (!parent::update($iId, $aData)) {
+                throw new \Exception('Failed to update form. ' . $this->lastError(), 1);
+            }
+
+            $oDb->trans_commit();
+            return true;
+
+        } catch (\Exception $e) {
+            $oDb->trans_rollback();
+            $this->setError($e->getMessage());
+            return false;
+        }
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
      * Formats a single object
      *
      * The getAll() method iterates over each returned item with this method so as to
@@ -113,106 +207,5 @@ class Form extends Base
 
         unset($oObj->thankyou_page_title);
         unset($oObj->thankyou_page_body);
-    }
-
-    // --------------------------------------------------------------------------
-
-    /**
-     * Creates a new form
-     *
-     * @param array   $aData         The data to create the object with
-     * @param boolean $bReturnObject Whether to return just the new ID or the full object
-     *
-     * @return mixed
-     */
-    public function create(array $aData = [], $bReturnObject = false)
-    {
-        //  Extract the form
-        $aForm = array_key_exists('form', $aData) ? $aData['form'] : null;
-        unset($aData['form']);
-
-        try {
-
-            $oDb = Factory::service('Database');
-
-            $oDb->trans_begin();
-
-            //  Create the associated form (if no ID supplied)
-            if (empty($aForm['id'])) {
-
-                $oFormModel       = Factory::model('Form', 'nailsapp/module-form-builder');
-                $aData['form_id'] = $oFormModel->create($aForm);
-
-                if (!$aData['form_id']) {
-                    throw new \Exception('Failed to create associated form.', 1);
-                }
-
-            } else {
-
-                $aData['form_id'] = $aForm['id'];
-            }
-
-            $mResult = parent::create($aData, $bReturnObject);
-
-            if (!$mResult) {
-                throw new \Exception('Failed to create form. ' . $this->lastError(), 1);
-            }
-
-            $oDb->trans_commit();
-            return $mResult;
-
-        } catch (\Exception $e) {
-
-            $oDb->trans_rollback();
-            $this->setError($e->getMessage());
-            return false;
-        }
-    }
-
-    // --------------------------------------------------------------------------
-
-    /**
-     * Update an existing form
-     *
-     * @param int   $iId   The ID of the form to update
-     * @param array $aData The data to update the form with
-     *
-     * @return mixed
-     */
-    public function update($iId, array $aData = [])
-    {
-        //  Extract the form
-        $aForm = array_key_exists('form', $aData) ? $aData['form'] : null;
-        unset($aData['form']);
-
-        try {
-
-            $oDb = Factory::service('Database');
-
-            $oDb->trans_begin();
-
-            //  Update the associated form (if no ID supplied)
-            if (!empty($aForm['id'])) {
-
-                $oFormModel = Factory::model('Form', 'nailsapp/module-form-builder');
-
-                if (!$oFormModel->update($aForm['id'], $aForm)) {
-                    throw new \Exception('Failed to update associated form.', 1);
-                }
-            }
-
-            if (!parent::update($iId, $aData)) {
-                throw new \Exception('Failed to update form. ' . $this->lastError(), 1);
-            }
-
-            $oDb->trans_commit();
-            return true;
-
-        } catch (\Exception $e) {
-
-            $oDb->trans_rollback();
-            $this->setError($e->getMessage());
-            return false;
-        }
     }
 }

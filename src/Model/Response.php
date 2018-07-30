@@ -30,6 +30,14 @@ class Response extends Base
         $this->destructiveDelete = false;
         $this->defaultSortColumn = 'created';
         $this->defaultSortOrder  = 'desc';
+        $this->addExpandableField([
+            'trigger'   => 'form',
+            'type'      => self::EXPANDABLE_TYPE_SINGLE,
+            'property'  => 'form',
+            'model'     => 'Form',
+            'provider'  => 'nailsapp/module-custom-forms',
+            'id_column' => 'form_id',
+        ]);
     }
 
     // --------------------------------------------------------------------------
@@ -56,8 +64,6 @@ class Response extends Base
         array $aFloats = []
     ) {
         parent::formatObject($oObj, $aData, $aIntegers, $aBools, $aFloats);
-        if (property_exists($oObj, 'answers')) {
-            $oObj->answers = json_decode($oObj->answers);
-        }
+        $oObj->answers = json_decode($oObj->answers);
     }
 }
