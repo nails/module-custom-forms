@@ -65,7 +65,7 @@ class Forms extends Base
 
                 if ($oForm->form->has_captcha && $bIsCaptchaEnabled) {
                     if (!$oCaptcha->verify()) {
-                        throw new ValidationException('You faield the captcha test.');
+                        throw new ValidationException('You failed the captcha test');
                     }
                 }
 

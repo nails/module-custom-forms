@@ -363,10 +363,10 @@ class Forms extends BaseAdmin
         $oUri       = Factory::service('Uri');
         $oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
 
-        $iFormId            = (int) $oUri->segment(5);
-        $this->data['form'] = $oFormModel->getById($iFormId, ['expand' => ['responses']]);
+        $iFormId = (int) $oUri->segment(5);
+        $oForm   = $oFormModel->getById($iFormId, ['expand' => ['responses']]);
 
-        if (empty($this->data['form'])) {
+        if (empty($oForm)) {
             show404();
         }
 
@@ -375,27 +375,26 @@ class Forms extends BaseAdmin
 
         if (empty($iResponseId)) {
 
-            return $this->responsesList();
+            return $this->responsesList($oForm);
 
         } else {
 
             $oResponseModel = Factory::model('Response', 'nailsapp/module-custom-forms');
+            $oResponse      = $oResponseModel->getById($iResponseId);
 
-            $this->data['response'] = $oResponseModel->getById($iResponseId);
-
-            if (!$this->data['response']) {
+            if (empty($oResponse)) {
                 show404();
             }
 
             switch ($sResponseMethod) {
 
                 case 'delete':
-                    return $this->responseDelete();
+                    return $this->responseDelete($oResponse, $oForm);
                     break;
 
                 default:
                 case 'view':
-                    return $this->responseView();
+                    return $this->responseView($oResponse, $oForm);
                     break;
             }
         }
@@ -403,86 +402,44 @@ class Forms extends BaseAdmin
 
     // --------------------------------------------------------------------------
 
-    protected function responsesList()
+    protected function responsesList($oForm)
     {
+        $oInput         = Factory::service('Input');
         $oResponseModel = Factory::model('Response', 'nailsapp/module-custom-forms');
 
-        $aData = [
+        $this->data['page']->title = 'Responses for form: ' . $oForm->label;
+        $this->data['form']        = $oForm;
+        $this->data['responses']   = $oResponseModel->getAll([
             'where' => [
-                ['form_id', $this->data['form']->id],
+                ['form_id', $oForm->id],
             ],
-        ];
+        ]);
 
-        $this->data['responses'] = $oResponseModel->getAll(null, null, $aData);
-
-        if ($oInput->get('dl')) {
-            // FILE
-            $aResult = [];
-
-            // header
-            $aRow    = ['Created'];
-            $oHeader = reset($this->data['responses']);
-
-            foreach ($oHeader->answers as $oColumn) {
-                $aRow[] = $oColumn->question;
-            }
-
-            $aResult[] = $aRow;
-
-            // answers
-            foreach ($this->data['responses'] as $oResponse) {
-                $aRow = [$oResponse->created];
-
-                foreach ($oResponse->answers as $oColumn) {
-                    $aRow[] = is_array($oColumn->answer) ? implode('|', $oColumn->answer) : $oColumn->answer;
-                }
-
-                $aResult[] = $aRow;
-            }
-
-            Helper::loadCsv($aResult, $this->data['form']->slug . '.csv');
-
-        } else {
-            // PAGE
-            Helper::addHeaderButton(
-                'admin/forms/forms/responses/' . $this->data['form']->id . '?dl=1',
-                'Download as CSV'
-            );
-
-            $this->data['page']->title = 'Responses for form: ' . $this->data['form']->label;
-            Helper::loadView('responses');
-        }
+        Helper::loadView('responses');
     }
 
     // --------------------------------------------------------------------------
 
-    protected function responseView()
+    protected function responseView($oResponse, $oForm)
     {
-        Helper::addHeaderButton(
-            'admin/forms/forms/responses/' . $this->data['form']->id . '/' . $this->data['response']->id . '?dl=1',
-            'Download as CSV'
-        );
-
-        // --------------------------------------------------------------------------
-
-        $oInput = Factory::service('Input');
-
-        if ($oInput->get('dl')) {
-            $oSession = Factory::service('Session', 'nailsapp/module-auth');
-            $oSession->setFlashData('warning', '@todo - Download as CSV');
-            redirect('admin/forms/forms/responses/' . $this->data['form']->id . '/' . $this->data['response']->id);
-        } else {
-            $this->data['page']->title = 'Responses for form: ' . $this->data['form']->label;
-            Helper::loadView('response');
-        }
+        $this->data['page']->title = 'Responses for form: ' . $oForm->label;
+        $this->data['response']    = $oResponse;
+        Helper::loadView('response');
     }
 
     // --------------------------------------------------------------------------
 
-    protected function responseDelete()
+    protected function responseDelete($oResponse, $oForm)
     {
         $oSession = Factory::service('Session', 'nailsapp/module-auth');
-        $oSession->setFlashData('warning', '@todo - delete individual responses');
-        redirect('admin/forms/forms/responses/' . $this->data['form']->id);
+        $oModel   = Factory::model('Response', 'nailsapp/module-custom-forms');
+
+        if ($oModel->delete($oResponse->id)) {
+            $oSession->setFlashData('success', 'Response deleted successfully!');
+        } else {
+            $oSession->setFlashData('error', 'Failed to delete response. ' . $oModel->lastError());
+        }
+
+        redirect('admin/forms/forms/responses/' . $oForm->id);
     }
 }
