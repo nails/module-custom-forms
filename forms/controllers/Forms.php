@@ -20,11 +20,11 @@ class Forms extends Base
     {
         $oUri            = Factory::service('Uri');
         $oInput          = Factory::service('Input');
-        $oFormModel      = Factory::model('Form', 'nailsapp/module-custom-forms');
-        $oFieldTypeModel = Factory::model('FieldType', 'nailsapp/module-form-builder');
-        $oCaptcha        = Factory::service('Captcha', 'nailsapp/module-captcha');
+        $oFormModel      = Factory::model('Form', 'nails/module-custom-forms');
+        $oFieldTypeModel = Factory::model('FieldType', 'nails/module-form-builder');
+        $oCaptcha        = Factory::service('Captcha', 'nails/module-captcha');
 
-        Factory::helper('formbuilder', 'nailsapp/module-form-builder');
+        Factory::helper('formbuilder', 'nails/module-form-builder');
 
         $sFormSlug         = $oUri->rsegment(3);
         $bIsCaptchaEnabled = $oCaptcha->isEnabled();
@@ -128,7 +128,7 @@ class Forms extends Base
 
                 //  Encode the answers into a string
                 $aData['answers'] = json_encode(array_values($aData['answers']));
-                $oResponseModel   = Factory::model('Response', 'nailsapp/module-custom-forms');
+                $oResponseModel   = Factory::model('Response', 'nails/module-custom-forms');
 
                 if (!$oResponseModel->create($aData)) {
                     throw new \Nails\Common\Exception\NailsException(
@@ -138,7 +138,7 @@ class Forms extends Base
 
                 //  Send notification email?
                 if (!empty($oForm->notification_email)) {
-                    $oEmailer = Factory::service('Emailer', 'nailsapp/module-email');
+                    $oEmailer = Factory::service('Emailer', 'nails/module-email');
                     foreach ($oForm->notification_email as $sEmail) {
                         $oEmailer->send((object) [
                             'to_email' => $sEmail,
@@ -156,7 +156,7 @@ class Forms extends Base
                 $sBody    = $oForm->thankyou_email->body;
 
                 if (isLoggedIn() && $oForm->thankyou_email->send && !empty($sSubject) && !empty($sBody)) {
-                    $oEmailer = Factory::service('Emailer', 'nailsapp/module-email');
+                    $oEmailer = Factory::service('Emailer', 'nails/module-email');
                     $oEmailer->send((object) [
                         'to_email' => activeUser('id'),
                         'type'     => 'custom_form_submitted_thanks',

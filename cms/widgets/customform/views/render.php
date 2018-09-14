@@ -21,7 +21,7 @@ $bCaptchaError = !empty($captchaError);
 
 if (!empty($iFormId)) {
 
-    $oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
+    $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
     $oForm      = $oFormModel->getById(
         $iFormId,
         [
@@ -52,7 +52,7 @@ if (!empty($iFormId)) {
 
 if ($bShowWidget) {
 
-    Factory::helper('formbuilder', 'nailsapp/module-form-builder');
+    Factory::helper('formbuilder', 'nails/module-form-builder');
 
     ?>
     <div class="cms-widget cms-widget-custom-forms">

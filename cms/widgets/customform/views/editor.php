@@ -12,7 +12,7 @@
 
 use Nails\Factory;
 
-$oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
+$oFormModel = Factory::model('Form', 'nails/module-custom-forms');
 $aFormsFlat = $oFormModel->getAllFlat();
 
 if (empty($aFormsFlat)) {

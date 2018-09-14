@@ -25,7 +25,7 @@ class Forms extends BaseAdmin
     public static function announce()
     {
         if (userHasPermission('admin:forms:forms:browse')) {
-            $oNavGroup = Factory::factory('Nav', 'nailsapp/module-admin');
+            $oNavGroup = Factory::factory('Nav', 'nails/module-admin');
             $oNavGroup->setLabel('Custom Forms');
             $oNavGroup->setIcon('fa-list-alt');
             $oNavGroup->addAction('Browse Forms');
@@ -68,7 +68,7 @@ class Forms extends BaseAdmin
         // --------------------------------------------------------------------------
 
         $oInput     = Factory::service('Input');
-        $oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
+        $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
 
         // --------------------------------------------------------------------------
 
@@ -139,11 +139,11 @@ class Forms extends BaseAdmin
         if ($oInput->post()) {
             if ($this->runFormValidation()) {
 
-                $oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
+                $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
 
                 if ($oFormModel->create($this->getPostObject())) {
 
-                    $oSession = Factory::service('Session', 'nailsapp/module-auth');
+                    $oSession = Factory::service('Session', 'nails/module-auth');
                     $oSession->setFlashData('success', 'Form created successfully.');
                     redirect('admin/forms/forms');
 
@@ -177,7 +177,7 @@ class Forms extends BaseAdmin
 
         $oInput     = Factory::service('Input');
         $oUri       = Factory::service('Uri');
-        $oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
+        $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
 
         $iFormId            = (int) $oUri->segment(5);
         $this->data['form'] = $oFormModel->getById(
@@ -207,7 +207,7 @@ class Forms extends BaseAdmin
             if ($this->runFormValidation()) {
                 if ($oFormModel->update($iFormId, $this->getPostObject())) {
 
-                    $oSession = Factory::service('Session', 'nailsapp/module-auth');
+                    $oSession = Factory::service('Session', 'nails/module-auth');
                     $oSession->setFlashData('success', 'Form updated successfully.');
                     redirect('admin/forms/forms');
 
@@ -232,12 +232,12 @@ class Forms extends BaseAdmin
     protected function loadViewData()
     {
         $oAsset = Factory::service('Asset');
-        $oAsset->load('admin.form.edit.min.js', 'nailsapp/module-custom-forms');
+        $oAsset->load('admin.form.edit.min.js', 'nails/module-custom-forms');
 
-        Factory::helper('formbuilder', 'nailsapp/module-form-builder');
+        Factory::helper('formbuilder', 'nails/module-form-builder');
         adminLoadFormBuilderAssets('#custom-form-fields');
 
-        $oCaptcha                        = Factory::service('Captcha', 'nailsapp/module-captcha');
+        $oCaptcha                        = Factory::service('Captcha', 'nails/module-captcha');
         $this->data['bIsCaptchaEnabled'] = $oCaptcha->isEnabled();
     }
 
@@ -276,7 +276,7 @@ class Forms extends BaseAdmin
         $bValidForm = $oFormValidation->run();
 
         //  Validate fields
-        Factory::helper('formbuilder', 'nailsapp/module-form-builder');
+        Factory::helper('formbuilder', 'nails/module-form-builder');
         $bValidFields = adminValidateFormData($oInput->post('fields'));
 
         return $bValidForm && $bValidFields;
@@ -286,7 +286,7 @@ class Forms extends BaseAdmin
 
     protected function getPostObject()
     {
-        Factory::helper('formbuilder', 'nailsapp/module-form-builder');
+        Factory::helper('formbuilder', 'nails/module-form-builder');
         $oInput  = Factory::service('Input');
         $iFormId = !empty($this->data['form']->form->id) ? $this->data['form']->form->id : null;
         $aData   = [
@@ -334,7 +334,7 @@ class Forms extends BaseAdmin
 
         $oInput     = Factory::service('Input');
         $oUri       = Factory::service('Uri');
-        $oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
+        $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
 
         $iFormId = (int) $oUri->segment(5);
         $sReturn = $oInput->get('return') ? $oInput->get('return') : 'admin/forms/forms/index';
@@ -347,7 +347,7 @@ class Forms extends BaseAdmin
             $sMessage = 'Custom form failed to delete. ' . $oFormModel->lastError();
         }
 
-        $oSession = Factory::service('Session', 'nailsapp/module-auth');
+        $oSession = Factory::service('Session', 'nails/module-auth');
         $oSession->setFlashData($sStatus, $sMessage);
         redirect($sReturn);
     }
@@ -361,7 +361,7 @@ class Forms extends BaseAdmin
         }
 
         $oUri       = Factory::service('Uri');
-        $oFormModel = Factory::model('Form', 'nailsapp/module-custom-forms');
+        $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
 
         $iFormId = (int) $oUri->segment(5);
         $oForm   = $oFormModel->getById($iFormId, ['expand' => ['responses']]);
@@ -379,7 +379,7 @@ class Forms extends BaseAdmin
 
         } else {
 
-            $oResponseModel = Factory::model('Response', 'nailsapp/module-custom-forms');
+            $oResponseModel = Factory::model('Response', 'nails/module-custom-forms');
             $oResponse      = $oResponseModel->getById($iResponseId);
 
             if (empty($oResponse)) {
@@ -404,7 +404,7 @@ class Forms extends BaseAdmin
 
     protected function responsesList($oForm)
     {
-        $oResponseModel = Factory::model('Response', 'nailsapp/module-custom-forms');
+        $oResponseModel = Factory::model('Response', 'nails/module-custom-forms');
 
         $this->data['page']->title = 'Responses for form: ' . $oForm->label;
         $this->data['form']        = $oForm;
@@ -430,8 +430,8 @@ class Forms extends BaseAdmin
 
     protected function responseDelete($oResponse, $oForm)
     {
-        $oSession = Factory::service('Session', 'nailsapp/module-auth');
-        $oModel   = Factory::model('Response', 'nailsapp/module-custom-forms');
+        $oSession = Factory::service('Session', 'nails/module-auth');
+        $oModel   = Factory::model('Response', 'nails/module-custom-forms');
 
         if ($oModel->delete($oResponse->id)) {
             $oSession->setFlashData('success', 'Response deleted successfully!');

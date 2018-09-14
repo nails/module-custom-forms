@@ -1,5 +1,5 @@
 {
-    "name": "nailsapp/module-custom-forms",
+    "name": "nails/module-custom-forms",
     "keywords": ["Nails", "Shed Collective", "CodeIgniter", "Custom Forms Module"],
     "homepage": "http://nailsapp.co.uk/modules/custom-forms",
     "description": "This is the \"Custom Forms\" module for Nails.",
@@ -21,9 +21,9 @@
     "prefer-stable": true,
     "require":
     {
-        "nailsapp/common": "dev-develop",
-        "nailsapp/module-form-builder": "dev-develop",
-        "nailsapp/module-captcha": "dev-develop"
+        "nails/common": "dev-develop",
+        "nails/module-form-builder": "dev-develop",
+        "nails/module-captcha": "dev-develop"
     },
     "require-dev":
     {

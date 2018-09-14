@@ -31,7 +31,7 @@ class Responses implements Source
 
     public function getOptions()
     {
-        $oModel = Factory::model('Form', 'nailsapp/module-custom-forms');
+        $oModel = Factory::model('Form', 'nails/module-custom-forms');
         return [
             [
                 'key'     => 'form_id',
@@ -54,8 +54,8 @@ class Responses implements Source
 
     public function execute($aOptions = [])
     {
-        $oFormModel     = Factory::model('Form', 'nailsapp/module-custom-forms');
-        $oResponseModel = Factory::model('Response', 'nailsapp/module-custom-forms');
+        $oFormModel     = Factory::model('Form', 'nails/module-custom-forms');
+        $oResponseModel = Factory::model('Response', 'nails/module-custom-forms');
 
         $iFormId = (int) getFromArray('form_id', $aOptions) ?: null;
         $oForm   = $oFormModel->getById($iFormId);
@@ -94,7 +94,7 @@ class Responses implements Source
             $aFormattedResults[] = array_values($aTemp);
         }
 
-        return Factory::factory('DataExportSourceResponse', 'nailsapp/module-admin')
+        return Factory::factory('DataExportSourceResponse', 'nails/module-admin')
                       ->setLabel($this->getLabel())
                       ->setFilename($this->getFileName())
                       ->setFields(array_values(array_merge([

@@ -32,7 +32,7 @@ class Response extends Base
             'type'      => self::EXPANDABLE_TYPE_SINGLE,
             'property'  => 'form',
             'model'     => 'Form',
-            'provider'  => 'nailsapp/module-custom-forms',
+            'provider'  => 'nails/module-custom-forms',
             'id_column' => 'form_id',
         ]);
     }

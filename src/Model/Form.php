@@ -31,7 +31,7 @@ class Form extends Base
             'type'      => self::EXPANDABLE_TYPE_SINGLE,
             'property'  => 'form',
             'model'     => 'Form',
-            'provider'  => 'nailsapp/module-form-builder',
+            'provider'  => 'nails/module-form-builder',
             'id_column' => 'form_id',
         ]);
         $this->addExpandableField([
@@ -39,7 +39,7 @@ class Form extends Base
             'type'      => self::EXPANDABLE_TYPE_MANY,
             'property'  => 'responses',
             'model'     => 'Response',
-            'provider'  => 'nailsapp/module-custom-forms',
+            'provider'  => 'nails/module-custom-forms',
             'id_column' => 'form_id',
         ]);
     }
@@ -68,7 +68,7 @@ class Form extends Base
             //  Create the associated form (if no ID supplied)
             if (empty($aForm['id'])) {
 
-                $oFormModel       = Factory::model('Form', 'nailsapp/module-form-builder');
+                $oFormModel       = Factory::model('Form', 'nails/module-form-builder');
                 $aData['form_id'] = $oFormModel->create($aForm);
 
                 if (!$aData['form_id']) {
@@ -118,7 +118,7 @@ class Form extends Base
 
             //  Update the associated form (if no ID supplied)
             if (!empty($aForm['id'])) {
-                $oFormModel = Factory::model('Form', 'nailsapp/module-form-builder');
+                $oFormModel = Factory::model('Form', 'nails/module-form-builder');
                 if (!$oFormModel->update($aForm['id'], $aForm)) {
                     throw new \Exception('Failed to update associated form.', 1);
                 }
