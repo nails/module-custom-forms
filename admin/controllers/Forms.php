@@ -20,6 +20,7 @@ class Forms extends BaseAdmin
 {
     /**
      * Announces this controller's navGroups
+     *
      * @return stdClass
      */
     public static function announce()
@@ -37,6 +38,7 @@ class Forms extends BaseAdmin
 
     /**
      * Returns an array of extra permissions for this controller
+     *
      * @return array
      */
     public static function permissions()
@@ -57,6 +59,7 @@ class Forms extends BaseAdmin
 
     /**
      * Browse existing form
+     *
      * @return void
      */
     public function index()
@@ -127,6 +130,7 @@ class Forms extends BaseAdmin
 
     /**
      * Create a new Form
+     *
      * @return void
      */
     public function create()
@@ -167,6 +171,7 @@ class Forms extends BaseAdmin
 
     /**
      * Edit an existing Form
+     *
      * @return void
      */
     public function edit()
@@ -324,6 +329,7 @@ class Forms extends BaseAdmin
 
     /**
      * Delete an existing form
+     *
      * @return void
      */
     public function delete()
@@ -414,7 +420,33 @@ class Forms extends BaseAdmin
             ],
         ]);
 
-        Helper::loadView('responses');
+
+        $oInput = Factory::service('Input');
+        if ($oInput->get('dl')) {
+
+            $aResults = [];
+            $aColumns = ['Created'];
+            $oHeader  = reset($this->data['responses']);
+
+            foreach ($oHeader->answers as $oColumn) {
+                $aColumns[] = $oColumn->question;
+            }
+
+            foreach ($this->data['responses'] as $oResponse) {
+                $aRow = [$oResponse->created];
+                foreach ($oResponse->answers as $oColumn) {
+                    $aRow[] = is_array($oColumn->answer) ? implode('|', $oColumn->answer) : $oColumn->answer;
+                }
+
+                $aResult[] = array_combine($aColumns, $aRow);
+            }
+
+            Helper::loadCsv($aResult, $this->data['form']->slug . '.csv');
+
+        } else {
+            Helper::addHeaderButton(uri_string() . '?dl=1', 'Download as CSV');
+            Helper::loadView('responses');
+        }
     }
 
     // --------------------------------------------------------------------------
