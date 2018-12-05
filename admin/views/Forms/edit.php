@@ -107,7 +107,7 @@
                 echo form_field_boolean([
                     'key'     => 'thankyou_email',
                     'label'   => 'Email',
-                    'info'    => 'Send the user a thank you email',
+                    'info'    => 'Send the user a thank you email (will only be sent if logged in, and will be sent to the logged in user)',
                     'id'      => 'do-send-thankyou',
                     'default' => !empty($form->thankyou_email->send),
                 ]);
