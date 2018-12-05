@@ -158,9 +158,9 @@ class Forms extends Base
                 if (isLoggedIn() && $oForm->thankyou_email->send && !empty($sSubject) && !empty($sBody)) {
                     $oEmailer = Factory::service('Emailer', 'nails/module-email');
                     $oEmailer->send((object) [
-                        'to_email' => activeUser('id'),
-                        'type'     => 'custom_form_submitted_thanks',
-                        'data'     => (object) [
+                        'to_id' => activeUser('id'),
+                        'type'  => 'custom_form_submitted_thanks',
+                        'data'  => (object) [
                             'subject' => $sSubject,
                             'body'    => $sBody,
                         ],
