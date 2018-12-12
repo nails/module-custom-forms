@@ -2,8 +2,8 @@
 
 namespace Nails\CustomForms\DataExport\Source;
 
+use Nails\Admin\Exception\DataExport\FailureException;
 use Nails\Admin\Interfaces\DataExport\Source;
-use Nails\Common\Exception\NailsException;
 use Nails\Factory;
 
 class Responses implements Source
@@ -60,7 +60,7 @@ class Responses implements Source
         $iFormId = (int) getFromArray('form_id', $aOptions) ?: null;
         $oForm   = $oFormModel->getById($iFormId);
         if (empty($oForm)) {
-            throw new NailsException('Invalid Form ID');
+            throw new FailureException('Invalid Form ID');
         }
 
         $aResults = $oResponseModel->getAll([
