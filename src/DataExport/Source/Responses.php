@@ -96,7 +96,7 @@ class Responses implements Source
 
         return Factory::factory('DataExportSourceResponse', 'nails/module-admin')
                       ->setLabel($this->getLabel())
-                      ->setFilename($this->getFileName())
+                      ->setFileName($this->getFileName())
                       ->setFields(array_values(array_merge([
                           'id'         => 'Response ID',
                           'form_id'    => 'Form ID',
