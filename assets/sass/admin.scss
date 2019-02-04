@@ -10,12 +10,14 @@
                 width: 75px;
                 text-align: center;
             }
+
             th.actions,
             td.actions {
                 width: 280px;
             }
         }
     }
+
     &.responses {
         table {
             th.actions,
@@ -23,6 +25,7 @@
                 width: 150px;
             }
         }
+
         &.single {
             table {
                 td.number {

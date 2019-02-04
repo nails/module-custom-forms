@@ -236,9 +236,6 @@ class Forms extends BaseAdmin
 
     protected function loadViewData()
     {
-        $oAsset = Factory::service('Asset');
-        $oAsset->load('admin.form.edit.min.js', 'nails/module-custom-forms');
-
         Factory::helper('formbuilder', 'nails/module-form-builder');
         adminLoadFormBuilderAssets('#custom-form-fields');
 

@@ -1,11 +1,15 @@
 {
     "name": "nails/module-custom-forms",
-    "keywords": ["Nails", "Shed Collective", "CodeIgniter", "Custom Forms Module"],
+    "keywords": [
+        "Nails",
+        "Shed Collective",
+        "CodeIgniter",
+        "Custom Forms Module"
+    ],
     "homepage": "http://nailsapp.co.uk/modules/custom-forms",
     "description": "This is the \"Custom Forms\" module for Nails.",
     "license": "MIT",
-    "authors":
-    [
+    "authors": [
         {
             "name": "Pablo de la Pena",
             "email": "p@nailsapp.co.uk",
@@ -13,33 +17,43 @@
             "role": "Developer"
         }
     ],
-    "support":
-    {
+    "support": {
         "email": "hello@nailsapp.co.uk"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "require":
-    {
+    "require": {
         "nails/common": "dev-develop",
         "nails/module-form-builder": "dev-develop",
         "nails/module-captcha": "dev-develop"
     },
-    "require-dev":
-    {
+    "require-dev": {
         "phpunit/phpunit": "8.*"
     },
-    "autoload":
-    {
-        "psr-4": {"Nails\\CustomForms\\": "src/"}
+    "autoload": {
+        "psr-4": {
+            "Nails\\CustomForms\\": "src/"
+        }
     },
-    "extra":
-    {
-        "nails" :
-        {
+    "extra": {
+        "nails": {
             "moduleName": "forms",
             "type": "module",
-            "namespace": "Nails\\CustomForms\\"
+            "namespace": "Nails\\CustomForms\\",
+            "data": {
+                "nails/module-admin": {
+                    "autoload": {
+                        "assets": {
+                            "js": [
+                                "admin.min.js"
+                            ],
+                            "css": [
+                                "admin.min.css"
+                            ]
+                        }
+                    }
+                }
+            }
         }
     }
 }
