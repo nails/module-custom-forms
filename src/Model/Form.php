@@ -12,6 +12,7 @@
 
 namespace Nails\CustomForms\Model;
 
+use Nails\Common\Exception\NailsException;
 use Nails\Common\Model\Base;
 use Nails\Factory;
 
@@ -72,7 +73,7 @@ class Form extends Base
                 $aData['form_id'] = $oFormModel->create($aForm);
 
                 if (!$aData['form_id']) {
-                    throw new \Exception('Failed to create associated form.', 1);
+                    throw new NailsException('Failed to create associated form.', 1);
                 }
 
             } else {
@@ -81,7 +82,7 @@ class Form extends Base
 
             $mResult = parent::create($aData, $bReturnObject);
             if (!$mResult) {
-                throw new \Exception('Failed to create form. ' . $this->lastError(), 1);
+                throw new NailsException('Failed to create form. ' . $this->lastError(), 1);
             }
 
             $oDb->trans_commit();
@@ -120,12 +121,12 @@ class Form extends Base
             if (!empty($aForm['id'])) {
                 $oFormModel = Factory::model('Form', 'nails/module-form-builder');
                 if (!$oFormModel->update($aForm['id'], $aForm)) {
-                    throw new \Exception('Failed to update associated form.', 1);
+                    throw new NailsException('Failed to update associated form.', 1);
                 }
             }
 
             if (!parent::update($iId, $aData)) {
-                throw new \Exception('Failed to update form. ' . $this->lastError(), 1);
+                throw new NailsException('Failed to update form. ' . $this->lastError(), 1);
             }
 
             $oDb->trans_commit();
