@@ -18,11 +18,11 @@ class Forms extends Base
 {
     public function index()
     {
-        $oUri            = Factory::service('Uri');
-        $oInput          = Factory::service('Input');
-        $oFormModel      = Factory::model('Form', 'nails/module-custom-forms');
-        $oFieldTypeModel = Factory::model('FieldType', 'nails/module-form-builder');
-        $oCaptcha        = Factory::service('Captcha', 'nails/module-captcha');
+        $oUri              = Factory::service('Uri');
+        $oInput            = Factory::service('Input');
+        $oFormModel        = Factory::model('Form', 'nails/module-custom-forms');
+        $oFieldTypeService = Factory::service('FieldType', 'nails/module-form-builder');
+        $oCaptcha          = Factory::service('Captcha', 'nails/module-captcha');
 
         Factory::helper('formbuilder', 'nails/module-form-builder');
 
@@ -79,7 +79,7 @@ class Forms extends Base
                  */
                 $bIsFormValid = true;
                 foreach ($oForm->form->fields->data as &$oField) {
-                    $oFieldType = $oFieldTypeModel->getBySlug($oField->type);
+                    $oFieldType = $oFieldTypeService->getBySlug($oField->type);
                     if (!empty($oFieldType)) {
                         try {
 
@@ -169,14 +169,14 @@ class Forms extends Base
 
                 //  Show the thanks page
                 return Factory::service('View')
-                              ->setData([
-                                  'oForm' => $oForm,
-                              ])
-                              ->load([
-                                  $sHeaderView,
-                                  'forms/thanks',
-                                  $sFooterView,
-                              ]);
+                    ->setData([
+                        'oForm' => $oForm,
+                    ])
+                    ->load([
+                        $sHeaderView,
+                        'forms/thanks',
+                        $sFooterView,
+                    ]);
 
             } catch (\Exception $e) {
                 $this->data['error'] = $e->getMessage();
@@ -184,14 +184,14 @@ class Forms extends Base
         }
 
         Factory::service('View')
-               ->setData([
-                   'oForm'             => $oForm,
-                   'bIsCaptchaEnabled' => $bIsCaptchaEnabled,
-               ])
-               ->load([
-                   $sHeaderView,
-                   'forms/form',
-                   $sFooterView,
-               ]);
+            ->setData([
+                'oForm'             => $oForm,
+                'bIsCaptchaEnabled' => $bIsCaptchaEnabled,
+            ])
+            ->load([
+                $sHeaderView,
+                'forms/form',
+                $sFooterView,
+            ]);
     }
 }
