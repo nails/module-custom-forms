@@ -55,7 +55,7 @@ class Form extends Base
      *
      * @return mixed
      */
-    public function create(array $aData = [], $bReturnObject = false)
+    public function create(array $aData = [], $bReturnObject = false): bool
     {
         //  Extract the form
         $aForm = array_key_exists('form', $aData) ? $aData['form'] : null;
@@ -105,7 +105,7 @@ class Form extends Base
      *
      * @return mixed
      */
-    public function update($iId, array $aData = [])
+    public function update($iId, array $aData = []): bool
     {
         //  Extract the form
         $aForm = array_key_exists('form', $aData) ? $aData['form'] : null;
