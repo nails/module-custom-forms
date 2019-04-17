@@ -8,11 +8,11 @@
     "devDependencies": {
         "autoprefixer": "^9.5",
         "css-loader": "^2.1",
-        "mini-css-extract-plugin": "^0.5",
+        "mini-css-extract-plugin": "^0.6",
         "node-sass": "^4.11",
         "postcss-loader": "^3.0",
         "sass-loader": "^7.1",
-        "webpack": "^4.29",
+        "webpack": "^4.30",
         "webpack-command": "^0.4"
     },
     "scripts": {
