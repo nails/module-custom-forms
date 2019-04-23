@@ -8,28 +8,28 @@ use Nails\Factory;
 
 class Responses implements Source
 {
-    public function getLabel()
+    public function getLabel(): string
     {
         return 'Custom Forms - Responses';
     }
 
     // --------------------------------------------------------------------------
 
-    public function getFileName()
+    public function getFileName(): string
     {
         return 'custom-forms-responses';
     }
 
     // --------------------------------------------------------------------------
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Exports all responses to a particular form';
     }
 
     // --------------------------------------------------------------------------
 
-    public function getOptions()
+    public function getOptions(): array
     {
         $oModel = Factory::model('Form', 'nails/module-custom-forms');
         return [
@@ -45,7 +45,7 @@ class Responses implements Source
 
     // --------------------------------------------------------------------------
 
-    public function isEnabled()
+    public function isEnabled(): bool
     {
         return true;
     }
@@ -95,13 +95,13 @@ class Responses implements Source
         }
 
         return Factory::factory('DataExportSourceResponse', 'nails/module-admin')
-                      ->setLabel($this->getLabel())
-                      ->setFileName($this->getFileName())
-                      ->setFields(array_values(array_merge([
-                          'id'         => 'Response ID',
-                          'form_id'    => 'Form ID',
-                          'form_label' => 'Form Label',
-                      ], $aFields)))
-                      ->setData($aFormattedResults);
+                  ->setLabel($this->getLabel())
+                  ->setFileName($this->getFileName())
+                  ->setFields(array_values(array_merge([
+                      'id'         => 'Response ID',
+                      'form_id'    => 'Form ID',
+                      'form_label' => 'Form Label',
+                  ], $aFields)))
+                  ->setData($aFormattedResults);
     }
 }
