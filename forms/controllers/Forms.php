@@ -12,6 +12,7 @@
 
 use App\Controller\Base;
 use Nails\Common\Exception\ValidationException;
+use Nails\Email;
 use Nails\Factory;
 
 class Forms extends Base
@@ -138,7 +139,7 @@ class Forms extends Base
 
                 //  Send notification email?
                 if (!empty($oForm->notification_email)) {
-                    $oEmailer = Factory::service('Emailer', 'nails/module-email');
+                    $oEmailer = Factory::service('Emailer', Email\Constants::MODULE_SLUG);
                     foreach ($oForm->notification_email as $sEmail) {
                         $oEmailer->send((object) [
                             'to_email' => $sEmail,
@@ -156,7 +157,7 @@ class Forms extends Base
                 $sBody    = $oForm->thankyou_email->body;
 
                 if (isLoggedIn() && $oForm->thankyou_email->send && !empty($sSubject) && !empty($sBody)) {
-                    $oEmailer = Factory::service('Emailer', 'nails/module-email');
+                    $oEmailer = Factory::service('Emailer', Email\Constants::MODULE_SLUG);
                     $oEmailer->send((object) [
                         'to_id' => activeUser('id'),
                         'type'  => 'custom_form_submitted_thanks',

@@ -13,6 +13,7 @@
 namespace Nails\Admin\Forms;
 
 use Nails\Admin\Helper;
+use Nails\Auth;
 use Nails\CustomForms\Controller\BaseAdmin;
 use Nails\Factory;
 
@@ -147,7 +148,7 @@ class Forms extends BaseAdmin
 
                 if ($oFormModel->create($this->getPostObject())) {
 
-                    $oSession = Factory::service('Session', 'nails/module-auth');
+                    $oSession = Factory::service('Session', Auth\Constants::MODULE_SLUG);
                     $oSession->setFlashData('success', 'Form created successfully.');
                     redirect('admin/forms/forms');
 
@@ -212,7 +213,7 @@ class Forms extends BaseAdmin
             if ($this->runFormValidation()) {
                 if ($oFormModel->update($iFormId, $this->getPostObject())) {
 
-                    $oSession = Factory::service('Session', 'nails/module-auth');
+                    $oSession = Factory::service('Session', Auth\Constants::MODULE_SLUG);
                     $oSession->setFlashData('success', 'Form updated successfully.');
                     redirect('admin/forms/forms');
 
@@ -362,7 +363,7 @@ class Forms extends BaseAdmin
             $sMessage = 'Custom form failed to delete. ' . $oFormModel->lastError();
         }
 
-        $oSession = Factory::service('Session', 'nails/module-auth');
+        $oSession = Factory::service('Session', Auth\Constants::MODULE_SLUG);
         $oSession->setFlashData($sStatus, $sMessage);
         redirect($sReturn);
     }
@@ -429,7 +430,6 @@ class Forms extends BaseAdmin
             ],
         ]);
 
-
         $oInput = Factory::service('Input');
         if ($oInput->get('dl')) {
 
@@ -471,7 +471,7 @@ class Forms extends BaseAdmin
 
     protected function responseDelete($oResponse, $oForm)
     {
-        $oSession = Factory::service('Session', 'nails/module-auth');
+        $oSession = Factory::service('Session', Auth\Constants::MODULE_SLUG);
         $oModel   = Factory::model('Response', 'nails/module-custom-forms');
 
         if ($oModel->delete($oResponse->id)) {
