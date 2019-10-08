@@ -54,6 +54,14 @@
                                     );
                                 }
 
+                                if (userHasPermission('admin:forms:forms:create')) {
+                                    echo anchor(
+                                        'admin/forms/forms/copy/' . $form->id,
+                                        'Duplicate',
+                                        'class="btn btn-xs btn-default confirm" data-body="This will create a copy of the form, excluding any existing responses."'
+                                    );
+                                }
+
                                 ?>
                             </td>
                         </tr>

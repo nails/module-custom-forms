@@ -12,11 +12,25 @@
 
 namespace Nails\Admin\Forms;
 
+use Nails\Admin\Factory\Nav;
 use Nails\Admin\Helper;
 use Nails\Auth;
+use Nails\Captcha\Service\Captcha;
+use Nails\Common\Exception\FactoryException;
+use Nails\Common\Exception\ModelException;
+use Nails\Common\Service\FormValidation;
+use Nails\Common\Service\Input;
+use Nails\Common\Service\Uri;
 use Nails\CustomForms\Controller\BaseAdmin;
+use Nails\CustomForms\Model\Form;
+use Nails\CustomForms\Model\Response;
 use Nails\Factory;
 
+/**
+ * Class Forms
+ *
+ * @package Nails\Admin\Forms
+ */
 class Forms extends BaseAdmin
 {
     /**
@@ -27,10 +41,14 @@ class Forms extends BaseAdmin
     public static function announce()
     {
         if (userHasPermission('admin:forms:forms:browse')) {
+
+            /** @var Nav $oNavGroup */
             $oNavGroup = Factory::factory('Nav', 'nails/module-admin');
-            $oNavGroup->setLabel('Custom Forms');
-            $oNavGroup->setIcon('fa-list-alt');
-            $oNavGroup->addAction('Browse Forms');
+            $oNavGroup
+                ->setLabel('Custom Forms')
+                ->setIcon('fa-list-alt')
+                ->addAction('Browse Forms');
+
             return $oNavGroup;
         }
     }
@@ -47,7 +65,7 @@ class Forms extends BaseAdmin
         $aPermissions = parent::permissions();
 
         $aPermissions['browse']           = 'Can browse forms';
-        $aPermissions['create']           = 'Can create forms';
+        $aPermissions['create']           = 'Can create and duplicate forms';
         $aPermissions['edit']             = 'Can edit forms';
         $aPermissions['delete']           = 'Can delete forms';
         $aPermissions['responses']        = 'Can view responses';
@@ -71,7 +89,9 @@ class Forms extends BaseAdmin
 
         // --------------------------------------------------------------------------
 
-        $oInput     = Factory::service('Input');
+        /** @var Input $oInput */
+        $oInput = Factory::service('Input');
+        /** @var Form $oFormModel */
         $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
 
         // --------------------------------------------------------------------------
@@ -140,14 +160,17 @@ class Forms extends BaseAdmin
             unauthorised();
         }
 
+        /** @var Input $oInput */
         $oInput = Factory::service('Input');
         if ($oInput->post()) {
             if ($this->runFormValidation()) {
 
+                /** @var Form $oFormModel */
                 $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
 
                 if ($oFormModel->create($this->getPostObject())) {
 
+                    /** @var Auth\Service\Session $oSession */
                     $oSession = Factory::service('Session', Auth\Constants::MODULE_SLUG);
                     $oSession->setFlashData('success', 'Form created successfully.');
                     redirect('admin/forms/forms');
@@ -181,8 +204,11 @@ class Forms extends BaseAdmin
             unauthorised();
         }
 
-        $oInput     = Factory::service('Input');
-        $oUri       = Factory::service('Uri');
+        /** @var Input $oInput */
+        $oInput = Factory::service('Input');
+        /** @var Uri $oUri */
+        $oUri = Factory::service('Uri');
+        /** @var Form $oFormModel */
         $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
 
         $iFormId            = (int) $oUri->segment(5);
@@ -235,12 +261,19 @@ class Forms extends BaseAdmin
 
     // --------------------------------------------------------------------------
 
+    /**
+     * Loads the edit view data
+     *
+     * @throws FactoryException
+     */
     protected function loadViewData()
     {
         Factory::helper('formbuilder', 'nails/module-form-builder');
         adminLoadFormBuilderAssets('#custom-form-fields');
 
-        $oCaptcha                        = Factory::service('Captcha', 'nails/module-captcha');
+        /** @var Captcha $oCaptcha */
+        $oCaptcha = Factory::service('Captcha', 'nails/module-captcha');
+
         $this->data['bIsCaptchaEnabled'] = $oCaptcha->isEnabled();
     }
 
@@ -255,8 +288,10 @@ class Forms extends BaseAdmin
      */
     protected function runFormValidation(array $aOverrides = [])
     {
+        /** @var FormValidation $oFormValidation */
         $oFormValidation = Factory::service('FormValidation');
-        $oInput          = Factory::service('Input');
+        /** @var Input $oInput */
+        $oInput = Factory::service('Input');
 
         //  Define the rules
         $aRules = [
@@ -302,6 +337,7 @@ class Forms extends BaseAdmin
     protected function getPostObject(): array
     {
         Factory::helper('formbuilder', 'nails/module-form-builder');
+        /** @var Input $oInput */
         $oInput  = Factory::service('Input');
         $iFormId = !empty($this->data['form']->form->id) ? $this->data['form']->form->id : null;
         $aData   = [
@@ -348,8 +384,11 @@ class Forms extends BaseAdmin
             unauthorised();
         }
 
-        $oInput     = Factory::service('Input');
-        $oUri       = Factory::service('Uri');
+        /** @var Input $oInput */
+        $oInput = Factory::service('Input');
+        /** @var Uri $oUri */
+        $oUri = Factory::service('Uri');
+        /** @var Form $oFormModel */
         $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
 
         $iFormId = (int) $oUri->segment(5);
@@ -363,20 +402,30 @@ class Forms extends BaseAdmin
             $sMessage = 'Custom form failed to delete. ' . $oFormModel->lastError();
         }
 
+        /** @var Auth\Service\Session $oSession */
         $oSession = Factory::service('Session', Auth\Constants::MODULE_SLUG);
         $oSession->setFlashData($sStatus, $sMessage);
+
         redirect($sReturn);
     }
 
     // --------------------------------------------------------------------------
 
+    /**
+     * Show responses to a form
+     *
+     * @throws FactoryException
+     * @throws ModelException
+     */
     public function responses()
     {
         if (!userHasPermission('admin:forms:forms:responses')) {
             unauthorised();
         }
 
-        $oUri       = Factory::service('Uri');
+        /** @var Uri $oUri */
+        $oUri = Factory::service('Uri');
+        /** @var Form $oFormModel */
         $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
 
         $iFormId = (int) $oUri->segment(5);
@@ -395,6 +444,7 @@ class Forms extends BaseAdmin
 
         } else {
 
+            /** @var Response $oResponseModel */
             $oResponseModel = Factory::model('Response', 'nails/module-custom-forms');
             $oResponse      = $oResponseModel->getById($iResponseId);
 
@@ -418,8 +468,17 @@ class Forms extends BaseAdmin
 
     // --------------------------------------------------------------------------
 
+    /**
+     * List the responses
+     *
+     * @param $oForm
+     *
+     * @throws FactoryException
+     * @throws ModelException
+     */
     protected function responsesList($oForm)
     {
+        /** @var Response $oResponseModel */
         $oResponseModel = Factory::model('Response', 'nails/module-custom-forms');
 
         $this->data['page']->title = 'Responses for form: ' . $oForm->label;
@@ -430,6 +489,7 @@ class Forms extends BaseAdmin
             ],
         ]);
 
+        /** @var Input $oInput */
         $oInput = Factory::service('Input');
         if ($oInput->get('dl')) {
 
@@ -460,6 +520,14 @@ class Forms extends BaseAdmin
 
     // --------------------------------------------------------------------------
 
+    /**
+     * View a single response
+     *
+     * @param $oResponse
+     * @param $oForm
+     *
+     * @throws FactoryException
+     */
     protected function responseView($oResponse, $oForm)
     {
         $this->data['page']->title = 'Responses for form: ' . $oForm->label;
@@ -469,10 +537,21 @@ class Forms extends BaseAdmin
 
     // --------------------------------------------------------------------------
 
+    /**
+     * Delete a response
+     *
+     * @param $oResponse
+     * @param $oForm
+     *
+     * @throws FactoryException
+     * @throws ModelException
+     */
     protected function responseDelete($oResponse, $oForm)
     {
+        /** @var Auth\Service\Session $oSession */
         $oSession = Factory::service('Session', Auth\Constants::MODULE_SLUG);
-        $oModel   = Factory::model('Response', 'nails/module-custom-forms');
+        /** @var Response $oModel */
+        $oModel = Factory::model('Response', 'nails/module-custom-forms');
 
         if ($oModel->delete($oResponse->id)) {
             $oSession->setFlashData('success', 'Response deleted successfully!');
@@ -481,5 +560,46 @@ class Forms extends BaseAdmin
         }
 
         redirect('admin/forms/forms/responses/' . $oForm->id);
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Creates a copy of a form
+     *
+     * @throws FactoryException
+     * @throws ModelException
+     */
+    public function copy()
+    {
+        if (!userHasPermission('admin:forms:forms:create')) {
+            unauthorised();
+        }
+
+        /** @var Input $oInput */
+        $oInput = Factory::service('Input');
+        /** @var Uri $oUri */
+        $oUri = Factory::service('Uri');
+        /** @var Form $oFormModel */
+        $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
+
+        try {
+
+            $iNewFormId   = $oFormModel->copy((int) $oUri->segment(5));
+            $sStatus      = 'success';
+            $sMessage     = 'Custom form was copied successfully.';
+            $sRedirectUrl = 'admin/forms/forms/edit/' . $iNewFormId;
+
+        } catch (\Exception $e) {
+            $sStatus      = 'error';
+            $sMessage     = 'Custom form failed to copy. ' . $e->getMessage();
+            $sRedirectUrl = $oInput->get('return') ? $oInput->get('return') : 'admin/forms/forms/index';
+        }
+
+        /** @var Auth\Service\Session $oSession */
+        $oSession = Factory::service('Session', Auth\Constants::MODULE_SLUG);
+        $oSession->setFlashData($sStatus, $sMessage);
+
+        redirect($sRedirectUrl);
     }
 }

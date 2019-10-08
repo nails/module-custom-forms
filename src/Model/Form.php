@@ -12,10 +12,20 @@
 
 namespace Nails\CustomForms\Model;
 
+use Nails\Common\Exception\FactoryException;
+use Nails\Common\Exception\ModelException;
 use Nails\Common\Exception\NailsException;
+use Nails\Common\Exception\ValidationException;
 use Nails\Common\Model\Base;
+use Nails\Common\Service\Database;
 use Nails\Factory;
+use phpDocumentor\Reflection\Types\Boolean;
 
+/**
+ * Class Form
+ *
+ * @package Nails\CustomForms\Model
+ */
 class Form extends Base
 {
     /**
@@ -29,8 +39,6 @@ class Form extends Base
         $this->tableAutoSetSlugs = true;
         $this->addExpandableField([
             'trigger'   => 'form',
-            'type'      => self::EXPANDABLE_TYPE_SINGLE,
-            'property'  => 'form',
             'model'     => 'Form',
             'provider'  => 'nails/module-form-builder',
             'id_column' => 'form_id',
@@ -38,7 +46,6 @@ class Form extends Base
         $this->addExpandableField([
             'trigger'   => 'responses',
             'type'      => self::EXPANDABLE_TYPE_MANY,
-            'property'  => 'responses',
             'model'     => 'Response',
             'provider'  => 'nails/module-custom-forms',
             'id_column' => 'form_id',
@@ -98,6 +105,75 @@ class Form extends Base
     // --------------------------------------------------------------------------
 
     /**
+     * Copies an existing Custom Form
+     *
+     * @param int   $iFormId       The ID of the form to copy
+     * @param bool  $bReturnObject Whether to return the new form's ID, or object
+     * @param array $aReturnData   If returning an object, data to pass to the getById method
+     *
+     * @return mixed|\Nails\Common\Resource|null
+     * @throws ValidationException
+     * @throws FactoryException
+     * @throws ModelException
+     */
+    public function copy(int $iFormId, bool $bReturnObject = false, array $aReturnData = [])
+    {
+        $oForm = $this->getById($iFormId);
+        if (empty($iFormId)) {
+            throw new ValidationException('Invalid form ID');
+        }
+
+        /** @var Database $oDb */
+        $oDb = Factory::service('Database');
+        /** @var \Nails\FormBuilder\Model\Form $oFormModel */
+        $oFormModel = Factory::model('Form', 'nails/module-form-builder');
+        /** @var \DateTime $oNow */
+        $oNow = Factory::factory('DateTime');
+
+        try {
+
+            //  Duplicate the base form
+            $iNewFormId = $oFormModel->copy($oForm->form_id);
+            if (empty($iNewFormId)) {
+                throw new ModelException(
+                    'Failed to copy FormBuilder form. ' . $oFormModel->lastError()
+                );
+            }
+
+            //  Duplicate the custom form
+            $oBasicForm = $oDb->query('SELECT * FROM ' . $this->getTableName() . ' WHERE id = ' . $oForm->id)
+                ->row();
+
+            //  Update some things
+            unset($oBasicForm->id);
+            unset($oBasicForm->form_id);
+            unset($oBasicForm->created);
+            unset($oBasicForm->created_by);
+            unset($oBasicForm->modified);
+            unset($oBasicForm->modified_by);
+
+            $oBasicForm->slug    = $this->generateSlug($oBasicForm->label);
+            $oBasicForm->form_id = $iNewFormId;
+            $oBasicForm->label   .= ' - Copy (' . toUserDatetime($oNow->format('Y-m-d H:i:s')) . ')';
+
+            $iCopiedFormId = parent::create((array) $oBasicForm);
+            if (empty($iCopiedFormId)) {
+                throw new ModelException('Failed to duplicate form. ' . $this->lastError());
+            }
+
+            $oDb->trans_commit();
+
+        } catch (\Exception $e) {
+            $oDb->trans_rollback();
+            throw $e;
+        }
+
+        return $bReturnObject ? $this->getById($iCopiedFormId, $aReturnData) : $iCopiedFormId;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
      * Update an existing form
      *
      * @param int   $iId   The ID of the form to update
@@ -147,11 +223,11 @@ class Form extends Base
      * The getAll() method iterates over each returned item with this method so as to
      * correctly format the output. Use this to cast integers and booleans and/or organise data into objects.
      *
-     * @param  object $oObj      A reference to the object being formatted.
-     * @param  array  $aData     The same data array which is passed to _getcount_common, for reference if needed
-     * @param  array  $aIntegers Fields which should be cast as integers if numerical and not null
-     * @param  array  $aBools    Fields which should be cast as booleans if not null
-     * @param  array  $aFloats   Fields which should be cast as floats if not null
+     * @param object $oObj      A reference to the object being formatted.
+     * @param array  $aData     The same data array which is passed to _getcount_common, for reference if needed
+     * @param array  $aIntegers Fields which should be cast as integers if numerical and not null
+     * @param array  $aBools    Fields which should be cast as booleans if not null
+     * @param array  $aFloats   Fields which should be cast as floats if not null
      *
      * @return void
      */
