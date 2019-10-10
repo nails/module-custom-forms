@@ -28,7 +28,19 @@
                             <?php
 
                             if (is_array($oAnswer->answer)) {
+
                                 echo implode('<br />', $oAnswer->answer);
+
+                            } elseif (!empty($oAnswer->field->type)) {
+
+                                $sClass = $oAnswer->field->type;
+                                $oField = new $sClass();
+
+                                echo $oField->extractText(
+                                    $oAnswer->answer,
+                                    $oAnswer->answer
+                                );
+
                             } else {
                                 echo $oAnswer->answer;
                             }
