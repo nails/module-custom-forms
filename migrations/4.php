@@ -25,11 +25,13 @@ class Migration4 extends Base
     public function execute()
     {
         $this->query('
-            CREATE TABLE `{{NAILS_DB_PREFIX}}}}custom_form_notification` (
+            CREATE TABLE `{{NAILS_DB_PREFIX}}custom_form_notification` (
                 `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
                 `form_id` int(11) unsigned NOT NULL,
                 `email` varchar(150) NOT NULL DEFAULT \'\',
+                `condition_enabled` tinyint(1) unsigned NOT NULL DEFAULT 0,
                 `condition_field_id` int(11) unsigned DEFAULT NULL,
+                `condition_operator` enum(\'IS\',\'IS_NOT\',\'GREATER_THAN\',\'LESS_THAN\', \'CONTAINS\') DEFAULT \'IS\',
                 `condition_value` varchar(150) DEFAULT NULL,
                 `created` datetime NOT NULL,
                 `created_by` int(11) unsigned DEFAULT NULL,
@@ -40,11 +42,14 @@ class Migration4 extends Base
                 KEY `created_by` (`created_by`),
                 KEY `modified_by` (`modified_by`),
                 KEY `condition_field_id` (`condition_field_id`),
-                CONSTRAINT `{{NAILS_DB_PREFIX}}}}custom_form_notification_ibfk_1` FOREIGN KEY (`form_id`) REFERENCES `{{NAILS_DB_PREFIX}}}}custom_form` (`id`) ON DELETE CASCADE,
-                CONSTRAINT `{{NAILS_DB_PREFIX}}}}custom_form_notification_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `{{NAILS_DB_PREFIX}}}}user` (`id`) ON DELETE SET NULL,
-                CONSTRAINT `{{NAILS_DB_PREFIX}}}}custom_form_notification_ibfk_3` FOREIGN KEY (`modified_by`) REFERENCES `{{NAILS_DB_PREFIX}}}}user` (`id`) ON DELETE SET NULL,
-                CONSTRAINT `{{NAILS_DB_PREFIX}}}}custom_form_notification_ibfk_4` FOREIGN KEY (`condition_field_id`) REFERENCES `{{NAILS_DB_PREFIX}}}}formbuilder_form_field` (`id`) ON DELETE SET NULL
+                CONSTRAINT `{{NAILS_DB_PREFIX}}custom_form_notification_ibfk_1` FOREIGN KEY (`form_id`) REFERENCES `{{NAILS_DB_PREFIX}}custom_form` (`id`) ON DELETE CASCADE,
+                CONSTRAINT `{{NAILS_DB_PREFIX}}custom_form_notification_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `{{NAILS_DB_PREFIX}}user` (`id`) ON DELETE SET NULL,
+                CONSTRAINT `{{NAILS_DB_PREFIX}}custom_form_notification_ibfk_3` FOREIGN KEY (`modified_by`) REFERENCES `{{NAILS_DB_PREFIX}}user` (`id`) ON DELETE SET NULL,
+                CONSTRAINT `{{NAILS_DB_PREFIX}}custom_form_notification_ibfk_4` FOREIGN KEY (`condition_field_id`) REFERENCES `{{NAILS_DB_PREFIX}}formbuilder_form_field` (`id`) ON DELETE SET NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
         ');
+
+        //  @todo (Pablo - 2019-10-10) - Migrate column to new table
+        //  @todo (Pablo - 2019-10-10) - Drop column
     }
 }

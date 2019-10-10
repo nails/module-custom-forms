@@ -216,6 +216,7 @@ class Forms extends BaseAdmin
             $iFormId,
             [
                 'expand' => [
+                    'notifications',
                     [
                         'form',
                         [
@@ -275,6 +276,57 @@ class Forms extends BaseAdmin
         $oCaptcha = Factory::service('Captcha', 'nails/module-captcha');
 
         $this->data['bIsCaptchaEnabled'] = $oCaptcha->isEnabled();
+
+        /** @var Form\Notification $oFormNotificationModel */
+        $oFormNotificationModel               = Factory::model('FormNotification', 'nails/module-custom-forms');
+        $this->data['aNotificationOperators'] = $oFormNotificationModel->getOperators();
+
+        /** @var Input $oInput */
+        $oInput = Factory::service('Input');
+
+        $this->data['aNotifications'] = [];
+
+        if ($oInput->post()) {
+            $this->data['aNotifications'] = $this->extractNotificationsFromPost();
+        } elseif (!empty($this->data['form'])) {
+            $this->data['aNotifications'] = $this->extractNotificationsFromObject();
+        }
+    }
+
+    // --------------------------------------------------------------------------
+
+    private function extractNotificationsFromPost()
+    {
+        /** @var Input $oInput */
+        $oInput = Factory::service('Input');
+        return array_map(function ($aItem) {
+            $aItem = (array) $aItem;
+            return (object) [
+                'id'                 => (int) getFromArray('id', $aItem) ?: null,
+                'email'              => getFromArray('email', $aItem),
+                'condition_enabled'  => getFromArray('condition_enabled', $aItem),
+                'condition_field_id' => getFromArray('condition_field_id', $aItem),
+                'condition_operator' => getFromArray('condition_operator', $aItem),
+                'condition_value'    => getFromArray('condition_value', $aItem),
+            ];
+        }, array_filter((array) $oInput->post('notifications')));
+    }
+
+    // --------------------------------------------------------------------------
+
+    private function extractNotificationsFromObject()
+    {
+        return array_map(function ($oItem) {
+            $aItem = (array) $oItem;
+            return (object) [
+                'id'                 => getFromArray('id', $aItem),
+                'email'              => getFromArray('email', $aItem),
+                'condition_enabled'  => getFromArray('condition_enabled', $aItem),
+                'condition_field_id' => getFromArray('condition_field_id', $aItem),
+                'condition_operator' => getFromArray('condition_operator', $aItem),
+                'condition_value'    => getFromArray('condition_value', $aItem),
+            ];
+        }, $this->data['form']->notifications->data);
     }
 
     // --------------------------------------------------------------------------
@@ -303,7 +355,7 @@ class Forms extends BaseAdmin
             'form_attributes'        => '',
             'is_minimal'             => '',
             'has_captcha'            => '',
-            'notification_email'     => 'valid_emails',
+            'notifications'          => '',
             'thankyou_email'         => '',
             'thankyou_email_subject' => '',
             'thankyou_email_body'    => '',
@@ -316,7 +368,6 @@ class Forms extends BaseAdmin
         }
 
         $oFormValidation->set_message('required', lang('fv_required'));
-        $oFormValidation->set_message('valid_emails', lang('fv_valid_emails'));
 
         $bValidForm = $oFormValidation->run();
 
@@ -358,15 +409,24 @@ class Forms extends BaseAdmin
                 $oInput->post('has_captcha'),
                 $oInput->post('fields')
             ),
+            'notifications'          => $this->extractNotificationsFromPost(),
         ];
 
-        //  Format the emails
-        $aEmails = explode(',', $oInput->post('notification_email'));
-        $aEmails = array_map('trim', $aEmails);
-        $aEmails = array_unique($aEmails);
-        $aEmails = array_filter($aEmails);
+        /**
+         * For fieldNumber:{\d} values we need to generate a signature so we can
+         * fetch the item later as the notificatuons require an Id, and this isn't
+         * available yet
+         */
 
-        $aData['notification_email'] = json_encode($aEmails);
+        foreach ($aData['notifications'] as $aNotification) {
+            if (preg_match('/^fieldNumber:(\d)+$/', $aNotification->condition_field_id, $aMatches)) {
+                $aOption                           = getFromArray(
+                    $aMatches[1],
+                    $aData['form']['fields']
+                );
+                $aNotification->condition_field_id = $aOption['form_id'] . ':' . $aOption['order'];
+            }
+        }
 
         return $aData;
     }
