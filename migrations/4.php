@@ -25,6 +25,7 @@ class Migration4 extends Base
     public function execute()
     {
         $this->query('
+            DROP TABLE IF EXISTS `{{NAILS_DB_PREFIX}}custom_form_notification`;
             CREATE TABLE `{{NAILS_DB_PREFIX}}custom_form_notification` (
                 `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
                 `form_id` int(11) unsigned NOT NULL,
@@ -49,7 +50,43 @@ class Migration4 extends Base
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
         ');
 
-        //  @todo (Pablo - 2019-10-10) - Migrate column to new table
-        //  @todo (Pablo - 2019-10-10) - Drop column
+        $oStatement = $this->query('
+            SELECT
+                `form_id`,
+                `notification_email`,
+                `created`,
+                `created_by`,
+                `modified`,
+                `modified_by`
+            FROM `{{NAILS_DB_PREFIX}}custom_form`
+        ');
+
+        while ($oRow = $oStatement->fetch(\PDO::FETCH_OBJ)) {
+
+            $aEmails = json_decode($oRow->notification_email) ?? [];
+            foreach ($aEmails as $sEmail) {
+                if (empty($sEmail)) {
+                    continue;
+                }
+
+                $this
+                    ->prepare('
+                        INSERT INTO `{{NAILS_DB_PREFIX}}custom_form_notification`
+                            (`form_id`, `email`, `created`, `created_by`, `modified`, `modified_by`)
+                        VALUES
+                            (:form_id, :email, :created, :created_by, :modified, :modified_by);
+                    ')
+                    ->execute([
+                        ':form_id'     => $oRow->form_id,
+                        ':email'       => $sEmail,
+                        ':created'     => $oRow->created,
+                        ':created_by'  => $oRow->created_by,
+                        ':modified'    => $oRow->modified,
+                        ':modified_by' => $oRow->modified_by,
+                    ]);
+            }
+        }
+
+        $this->query('ALTER TABLE `{{NAILS_DB_PREFIX}}custom_form` DROP `notification_email`;');
     }
 }
