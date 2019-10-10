@@ -6,6 +6,11 @@ use Nails\Admin\Exception\DataExport\FailureException;
 use Nails\Admin\Interfaces\DataExport\Source;
 use Nails\Factory;
 
+/**
+ * Class Responses
+ *
+ * @package Nails\CustomForms\DataExport\Source
+ */
 class Responses implements Source
 {
     public function getLabel(): string
@@ -95,13 +100,13 @@ class Responses implements Source
         }
 
         return Factory::factory('DataExportSourceResponse', 'nails/module-admin')
-                  ->setLabel($this->getLabel())
-                  ->setFileName($this->getFileName())
-                  ->setFields(array_values(array_merge([
-                      'id'         => 'Response ID',
-                      'form_id'    => 'Form ID',
-                      'form_label' => 'Form Label',
-                  ], $aFields)))
-                  ->setData($aFormattedResults);
+            ->setLabel($this->getLabel())
+            ->setFileName($this->getFileName())
+            ->setFields(array_values(array_merge([
+                'id'         => 'Response ID',
+                'form_id'    => 'Form ID',
+                'form_label' => 'Form Label',
+            ], $aFields)))
+            ->setData($aFormattedResults);
     }
 }

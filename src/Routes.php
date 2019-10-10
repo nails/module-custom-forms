@@ -14,10 +14,16 @@ namespace Nails\CustomForms;
 
 use Nails\Common\Interfaces\RouteGenerator;
 
+/**
+ * Class Routes
+ *
+ * @package Nails\CustomForms
+ */
 class Routes implements RouteGenerator
 {
     /**
      * Returns an array of routes for this module
+     *
      * @return array
      */
     public static function generate()

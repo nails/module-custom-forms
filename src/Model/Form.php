@@ -29,27 +29,64 @@ use phpDocumentor\Reflection\Types\Boolean;
 class Form extends Base
 {
     /**
-     * Construct the model
+     * The table this model represents
+     *
+     * @var string
+     */
+    const TABLE = NAILS_DB_PREFIX . 'custom_form';
+
+    /**
+     * Whether to automatically set slugs or not
+     *
+     * @var bool
+     */
+    const AUTO_SET_SLUG = true;
+
+    /**
+     * Whether this model uses destructive delete or not
+     *
+     * @var bool
+     */
+    const DESTRUCTIVE_DELETE = false;
+
+    /**
+     * The name of the resource to use (as passed to \Nails\Factory::resource())
+     *
+     * @var string
+     */
+    const RESOURCE_NAME = 'Form';
+
+    /**
+     * The provider of the resource to use (as passed to \Nails\Factory::resource())
+     *
+     * @var string
+     */
+    const RESOURCE_PROVIDER = 'nails/module-custom-forms';
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Form constructor.
+     *
+     * @throws ModelException
      */
     public function __construct()
     {
         parent::__construct();
-        $this->table             = NAILS_DB_PREFIX . 'custom_form';
-        $this->destructiveDelete = false;
-        $this->tableAutoSetSlugs = true;
-        $this->addExpandableField([
-            'trigger'   => 'form',
-            'model'     => 'Form',
-            'provider'  => 'nails/module-form-builder',
-            'id_column' => 'form_id',
-        ]);
-        $this->addExpandableField([
-            'trigger'   => 'responses',
-            'type'      => self::EXPANDABLE_TYPE_MANY,
-            'model'     => 'Response',
-            'provider'  => 'nails/module-custom-forms',
-            'id_column' => 'form_id',
-        ]);
+        $this
+            ->addExpandableField([
+                'trigger'   => 'form',
+                'model'     => 'Form',
+                'provider'  => 'nails/module-form-builder',
+                'id_column' => 'form_id',
+            ])
+            ->addExpandableField([
+                'trigger'   => 'responses',
+                'type'      => self::EXPANDABLE_TYPE_MANY,
+                'model'     => 'Response',
+                'provider'  => 'nails/module-custom-forms',
+                'id_column' => 'form_id',
+            ]);
     }
 
     // --------------------------------------------------------------------------
