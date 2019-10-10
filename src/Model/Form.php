@@ -81,6 +81,13 @@ class Form extends Base
                 'id_column' => 'form_id',
             ])
             ->addExpandableField([
+                'trigger'   => 'notifications',
+                'type'      => self::EXPANDABLE_TYPE_MANY,
+                'model'     => 'FormNotification',
+                'provider'  => 'nails/module-custom-forms',
+                'id_column' => 'form_id',
+            ])
+            ->addExpandableField([
                 'trigger'   => 'responses',
                 'type'      => self::EXPANDABLE_TYPE_MANY,
                 'model'     => 'Response',
@@ -286,9 +293,8 @@ class Form extends Base
 
         // --------------------------------------------------------------------------
 
-        $oObj->header             = json_decode($oObj->header);
-        $oObj->footer             = json_decode($oObj->footer);
-        $oObj->notification_email = json_decode($oObj->notification_email);
+        $oObj->header = json_decode($oObj->header);
+        $oObj->footer = json_decode($oObj->footer);
 
         // --------------------------------------------------------------------------
 

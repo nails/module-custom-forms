@@ -33,6 +33,7 @@ class Forms extends Base
             $sFormSlug,
             [
                 'expand' => [
+                    'notifications',
                     [
                         'form',
                         [
@@ -87,6 +88,7 @@ class Forms extends Base
                             $mAnswer = !empty($_POST['field'][$oField->id]) ? $_POST['field'][$oField->id] : null;
 
                             $aData['answers'][$oField->id] = [
+                                'field_id' => $oField->id,
                                 'question' => $oField->label,
                                 'answer'   => null,
                             ];
@@ -131,24 +133,28 @@ class Forms extends Base
                 $aData['answers'] = json_encode(array_values($aData['answers']));
                 $oResponseModel   = Factory::model('Response', 'nails/module-custom-forms');
 
-                if (!$oResponseModel->create($aData)) {
+                $oResponse = $oResponseModel->create($aData, true);
+                if (empty($oResponse)) {
                     throw new \Nails\Common\Exception\NailsException(
                         'Failed to save your responses. ' . $oResponseModel->lastError()
                     );
                 }
 
                 //  Send notification email?
-                if (!empty($oForm->notification_email)) {
+                if (!empty($oForm->notifications->data)) {
+                    /** @var Email\Service\Emailer $oEmailer */
                     $oEmailer = Factory::service('Emailer', Email\Constants::MODULE_SLUG);
-                    foreach ($oForm->notification_email as $sEmail) {
-                        $oEmailer->send((object) [
-                            'to_email' => $sEmail,
-                            'type'     => 'custom_form_submitted',
-                            'data'     => (object) [
-                                'label'   => $oForm->label,
-                                'answers' => json_decode($aData['answers']),
-                            ],
-                        ]);
+                    foreach ($oForm->notifications->data as $oNotify) {
+                        if ($this->doSendNotification($oNotify, $oResponse)) {
+                            $oEmailer->send((object) [
+                                'to_email' => $oNotify->email,
+                                'type'     => 'custom_form_submitted',
+                                'data'     => (object) [
+                                    'label'   => $oForm->label,
+                                    'answers' => json_decode($aData['answers']),
+                                ],
+                            ]);
+                        }
                     }
                 }
 
@@ -194,5 +200,64 @@ class Forms extends Base
                 'forms/form',
                 $sFooterView,
             ]);
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Determines whetehr to send a notification
+     *
+     * @param \Nails\CustomForms\Resource\Form\Notification $oNotify
+     * @param \Nails\CustomForms\Resource\Response          $oResponse
+     *
+     * @return bool
+     * @throws \Nails\Common\Exception\FactoryException
+     */
+    private function doSendNotification(
+        \Nails\CustomForms\Resource\Form\Notification $oNotify,
+        \Nails\CustomForms\Resource\Response $oResponse
+    ) {
+        //  The easy ones
+        if (empty($oNotify->email)) {
+            return false;
+        } elseif (!valid_email($oNotify->email)) {
+            return false;
+        } elseif (!(bool) $oNotify->condition_enabled) {
+            return true;
+        }
+
+        /** @var \Nails\CustomForms\Model\Form\Notification $oModel */
+        $oModel = Factory::model('FormNotification', 'nails/module-custom-forms');
+
+        foreach ($oResponse->answers as $oAnswer) {
+
+            if (is_array($oAnswer->answer)) {
+                $sAnswerToTest = reset($oAnswer->answer);
+            } else {
+                $sAnswerToTest = $oAnswer->answer;
+            }
+
+            if ($oAnswer->field_id == $oNotify->condition_field_id) {
+                switch ($oNotify->condition_operator) {
+                    case $oModel::OPERATOR_IS:
+                        return strtolower($sAnswerToTest) == strtolower($oNotify->condition_value);
+                        break;
+                    case $oModel::OPERATOR_IS_NOT:
+                        return strtolower($sAnswerToTest) != strtolower($oNotify->condition_value);
+                        break;
+                    case $oModel::OPERATOR_GREATER_THAN:
+                        return $sAnswerToTest > $oNotify->condition_value;
+                        break;
+                    case $oModel::OPERATOR_LESS_THAN:
+                        return $sAnswerToTest < $oNotify->condition_value;
+                        break;
+                    case $oModel::OPERATOR_CONTAINS:
+                        return strpos(strtolower($sAnswerToTest), strtolower($oNotify->condition_value)) !== -1;
+                        break;
+                }
+            }
+        }
+
+        return false;
     }
 }

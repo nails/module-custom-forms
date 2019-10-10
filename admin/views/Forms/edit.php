@@ -97,11 +97,55 @@
             <div class="fieldset">
                 <?php
 
-                echo form_field([
-                    'key'         => 'notification_email',
-                    'label'       => 'Notify',
-                    'placeholder' => 'A comma separated list of email addresses to notify when a form is submitted.',
-                    'default'     => !empty($form->notification_email) ? implode(', ', $form->notification_email) : '',
+                echo form_field_dynamic_table([
+                    'key'     => 'notifications',
+                    'label'   => 'Notify',
+                    'id'      => 'custom-form-notifications',
+                    'default' => $aNotifications,
+                    'columns' => [
+                        'Email'     => form_email(
+                            'notifications[{{index}}][email]',
+                            '{{email}}',
+                            'placeholder="someone@example.com" class="js-notification-email"'
+                        ),
+                        'Condition' =>
+                            '<div class="row">' .
+                            '<div class="col-md-2">' .
+                            form_dropdown(
+                                'notifications[{{index}}][condition_enabled]',
+                                [
+                                    'Always',
+                                    'When',
+                                ],
+                                null,
+                                'class="js-notification-condition-enabled" data-dynamic-table-value="{{condition_enabled}}"'
+                            ) .
+                            '</div>' .
+                            '<div class="col-md-4">' .
+                            form_dropdown(
+                                'notifications[{{index}}][condition_field_id]',
+                                [],
+                                null,
+                                'class="js-notification-condition-field-id" data-dynamic-table-value="{{condition_field_id}}"'
+                            ) .
+                            '</div>' .
+                            '<div class="col-md-2">' .
+                            form_dropdown(
+                                'notifications[{{index}}][condition_operator]',
+                                $aNotificationOperators,
+                                null,
+                                'class="js-notification-condition-operator" data-dynamic-table-value="{{condition_operator}}"'
+                            ) .
+                            '</div>' .
+                            '<div class="col-md-4">' .
+                            form_input(
+                                'notifications[{{index}}][condition_value]',
+                                '{{condition_value}}',
+                                'class="js-notification-condition-value" placeholder="value"'
+                            ) .
+                            '</div>' .
+                            '</div>',
+                    ],
                 ]);
 
                 echo form_field_boolean([
