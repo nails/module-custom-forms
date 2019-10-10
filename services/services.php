@@ -17,4 +17,20 @@ return [
             }
         },
     ],
+    'resources' => [
+        'Form'             => function ($mObj): \Nails\CustomForms\Resource\Form {
+            if (class_exists('\App\CustomForms\Resource\Form')) {
+                return new \App\CustomForms\Resource\Form($mObj);
+            } else {
+                return new \Nails\CustomForms\Resource\Form($mObj);
+            }
+        },
+        'Response'         => function ($mObj): \Nails\CustomForms\Resource\Response {
+            if (class_exists('\App\CustomForms\Resource\Response')) {
+                return new \App\CustomForms\Resource\Response($mObj);
+            } else {
+                return new \Nails\CustomForms\Resource\Response($mObj);
+            }
+        },
+    ],
 ];
