@@ -88,7 +88,10 @@ class Forms extends Base
                             $mAnswer = !empty($_POST['field'][$oField->id]) ? $_POST['field'][$oField->id] : null;
 
                             $aData['answers'][$oField->id] = [
-                                'field_id' => $oField->id,
+                                'field'    => (object) [
+                                    'id'   => $oField->id,
+                                    'type' => get_class($oFieldType),
+                                ],
                                 'question' => $oField->label,
                                 'answer'   => null,
                             ];
@@ -237,7 +240,7 @@ class Forms extends Base
                 $sAnswerToTest = $oAnswer->answer;
             }
 
-            if ($oAnswer->field_id == $oNotify->condition_field_id) {
+            if ($oAnswer->field->id == $oNotify->condition_field_id) {
                 switch ($oNotify->condition_operator) {
                     case $oModel::OPERATOR_IS:
                         return strtolower($sAnswerToTest) == strtolower($oNotify->condition_value);

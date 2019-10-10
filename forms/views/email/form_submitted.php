@@ -4,35 +4,44 @@
 <hr />
 <table class="default-style">
     <tbody>
-    <?php
+        <?php
 
-    foreach ($emailObject->data->answers as $oAnswer) {
+        foreach ($emailObject->data->answers as $oAnswer) {
 
-        ?>
-        <tr>
-            <td class="left-header-cell">
-                <?=$oAnswer->question?>
-            </td>
-            <td>
-                <?php
+            ?>
+            <tr>
+                <td class="left-header-cell">
+                    <?=$oAnswer->question?>
+                </td>
+                <td>
+                    <?php
 
-                if (is_array($oAnswer->answer)) {
+                    if (is_array($oAnswer->answer)) {
 
-                    foreach ($oAnswer->answer as $sAnswer) {
-                        echo $sAnswer;
+                        foreach ($oAnswer->answer as $sAnswer) {
+                            echo $sAnswer;
+                        }
+
+                    } elseif (!empty($oAnswer->field->type)) {
+
+                        $sClass = $oAnswer->field->type;
+                        $oField = new $sClass();
+
+                        echo $oField->extractText(
+                            $oAnswer->answer,
+                            $oAnswer->answer
+                        );
+
+                    } else {
+                        echo $oAnswer->answer;
                     }
 
-                } else {
+                    ?>
+                </td>
+            </tr>
+            <?php
+        }
 
-                    echo $oAnswer->answer;
-                }
-
-                ?>
-            </td>
-        </tr>
-        <?php
-    }
-
-    ?>
+        ?>
     </tbody>
 </table>
