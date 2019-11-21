@@ -16,7 +16,6 @@ use Nails\Admin\Factory\Nav;
 use Nails\Admin\Helper;
 use Nails\Auth;
 use Nails\Captcha;
-use Nails\Captcha\Service\Captcha;
 use Nails\Common\Exception\FactoryException;
 use Nails\Common\Exception\ModelException;
 use Nails\Common\Service\FormValidation;
@@ -273,7 +272,7 @@ class Forms extends BaseAdmin
         Factory::helper('formbuilder', 'nails/module-form-builder');
         adminLoadFormBuilderAssets('#custom-form-fields');
 
-        /** @var Captcha $oCaptcha */
+        /** @var Captcha\Service\Captcha $oCaptcha */
         $oCaptcha = Factory::service('Captcha', Captcha\Constants::MODULE_SLUG);
 
         $this->data['bIsCaptchaEnabled'] = $oCaptcha->isEnabled();
