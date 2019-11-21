@@ -11,10 +11,14 @@
  */
 
 use App\Controller\Base;
+use Nails\Captcha;
 use Nails\Common\Exception\ValidationException;
 use Nails\Email;
 use Nails\Factory;
 
+/**
+ * Class Forms
+ */
 class Forms extends Base
 {
     public function index()
@@ -23,7 +27,7 @@ class Forms extends Base
         $oInput            = Factory::service('Input');
         $oFormModel        = Factory::model('Form', 'nails/module-custom-forms');
         $oFieldTypeService = Factory::service('FieldType', 'nails/module-form-builder');
-        $oCaptcha          = Factory::service('Captcha', 'nails/module-captcha');
+        $oCaptcha          = Factory::service('Captcha', Captcha\Constants::MODULE_SLUG);
 
         Factory::helper('formbuilder', 'nails/module-form-builder');
 

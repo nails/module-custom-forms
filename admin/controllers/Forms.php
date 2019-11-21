@@ -15,6 +15,7 @@ namespace Nails\Admin\Forms;
 use Nails\Admin\Factory\Nav;
 use Nails\Admin\Helper;
 use Nails\Auth;
+use Nails\Captcha;
 use Nails\Captcha\Service\Captcha;
 use Nails\Common\Exception\FactoryException;
 use Nails\Common\Exception\ModelException;
@@ -273,7 +274,7 @@ class Forms extends BaseAdmin
         adminLoadFormBuilderAssets('#custom-form-fields');
 
         /** @var Captcha $oCaptcha */
-        $oCaptcha = Factory::service('Captcha', 'nails/module-captcha');
+        $oCaptcha = Factory::service('Captcha', Captcha\Constants::MODULE_SLUG);
 
         $this->data['bIsCaptchaEnabled'] = $oCaptcha->isEnabled();
 
