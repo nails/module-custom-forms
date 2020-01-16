@@ -118,9 +118,7 @@ class FormEdit {
             this.dom.thankyou.$options.hide();
         }
 
-        if (typeof window._nails === 'object') {
-            window._nails.addStripes();
-        }
+        window.NAILS.ADMIN.refreshUi();
     }
 
     // --------------------------------------------------------------------------
