@@ -14,12 +14,12 @@ namespace Nails\Admin\Forms;
 
 use Nails\Admin\Factory\Nav;
 use Nails\Admin\Helper;
-use Nails\Auth;
 use Nails\Captcha;
 use Nails\Common\Exception\FactoryException;
 use Nails\Common\Exception\ModelException;
 use Nails\Common\Service\FormValidation;
 use Nails\Common\Service\Input;
+use Nails\Common\Service\Session;
 use Nails\Common\Service\Uri;
 use Nails\CustomForms\Controller\BaseAdmin;
 use Nails\CustomForms\Model\Form;
@@ -170,8 +170,8 @@ class Forms extends BaseAdmin
 
                 if ($oFormModel->create($this->getPostObject())) {
 
-                    /** @var Auth\Service\Session $oSession */
-                    $oSession = Factory::service('Session', Auth\Constants::MODULE_SLUG);
+                    /** @var Session $oSession */
+                    $oSession = Factory::service('Session');
                     $oSession->setFlashData('success', 'Form created successfully.');
                     redirect('admin/forms/forms');
 
@@ -240,7 +240,8 @@ class Forms extends BaseAdmin
             if ($this->runFormValidation()) {
                 if ($oFormModel->update($iFormId, $this->getPostObject())) {
 
-                    $oSession = Factory::service('Session', Auth\Constants::MODULE_SLUG);
+                    /** @var Session $oSession */
+                    $oSession = Factory::service('Session');
                     $oSession->setFlashData('success', 'Form updated successfully.');
                     redirect('admin/forms/forms');
 
@@ -462,8 +463,8 @@ class Forms extends BaseAdmin
             $sMessage = 'Custom form failed to delete. ' . $oFormModel->lastError();
         }
 
-        /** @var Auth\Service\Session $oSession */
-        $oSession = Factory::service('Session', Auth\Constants::MODULE_SLUG);
+        /** @var Session $oSession */
+        $oSession = Factory::service('Session');
         $oSession->setFlashData($sStatus, $sMessage);
 
         redirect($sReturn);
@@ -608,8 +609,8 @@ class Forms extends BaseAdmin
      */
     protected function responseDelete($oResponse, $oForm)
     {
-        /** @var Auth\Service\Session $oSession */
-        $oSession = Factory::service('Session', Auth\Constants::MODULE_SLUG);
+        /** @var Session $oSession */
+        $oSession = Factory::service('Session');
         /** @var Response $oModel */
         $oModel = Factory::model('Response', 'nails/module-custom-forms');
 
@@ -656,8 +657,8 @@ class Forms extends BaseAdmin
             $sRedirectUrl = $oInput->get('return') ? $oInput->get('return') : 'admin/forms/forms/index';
         }
 
-        /** @var Auth\Service\Session $oSession */
-        $oSession = Factory::service('Session', Auth\Constants::MODULE_SLUG);
+        /** @var Session $oSession */
+        $oSession = Factory::service('Session');
         $oSession->setFlashData($sStatus, $sMessage);
 
         redirect($sRedirectUrl);
