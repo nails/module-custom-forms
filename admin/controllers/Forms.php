@@ -105,8 +105,8 @@ class Forms extends BaseAdmin
         $sTableAlias = $oFormModel->getTableAlias();
         $iPage       = (int) $oInput->get('page') ? $oInput->get('page') : 0;
         $iPerPage    = (int) $oInput->get('perPage') ? $oInput->get('perPage') : 50;
-        $sSortOn     = $oInput->get('sortOn') ? $oInput->get('sortOn') : $sTableAlias . '.label';
-        $sSortOrder  = $oInput->get('sortOrder') ? $oInput->get('sortOrder') : 'asc';
+        $sSortOn     = $oInput->get('sortOn') ? $oInput->get('sortOn') : $sTableAlias . '.modified';
+        $sSortOrder  = $oInput->get('sortOrder') ? $oInput->get('sortOrder') : 'desc';
         $sKeywords   = $oInput->get('keywords') ? $oInput->get('keywords') : '';
 
         // --------------------------------------------------------------------------
