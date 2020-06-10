@@ -306,7 +306,7 @@ class Forms extends BaseAdmin
             return (object) [
                 'id'                 => (int) getFromArray('id', $aItem) ?: null,
                 'email'              => getFromArray('email', $aItem),
-                'condition_enabled'  => getFromArray('condition_enabled', $aItem),
+                'condition_enabled'  => (int) getFromArray('condition_enabled', $aItem),
                 'condition_field_id' => getFromArray('condition_field_id', $aItem),
                 'condition_operator' => getFromArray('condition_operator', $aItem),
                 'condition_value'    => getFromArray('condition_value', $aItem),
@@ -323,7 +323,7 @@ class Forms extends BaseAdmin
             return (object) [
                 'id'                 => getFromArray('id', $aItem),
                 'email'              => getFromArray('email', $aItem),
-                'condition_enabled'  => getFromArray('condition_enabled', $aItem),
+                'condition_enabled'  => (int) getFromArray('condition_enabled', $aItem),
                 'condition_field_id' => getFromArray('condition_field_id', $aItem),
                 'condition_operator' => getFromArray('condition_operator', $aItem),
                 'condition_value'    => getFromArray('condition_value', $aItem),
