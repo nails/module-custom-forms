@@ -167,13 +167,14 @@ class Forms extends BaseAdmin
 
                 /** @var Form $oFormModel */
                 $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
+                $iFormId    = $oFormModel->create($this->getPostObject());
 
-                if ($oFormModel->create($this->getPostObject())) {
+                if ($iFormId) {
 
                     /** @var Session $oSession */
                     $oSession = Factory::service('Session');
                     $oSession->setFlashData('success', 'Form created successfully.');
-                    redirect('admin/forms/forms');
+                    redirect('admin/forms/forms/edit/' . $iFormId);
 
                 } else {
                     $this->data['error'] = 'Failed to create form.' . $oFormModel->lastError();
@@ -243,7 +244,7 @@ class Forms extends BaseAdmin
                     /** @var Session $oSession */
                     $oSession = Factory::service('Session');
                     $oSession->setFlashData('success', 'Form updated successfully.');
-                    redirect('admin/forms/forms');
+                    redirect('admin/forms/forms/edit/' . $this->data['form']->id);
 
                 } else {
                     $this->data['error'] = 'Failed to update form. ' . $oFormModel->lastError();
