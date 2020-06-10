@@ -11,13 +11,6 @@ class FormEdit {
 
         if (this.dom.$container.length) {
 
-            //  Thank you elements
-            this.dom.thankyou = {
-                $container: $('#field-do-send-thankyou'),
-                $checked: $('#field-do-send-thankyou input[type=checkbox]'),
-                $options: $('#send-thankyou-options')
-            }
-
             //  Field elements
             this.dom.fields = {
                 $container: $('#custom-form-fields')
@@ -39,11 +32,6 @@ class FormEdit {
      * Binds events on load
      */
     bindEvents() {
-
-        this.dom.thankyou.$container
-            .on('toggle', (event, toggled) => {
-                this.fieldDoSendThankYou(toggled);
-            });
 
         this.dom.fields.$container
             .on('click', '.js-remove-field', (e) => {
@@ -81,8 +69,6 @@ class FormEdit {
      * Sets initial states
      */
     initialStates() {
-        //  Initial state of thank you form
-        this.fieldDoSendThankYou(this.dom.thankyou.$checked.is(':checked'));
 
         //  Initial state of conditionsls
         this.dom.notification.$container
@@ -103,22 +89,6 @@ class FormEdit {
                     $select.trigger('change');
                 }
             });
-    }
-
-    // --------------------------------------------------------------------------
-
-    /**
-     * Toggles the "do send thank you" form
-     * @param toggled
-     */
-    fieldDoSendThankYou(toggled) {
-        if (toggled) {
-            this.dom.thankyou.$options.show();
-        } else {
-            this.dom.thankyou.$options.hide();
-        }
-
-        window.NAILS.ADMIN.refreshUi();
     }
 
     // --------------------------------------------------------------------------

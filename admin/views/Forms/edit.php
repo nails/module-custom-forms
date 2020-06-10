@@ -152,29 +152,35 @@
                     'key'     => 'thankyou_email',
                     'label'   => 'Email',
                     'info'    => 'Send the user a thank you email (will only be sent if logged in, and will be sent to the logged in user)',
-                    'id'      => 'do-send-thankyou',
                     'default' => !empty($form->thankyou_email->send),
+                    'data'    => [
+                        'revealer' => 'thankyou-email',
+                    ],
                 ]);
 
-                ?>
-                <div id="send-thankyou-options">
-                    <?php
-                    echo form_field([
-                        'key'         => 'thankyou_email_subject',
-                        'label'       => 'Subject',
-                        'placeholder' => 'Define the subject of the thank you email',
-                        'default'     => !empty($form->thankyou_email->subject) ? $form->thankyou_email->subject : '',
-                    ]);
+                echo form_field([
+                    'key'         => 'thankyou_email_subject',
+                    'label'       => 'Subject',
+                    'placeholder' => 'Define the subject of the thank you email',
+                    'default'     => !empty($form->thankyou_email->subject) ? $form->thankyou_email->subject : '',
+                    'data'        => [
+                        'revealer'  => 'thankyou-email',
+                        'reveal-on' => true,
+                    ],
+                ]);
 
-                    echo form_field_wysiwyg([
-                        'key'         => 'thankyou_email_body',
-                        'label'       => 'Body',
-                        'placeholder' => 'Define the body of the thank you email',
-                        'class'       => 'wysiwyg-basic',
-                        'default'     => !empty($form->thankyou_email->body) ? $form->thankyou_email->body : '',
-                    ]);
-                    ?>
-                </div>
+                echo form_field_wysiwyg([
+                    'key'         => 'thankyou_email_body',
+                    'label'       => 'Body',
+                    'placeholder' => 'Define the body of the thank you email',
+                    'class'       => 'wysiwyg-basic',
+                    'default'     => !empty($form->thankyou_email->body) ? $form->thankyou_email->body : '',
+                    'data'        => [
+                        'revealer'  => 'thankyou-email',
+                        'reveal-on' => true,
+                    ],
+                ]);
+                ?>
             </div>
         </div>
         <div class="tab-page thankyou">
