@@ -88,8 +88,11 @@
                 <?php
             }
 
-            $aFields = !empty($form->form->fields->data) ? $form->form->fields->data : [];
-            echo adminLoadFormBuilderView('custom-form-fields', 'fields', $aFields);
+            echo adminLoadFormBuilderView(
+                'custom-form-fields',
+                'fields',
+                $form->form->fields->data ?? []
+            );
 
             ?>
         </div>

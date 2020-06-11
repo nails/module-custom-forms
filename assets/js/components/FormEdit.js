@@ -131,7 +131,7 @@ class FormEdit {
 
                 let $select = $(element);
                 let $row = $select.closest('tr');
-                let currentValue = $select.val();
+                let currentValue = $select.val() || $select.data('dynamic-table-value');
 
                 $select.find('option').remove()
                 $.each(fields, (index, option) => {
