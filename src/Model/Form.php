@@ -106,7 +106,7 @@ class Form extends Base
      *
      * @return mixed
      */
-    public function create(array $aData = [], $bReturnObject = false): bool
+    public function create(array $aData = [], $bReturnObject = false)
     {
         //  Extract the form
         $aForm = array_key_exists('form', $aData) ? $aData['form'] : null;
