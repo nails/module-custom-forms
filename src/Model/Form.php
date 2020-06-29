@@ -196,7 +196,7 @@ class Form extends Base
             unset($oBasicForm->modified);
             unset($oBasicForm->modified_by);
 
-            $oBasicForm->slug    = $this->generateSlug($oBasicForm->label);
+            $oBasicForm->slug    = $this->generateSlug((array) $oBasicForm);
             $oBasicForm->form_id = $iNewFormId;
             $oBasicForm->label   .= ' - Copy (' . toUserDatetime($oNow->format('Y-m-d H:i:s')) . ')';
 
