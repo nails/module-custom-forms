@@ -23,11 +23,16 @@ class Forms extends Base
 {
     public function index()
     {
-        $oUri              = Factory::service('Uri');
-        $oInput            = Factory::service('Input');
-        $oFormModel        = Factory::model('Form', 'nails/module-custom-forms');
+        /** @var \Nails\Common\Service\Uri $oUri */
+        $oUri = Factory::service('Uri');
+        /** @var \Nails\Common\Service\Input $oInput */
+        $oInput = Factory::service('Input');
+        /** @var \Nails\CustomForms\Model\Form $oFormModel */
+        $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
+        /** @var \Nails\FormBuilder\Service\FieldType $oFieldTypeService */
         $oFieldTypeService = Factory::service('FieldType', 'nails/module-form-builder');
-        $oCaptcha          = Factory::service('Captcha', Captcha\Constants::MODULE_SLUG);
+        /** @var Captcha\Service\Captcha $oCaptcha */
+        $oCaptcha = Factory::service('Captcha', Captcha\Constants::MODULE_SLUG);
 
         Factory::helper('formbuilder', 'nails/module-form-builder');
 
@@ -138,7 +143,8 @@ class Forms extends Base
 
                 //  Encode the answers into a string
                 $aData['answers'] = json_encode(array_values($aData['answers']));
-                $oResponseModel   = Factory::model('Response', 'nails/module-custom-forms');
+                /** @var \Nails\CustomForms\Model\Response $oResponseModel */
+                $oResponseModel = Factory::model('Response', 'nails/module-custom-forms');
 
                 $oResponse = $oResponseModel->create($aData, true);
                 if (empty($oResponse)) {
@@ -170,6 +176,7 @@ class Forms extends Base
                 $sBody    = $oForm->thankyou_email->body;
 
                 if (isLoggedIn() && $oForm->thankyou_email->send && !empty($sSubject) && !empty($sBody)) {
+                    /** @var Email\Service\Emailer $oEmailer */
                     $oEmailer = Factory::service('Emailer', Email\Constants::MODULE_SLUG);
                     $oEmailer->send((object) [
                         'to_id' => activeUser('id'),
@@ -180,6 +187,8 @@ class Forms extends Base
                         ],
                     ]);
                 }
+
+                $this->oMetaData->setTitles([$oForm->thankyou_page->title]);
 
                 //  Show the thanks page
                 return Factory::service('View')

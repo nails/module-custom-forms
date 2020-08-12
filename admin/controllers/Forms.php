@@ -17,6 +17,7 @@ use Nails\Admin\Helper;
 use Nails\Captcha;
 use Nails\Common\Exception\FactoryException;
 use Nails\Common\Exception\ModelException;
+use Nails\Common\Exception\ValidationException;
 use Nails\Common\Service\FormValidation;
 use Nails\Common\Service\Input;
 use Nails\Common\Service\Session;
@@ -347,31 +348,52 @@ class Forms extends BaseAdmin
         /** @var Input $oInput */
         $oInput = Factory::service('Input');
 
-        //  Define the rules
-        $aRules = [
-            'label'                  => 'required',
-            'header'                 => '',
-            'footer'                 => '',
-            'cta_label'              => '',
-            'cta_attributes'         => '',
-            'form_attributes'        => '',
-            'is_minimal'             => '',
-            'has_captcha'            => '',
-            'notifications'          => '',
-            'thankyou_email'         => '',
-            'thankyou_email_subject' => '',
-            'thankyou_email_body'    => '',
-            'thankyou_page_title'    => 'required',
-            'thankyou_page_body'     => '',
-        ];
+        try {
 
-        foreach ($aRules as $sKey => $sRules) {
-            $oFormValidation->set_rules($sKey, '', $sRules);
+            $oFormValidation
+                ->buildValidator([
+                    'label'                  => [FormValidation::RULE_REQUIRED],
+                    'header'                 => [''],
+                    'footer'                 => [''],
+                    'cta_label'              => [''],
+                    'cta_attributes'         => [''],
+                    'form_attributes'        => [''],
+                    'is_minimal'             => [''],
+                    'has_captcha'            => [''],
+                    'notifications'          => [''],
+                    'thankyou_email'         => [''],
+                    'thankyou_email_subject' => [''],
+                    'thankyou_email_body'    => [''],
+                    'thankyou_page_title'    => [
+                        function ($sTitle) use ($oInput) {
+                            $sTitle = trim($sTitle);
+                            $mBody  = json_decode($oInput->post('thankyou_page_body'));
+                            if (empty($sTitle) && empty($mBody)) {
+                                throw new ValidationException(
+                                    'Thank you page title is required if no body is set.'
+                                );
+                            }
+                        },
+                    ],
+                    'thankyou_page_body'     => [
+                        function ($mBody) use ($oInput) {
+                            $sTitle = trim($oInput->post('thankyou_page_title'));
+                            $mBody  = json_decode($oInput->post('thankyou_page_body'));
+                            if (empty($mBody) && empty($sTitle)) {
+                                throw new ValidationException(
+                                    'Thank you page body is required if no title is set.'
+                                );
+                            }
+                        },
+                    ],
+                ])
+                ->run();
+
+            $bValidForm = true;
+
+        } catch (ValidationException $e) {
+            $bValidForm = false;
         }
-
-        $oFormValidation->set_message('required', lang('fv_required'));
-
-        $bValidForm = $oFormValidation->run();
 
         //  Validate fields
         Factory::helper('formbuilder', 'nails/module-form-builder');
