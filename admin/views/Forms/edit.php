@@ -194,7 +194,7 @@
                     'key'         => 'thankyou_page_title',
                     'label'       => 'Title',
                     'placeholder' => 'Define the title of the thank you page',
-                    'required'    => true,
+                    'info'        => 'Title is required if no body is defined.',
                     'default'     => !empty($form->thankyou_page->title) ? $form->thankyou_page->title : '',
                 ]);
 
@@ -202,6 +202,7 @@
                     'key'         => 'thankyou_page_body',
                     'label'       => 'Body',
                     'placeholder' => 'Define the body of the thank you page',
+                    'info'        => 'Body is required if no title is defined.',
                     'default'     => !empty($form->thankyou_page->body) ? $form->thankyou_page->body : '',
                 ]);
 
