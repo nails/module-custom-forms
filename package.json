@@ -19,8 +19,5 @@
         "build": "webpack -p",
         "build-dev": "webpack",
         "watch": "webpack --watch"
-    },
-    "resolutions": {
-        "terser": "3.14.1"
     }
 }
