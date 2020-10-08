@@ -18,6 +18,7 @@ use Nails\Common\Exception\NailsException;
 use Nails\Common\Exception\ValidationException;
 use Nails\Common\Model\Base;
 use Nails\Common\Service\Database;
+use Nails\CustomForms\Constants;
 use Nails\Factory;
 use phpDocumentor\Reflection\Types\Boolean;
 
@@ -61,7 +62,7 @@ class Form extends Base
      *
      * @var string
      */
-    const RESOURCE_PROVIDER = 'nails/module-custom-forms';
+    const RESOURCE_PROVIDER = Constants::MODULE_SLUG;
 
     // --------------------------------------------------------------------------
 
@@ -84,14 +85,14 @@ class Form extends Base
                 'trigger'   => 'notifications',
                 'type'      => self::EXPANDABLE_TYPE_MANY,
                 'model'     => 'FormNotification',
-                'provider'  => 'nails/module-custom-forms',
+                'provider'  => Constants::MODULE_SLUG,
                 'id_column' => 'form_id',
             ])
             ->addExpandableField([
                 'trigger'   => 'responses',
                 'type'      => self::EXPANDABLE_TYPE_MANY,
                 'model'     => 'Response',
-                'provider'  => 'nails/module-custom-forms',
+                'provider'  => Constants::MODULE_SLUG,
                 'id_column' => 'form_id',
             ]);
     }

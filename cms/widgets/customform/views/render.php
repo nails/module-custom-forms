@@ -10,6 +10,7 @@
  * @link
  */
 
+use Nails\CustomForms\Constants;
 use Nails\Factory;
 
 $bShowWidget   = true;
@@ -21,7 +22,7 @@ $bCaptchaError = !empty($captchaError);
 
 if (!empty($iFormId)) {
 
-    $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
+    $oFormModel = Factory::model('Form', Constants::MODULE_SLUG);
     $oForm      = $oFormModel->getById(
         $iFormId,
         [

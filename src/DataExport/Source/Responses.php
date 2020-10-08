@@ -4,6 +4,7 @@ namespace Nails\CustomForms\DataExport\Source;
 
 use Nails\Admin\Exception\DataExport\FailureException;
 use Nails\Admin\Interfaces\DataExport\Source;
+use Nails\CustomForms\Constants;
 use Nails\Factory;
 
 /**
@@ -36,7 +37,7 @@ class Responses implements Source
 
     public function getOptions(): array
     {
-        $oModel = Factory::model('Form', 'nails/module-custom-forms');
+        $oModel = Factory::model('Form', Constants::MODULE_SLUG);
         return [
             [
                 'key'     => 'form_id',
@@ -59,8 +60,8 @@ class Responses implements Source
 
     public function execute($aOptions = [])
     {
-        $oFormModel     = Factory::model('Form', 'nails/module-custom-forms');
-        $oResponseModel = Factory::model('Response', 'nails/module-custom-forms');
+        $oFormModel     = Factory::model('Form', Constants::MODULE_SLUG);
+        $oResponseModel = Factory::model('Response', Constants::MODULE_SLUG);
 
         $iFormId = (int) getFromArray('form_id', $aOptions) ?: null;
         $oForm   = $oFormModel->getById($iFormId);

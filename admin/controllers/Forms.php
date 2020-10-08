@@ -22,6 +22,7 @@ use Nails\Common\Service\FormValidation;
 use Nails\Common\Service\Input;
 use Nails\Common\Service\Session;
 use Nails\Common\Service\Uri;
+use Nails\CustomForms\Constants;
 use Nails\CustomForms\Controller\BaseAdmin;
 use Nails\CustomForms\Model\Form;
 use Nails\CustomForms\Model\Response;
@@ -93,7 +94,7 @@ class Forms extends BaseAdmin
         /** @var Input $oInput */
         $oInput = Factory::service('Input');
         /** @var Form $oFormModel */
-        $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
+        $oFormModel = Factory::model('Form', Constants::MODULE_SLUG);
 
         // --------------------------------------------------------------------------
 
@@ -167,7 +168,7 @@ class Forms extends BaseAdmin
             if ($this->runFormValidation()) {
 
                 /** @var Form $oFormModel */
-                $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
+                $oFormModel = Factory::model('Form', Constants::MODULE_SLUG);
                 $iFormId    = $oFormModel->create($this->getPostObject());
 
                 if ($iFormId) {
@@ -211,7 +212,7 @@ class Forms extends BaseAdmin
         /** @var Uri $oUri */
         $oUri = Factory::service('Uri');
         /** @var Form $oFormModel */
-        $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
+        $oFormModel = Factory::model('Form', Constants::MODULE_SLUG);
 
         $iFormId            = (int) $oUri->segment(5);
         $this->data['form'] = $oFormModel->getById(
@@ -281,7 +282,7 @@ class Forms extends BaseAdmin
         $this->data['bIsCaptchaEnabled'] = $oCaptcha->isEnabled();
 
         /** @var Form\Notification $oFormNotificationModel */
-        $oFormNotificationModel               = Factory::model('FormNotification', 'nails/module-custom-forms');
+        $oFormNotificationModel               = Factory::model('FormNotification', Constants::MODULE_SLUG);
         $this->data['aNotificationOperators'] = $oFormNotificationModel->getOperators();
 
         /** @var Input $oInput */
@@ -473,7 +474,7 @@ class Forms extends BaseAdmin
         /** @var Uri $oUri */
         $oUri = Factory::service('Uri');
         /** @var Form $oFormModel */
-        $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
+        $oFormModel = Factory::model('Form', Constants::MODULE_SLUG);
 
         $iFormId = (int) $oUri->segment(5);
         $sReturn = $oInput->get('return') ? $oInput->get('return') : 'admin/forms/forms/index';
@@ -510,7 +511,7 @@ class Forms extends BaseAdmin
         /** @var Uri $oUri */
         $oUri = Factory::service('Uri');
         /** @var Form $oFormModel */
-        $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
+        $oFormModel = Factory::model('Form', Constants::MODULE_SLUG);
 
         $iFormId = (int) $oUri->segment(5);
         $oForm   = $oFormModel->getById($iFormId, ['expand' => ['responses']]);
@@ -529,7 +530,7 @@ class Forms extends BaseAdmin
         } else {
 
             /** @var Response $oResponseModel */
-            $oResponseModel = Factory::model('Response', 'nails/module-custom-forms');
+            $oResponseModel = Factory::model('Response', Constants::MODULE_SLUG);
             $oResponse      = $oResponseModel->getById($iResponseId);
 
             if (empty($oResponse)) {
@@ -563,7 +564,7 @@ class Forms extends BaseAdmin
     protected function responsesList($oForm)
     {
         /** @var Response $oResponseModel */
-        $oResponseModel = Factory::model('Response', 'nails/module-custom-forms');
+        $oResponseModel = Factory::model('Response', Constants::MODULE_SLUG);
 
         $this->data['page']->title = 'Responses for form: ' . $oForm->label;
         $this->data['form']        = $oForm;
@@ -635,7 +636,7 @@ class Forms extends BaseAdmin
         /** @var Session $oSession */
         $oSession = Factory::service('Session');
         /** @var Response $oModel */
-        $oModel = Factory::model('Response', 'nails/module-custom-forms');
+        $oModel = Factory::model('Response', Constants::MODULE_SLUG);
 
         if ($oModel->delete($oResponse->id)) {
             $oSession->setFlashData('success', 'Response deleted successfully!');
@@ -665,7 +666,7 @@ class Forms extends BaseAdmin
         /** @var Uri $oUri */
         $oUri = Factory::service('Uri');
         /** @var Form $oFormModel */
-        $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
+        $oFormModel = Factory::model('Form', Constants::MODULE_SLUG);
 
         try {
 

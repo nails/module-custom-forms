@@ -15,6 +15,7 @@ namespace Nails\CustomForms\Model\Form;
 use Nails\Common\Exception\FactoryException;
 use Nails\Common\Exception\ModelException;
 use Nails\Common\Model\Base;
+use Nails\CustomForms\Constants;
 use Nails\Factory;
 use Nails\FormBuilder\Model\FormField;
 
@@ -44,7 +45,7 @@ class Notification extends Base
      *
      * @var string
      */
-    const RESOURCE_PROVIDER = 'nails/module-custom-forms';
+    const RESOURCE_PROVIDER = Constants::MODULE_SLUG;
 
     /**
      * The various operators

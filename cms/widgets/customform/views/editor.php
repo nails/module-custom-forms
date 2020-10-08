@@ -11,8 +11,9 @@
  */
 
 use Nails\Factory;
+use Nails\CustomForms\Constants;
 
-$oFormModel = Factory::model('Form', 'nails/module-custom-forms');
+$oFormModel = Factory::model('Form', Constants::MODULE_SLUG);
 $aFormsFlat = $oFormModel->getAllFlat();
 
 if (empty($aFormsFlat)) {

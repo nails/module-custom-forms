@@ -14,6 +14,7 @@ namespace Nails\CustomForms\Model;
 
 use Nails\Common\Exception\ModelException;
 use Nails\Common\Model\Base;
+use Nails\CustomForms\Constants;
 
 /**
  * Class Response
@@ -48,7 +49,7 @@ class Response extends Base
      *
      * @var string
      */
-    const RESOURCE_PROVIDER = 'nails/module-custom-forms';
+    const RESOURCE_PROVIDER = Constants::MODULE_SLUG;
 
     // --------------------------------------------------------------------------
 
@@ -66,7 +67,7 @@ class Response extends Base
             ->addExpandableField([
                 'trigger'   => 'form',
                 'model'     => 'Form',
-                'provider'  => 'nails/module-custom-forms',
+                'provider'  => Constants::MODULE_SLUG,
                 'id_column' => 'form_id',
             ]);
     }

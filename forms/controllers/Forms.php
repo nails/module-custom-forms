@@ -13,6 +13,7 @@
 use App\Controller\Base;
 use Nails\Captcha;
 use Nails\Common\Exception\ValidationException;
+use Nails\CustomForms\Constants;
 use Nails\Email;
 use Nails\Factory;
 
@@ -28,7 +29,7 @@ class Forms extends Base
         /** @var \Nails\Common\Service\Input $oInput */
         $oInput = Factory::service('Input');
         /** @var \Nails\CustomForms\Model\Form $oFormModel */
-        $oFormModel = Factory::model('Form', 'nails/module-custom-forms');
+        $oFormModel = Factory::model('Form', Constants::MODULE_SLUG);
         /** @var \Nails\FormBuilder\Service\FieldType $oFieldTypeService */
         $oFieldTypeService = Factory::service('FieldType', 'nails/module-form-builder');
         /** @var Captcha\Service\Captcha $oCaptcha */
@@ -144,7 +145,7 @@ class Forms extends Base
                 //  Encode the answers into a string
                 $aData['answers'] = json_encode(array_values($aData['answers']));
                 /** @var \Nails\CustomForms\Model\Response $oResponseModel */
-                $oResponseModel = Factory::model('Response', 'nails/module-custom-forms');
+                $oResponseModel = Factory::model('Response', Constants::MODULE_SLUG);
 
                 $oResponse = $oResponseModel->create($aData, true);
                 if (empty($oResponse)) {
@@ -157,7 +158,7 @@ class Forms extends Base
                 if (!empty($oForm->notifications->data)) {
 
                     /** @var \Nails\CustomForms\Factory\Email\Form\Submitted $oEmail */
-                    $oEmail = Factory::factory('EmailFormSubmitted', 'nails/module-custom-forms');
+                    $oEmail = Factory::factory('EmailFormSubmitted', Constants::MODULE_SLUG);
                     $oEmail
                         ->data([
                             'label'   => $oForm->label,
@@ -185,7 +186,7 @@ class Forms extends Base
                 if (isLoggedIn() && $oForm->thankyou_email->send && !empty($sSubject) && !empty($sBody)) {
 
                     /** @var \Nails\CustomForms\Factory\Email\Form\Submitted\Thanks $oEmail */
-                    $oEmail = Factory::factory('EmailFormSubmittedThanks', 'nails/module-custom-forms');
+                    $oEmail = Factory::factory('EmailFormSubmittedThanks', Constants::MODULE_SLUG);
 
                     try {
                         $oEmail
@@ -255,7 +256,7 @@ class Forms extends Base
         }
 
         /** @var \Nails\CustomForms\Model\Form\Notification $oModel */
-        $oModel = Factory::model('FormNotification', 'nails/module-custom-forms');
+        $oModel = Factory::model('FormNotification', Constants::MODULE_SLUG);
 
         foreach ($oResponse->answers as $oAnswer) {
 

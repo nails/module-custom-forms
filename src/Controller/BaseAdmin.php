@@ -14,6 +14,7 @@ namespace Nails\CustomForms\Controller;
 
 use Nails\Admin\Controller\Base;
 use Nails\Common\Service\Asset;
+use Nails\CustomForms\Constants;
 use Nails\Factory;
 
 /**
@@ -28,6 +29,6 @@ class BaseAdmin extends Base
         parent::__construct();
         /** @var Asset $oAsset */
         $oAsset = Factory::service('Asset');
-        $oAsset->load('admin.css', 'nails/module-custom-forms');
+        $oAsset->load('admin.css', Constants::MODULE_SLUG);
     }
 }
