@@ -20,6 +20,7 @@ $config['email_types'] = [
         'template_footer'  => '',
         'default_subject'  => 'The {{label}} form has been submitted',
         'can_unsubscribe'  => false,
+        'factory'          => 'nails/module-custom-forms::EmailFormSubmitted',
     ],
     (object) [
         'slug'             => 'custom_form_submitted_thanks',
@@ -30,5 +31,6 @@ $config['email_types'] = [
         'template_footer'  => '',
         'default_subject'  => '{{subject}}',
         'can_unsubscribe'  => false,
+        'factory'          => 'nails/module-custom-forms::EmailFormSubmittedThanks',
     ],
 ];

@@ -155,18 +155,25 @@ class Forms extends Base
 
                 //  Send notification email?
                 if (!empty($oForm->notifications->data)) {
-                    /** @var Email\Service\Emailer $oEmailer */
-                    $oEmailer = Factory::service('Emailer', Email\Constants::MODULE_SLUG);
+
+                    /** @var \Nails\CustomForms\Factory\Email\Form\Submitted $oEmail */
+                    $oEmail = Factory::factory('EmailFormSubmitted', 'nails/module-custom-forms');
+                    $oEmail
+                        ->data([
+                            'label'   => $oForm->label,
+                            'answers' => json_decode($aData['answers']),
+                        ]);
+
+
                     foreach ($oForm->notifications->data as $oNotify) {
                         if ($this->doSendNotification($oNotify, $oResponse)) {
-                            $oEmailer->send((object) [
-                                'to_email' => $oNotify->email,
-                                'type'     => 'custom_form_submitted',
-                                'data'     => (object) [
-                                    'label'   => $oForm->label,
-                                    'answers' => json_decode($aData['answers']),
-                                ],
-                            ]);
+                            try {
+                                $oEmail
+                                    ->to($oNotify->email)
+                                    ->send();
+                            } catch (\Nails\Email\Exception\EmailerException $e) {
+                                //  Do something with this info?
+                            }
                         }
                     }
                 }
@@ -176,16 +183,21 @@ class Forms extends Base
                 $sBody    = $oForm->thankyou_email->body;
 
                 if (isLoggedIn() && $oForm->thankyou_email->send && !empty($sSubject) && !empty($sBody)) {
-                    /** @var Email\Service\Emailer $oEmailer */
-                    $oEmailer = Factory::service('Emailer', Email\Constants::MODULE_SLUG);
-                    $oEmailer->send((object) [
-                        'to_id' => activeUser('id'),
-                        'type'  => 'custom_form_submitted_thanks',
-                        'data'  => (object) [
-                            'subject' => $sSubject,
-                            'body'    => $sBody,
-                        ],
-                    ]);
+
+                    /** @var \Nails\CustomForms\Factory\Email\Form\Submitted\Thanks $oEmail */
+                    $oEmail = Factory::factory('EmailFormSubmittedThanks', 'nails/module-custom-forms');
+
+                    try {
+                        $oEmail
+                            ->to(activeUser())
+                            ->data([
+                                'subject' => $sSubject,
+                                'body'    => $sBody,
+                            ])
+                            ->send();
+                    } catch (\Nails\Email\Exception\EmailerException $e) {
+                        //  Do something with this info?
+                    }
                 }
 
                 $this->oMetaData->setTitles([$oForm->thankyou_page->title]);
