@@ -7,7 +7,7 @@ use Nails\Email\Factory\Email;
 /**
  * Class Submitted
  *
- * @package Nails\Invoice\Factory\Email\Invoice
+ * @package Nails\CustomForms\Factory\Email\Form
  */
 class Submitted extends Email
 {
