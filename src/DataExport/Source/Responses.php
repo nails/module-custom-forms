@@ -100,7 +100,7 @@ class Responses implements Source
             $aFormattedResults[] = array_values($aTemp);
         }
 
-        return Factory::factory('DataExportSourceResponse', 'nails/module-admin')
+        return Factory::factory('DataExportSourceResponse', \Nails\Admin\Constants::MODULE_SLUG)
             ->setLabel($this->getLabel())
             ->setFileName($this->getFileName())
             ->setFields(array_values(array_merge([

@@ -46,7 +46,7 @@ class Forms extends BaseAdmin
         if (userHasPermission('admin:forms:forms:browse')) {
 
             /** @var Nav $oNavGroup */
-            $oNavGroup = Factory::factory('Nav', 'nails/module-admin');
+            $oNavGroup = Factory::factory('Nav', \Nails\Admin\Constants::MODULE_SLUG);
             $oNavGroup
                 ->setLabel('Custom Forms')
                 ->setIcon('fa-list-alt')
