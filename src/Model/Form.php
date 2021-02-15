@@ -78,7 +78,7 @@ class Form extends Base
             ->addExpandableField([
                 'trigger'   => 'form',
                 'model'     => 'Form',
-                'provider'  => 'nails/module-form-builder',
+                'provider'  => \Nails\FormBuilder\Constants::MODULE_SLUG,
                 'id_column' => 'form_id',
             ])
             ->addExpandableField([
@@ -121,7 +121,7 @@ class Form extends Base
             //  Create the associated form (if no ID supplied)
             if (empty($aForm['id'])) {
 
-                $oFormModel       = Factory::model('Form', 'nails/module-form-builder');
+                $oFormModel       = Factory::model('Form', \Nails\FormBuilder\Constants::MODULE_SLUG);
                 $aData['form_id'] = $oFormModel->create($aForm);
 
                 if (!$aData['form_id']) {
@@ -171,7 +171,7 @@ class Form extends Base
         /** @var Database $oDb */
         $oDb = Factory::service('Database');
         /** @var \Nails\FormBuilder\Model\Form $oFormModel */
-        $oFormModel = Factory::model('Form', 'nails/module-form-builder');
+        $oFormModel = Factory::model('Form', \Nails\FormBuilder\Constants::MODULE_SLUG);
         /** @var \DateTime $oNow */
         $oNow = Factory::factory('DateTime');
 
@@ -240,7 +240,7 @@ class Form extends Base
 
             //  Update the associated form (if no ID supplied)
             if (!empty($aForm['id'])) {
-                $oFormModel = Factory::model('Form', 'nails/module-form-builder');
+                $oFormModel = Factory::model('Form', \Nails\FormBuilder\Constants::MODULE_SLUG);
                 if (!$oFormModel->update($aForm['id'], $aForm)) {
                     throw new NailsException('Failed to update associated form.', 1);
                 }

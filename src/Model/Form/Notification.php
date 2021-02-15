@@ -94,7 +94,7 @@ class Notification extends Base
         ) {
             //  This field needs mapped to a [newly created] field item
             /** @var FormField $oFormFieldModel */
-            $oFormFieldModel = Factory::model('FormField', 'nails/module-form-builder');
+            $oFormFieldModel = Factory::model('FormField', \Nails\FormBuilder\Constants::MODULE_SLUG);
             $aFields         = $oFormFieldModel->getAll([
                 'where' => [
                     ['form_id', $aMatches[1]],

@@ -31,11 +31,11 @@ class Forms extends Base
         /** @var \Nails\CustomForms\Model\Form $oFormModel */
         $oFormModel = Factory::model('Form', Constants::MODULE_SLUG);
         /** @var \Nails\FormBuilder\Service\FieldType $oFieldTypeService */
-        $oFieldTypeService = Factory::service('FieldType', 'nails/module-form-builder');
+        $oFieldTypeService = Factory::service('FieldType', \Nails\FormBuilder\Constants::MODULE_SLUG);
         /** @var Captcha\Service\Captcha $oCaptcha */
         $oCaptcha = Factory::service('Captcha', Captcha\Constants::MODULE_SLUG);
 
-        Factory::helper('formbuilder', 'nails/module-form-builder');
+        Factory::helper('formbuilder', \Nails\FormBuilder\Constants::MODULE_SLUG);
 
         $sFormSlug         = $oUri->rsegment(3);
         $bIsCaptchaEnabled = $oCaptcha->isEnabled();

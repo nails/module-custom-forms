@@ -53,7 +53,7 @@ if (!empty($iFormId)) {
 
 if ($bShowWidget) {
 
-    Factory::helper('formbuilder', 'nails/module-form-builder');
+    Factory::helper('formbuilder', \Nails\FormBuilder\Constants::MODULE_SLUG);
 
     ?>
     <div class="cms-widget cms-widget-custom-forms">
