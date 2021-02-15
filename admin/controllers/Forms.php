@@ -27,6 +27,7 @@ use Nails\CustomForms\Controller\BaseAdmin;
 use Nails\CustomForms\Model\Form;
 use Nails\CustomForms\Model\Response;
 use Nails\Factory;
+use Nails\FormBuilder;
 
 /**
  * Class Forms
@@ -273,7 +274,7 @@ class Forms extends BaseAdmin
      */
     protected function loadViewData()
     {
-        Factory::helper('formbuilder', \Nails\FormBuilder\Constants::MODULE_SLUG);
+        Factory::helper('formbuilder', FormBuilder\Constants::MODULE_SLUG);
         adminLoadFormBuilderAssets('#custom-form-fields');
 
         /** @var Captcha\Service\Captcha $oCaptcha */
@@ -396,9 +397,18 @@ class Forms extends BaseAdmin
             $bValidForm = false;
         }
 
-        //  Validate fields
-        Factory::helper('formbuilder', \Nails\FormBuilder\Constants::MODULE_SLUG);
-        $bValidFields = adminValidateFormData($oInput->post('fields'));
+
+        try {
+
+            FormBuilder\Helper\FormBuilder::adminValidateFormData(
+                (array) $oInput->post('fields')
+            );
+
+            $bValidFields = true;
+
+        } catch (ValidationException $e) {
+            $bValidFields = false;
+        }
 
         return $bValidForm && $bValidFields;
     }
@@ -412,7 +422,7 @@ class Forms extends BaseAdmin
      */
     protected function getPostObject(): array
     {
-        Factory::helper('formbuilder', \Nails\FormBuilder\Constants::MODULE_SLUG);
+        Factory::helper('formbuilder', FormBuilder\Constants::MODULE_SLUG);
         /** @var Input $oInput */
         $oInput  = Factory::service('Input');
         $iFormId = !empty($this->data['form']->form->id) ? $this->data['form']->form->id : null;
