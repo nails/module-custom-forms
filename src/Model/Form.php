@@ -116,7 +116,7 @@ class Form extends Base
         try {
 
             $oDb = Factory::service('Database');
-            $oDb->trans_begin();
+            $oDb->transaction()->start();
 
             //  Create the associated form (if no ID supplied)
             if (empty($aForm['id'])) {
@@ -137,11 +137,11 @@ class Form extends Base
                 throw new NailsException('Failed to create form. ' . $this->lastError(), 1);
             }
 
-            $oDb->trans_commit();
+            $oDb->transaction()->commit();
             return $mResult;
 
         } catch (\Exception $e) {
-            $oDb->trans_rollback();
+            $oDb->transaction()->rollback();
             $this->setError($e->getMessage());
             return false;
         }
@@ -206,10 +206,10 @@ class Form extends Base
                 throw new ModelException('Failed to duplicate form. ' . $this->lastError());
             }
 
-            $oDb->trans_commit();
+            $oDb->transaction()->commit();
 
         } catch (\Exception $e) {
-            $oDb->trans_rollback();
+            $oDb->transaction()->rollback();
             throw $e;
         }
 
@@ -236,7 +236,7 @@ class Form extends Base
 
             $oDb = Factory::service('Database');
 
-            $oDb->trans_begin();
+            $oDb->transaction()->start();
 
             //  Update the associated form (if no ID supplied)
             if (!empty($aForm['id'])) {
@@ -250,11 +250,11 @@ class Form extends Base
                 throw new NailsException('Failed to update form. ' . $this->lastError(), 1);
             }
 
-            $oDb->trans_commit();
+            $oDb->transaction()->commit();
             return true;
 
         } catch (\Exception $e) {
-            $oDb->trans_rollback();
+            $oDb->transaction()->rollback();
             $this->setError($e->getMessage());
             return false;
         }
