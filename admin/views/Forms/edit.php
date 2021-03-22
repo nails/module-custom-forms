@@ -88,7 +88,7 @@
                 <?php
             }
 
-            echo adminLoadFormBuilderView(
+            echo \Nails\FormBuilder\Helper\FormBuilder::adminLoadView(
                 'custom-form-fields',
                 'fields',
                 $form->form->fields->data ?? []

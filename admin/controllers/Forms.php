@@ -274,9 +274,6 @@ class Forms extends BaseAdmin
      */
     protected function loadViewData()
     {
-        Factory::helper('formbuilder', FormBuilder\Constants::MODULE_SLUG);
-        adminLoadFormBuilderAssets('#custom-form-fields');
-
         /** @var Captcha\Service\Captcha $oCaptcha */
         $oCaptcha = Factory::service('Captcha', Captcha\Constants::MODULE_SLUG);
 
