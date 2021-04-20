@@ -231,10 +231,10 @@
             </div>
         </div>
     </section>
-    <div class="admin-floating-controls">
-        <button type="submit" class="btn btn-primary">
-            Save Changes
-        </button>
-    </div>
-    <?=form_close()?>
+    <?php
+
+    echo \Nails\Admin\Helper::floatingControls();
+    echo form_close();
+
+    ?>
 </div>
