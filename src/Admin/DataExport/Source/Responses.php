@@ -1,6 +1,6 @@
 <?php
 
-namespace Nails\CustomForms\DataExport\Source;
+namespace Nails\CustomForms\Admin\DataExport\Source;
 
 use Nails\Admin\Exception\DataExport\FailureException;
 use Nails\Admin\Interfaces\DataExport\Source;
