@@ -10,7 +10,7 @@ use Nails\Factory;
 /**
  * Class Responses
  *
- * @package Nails\CustomForms\DataExport\Source
+ * @package Nails\CustomForms\Admin\DataExport\Source
  */
 class Responses implements Source
 {
