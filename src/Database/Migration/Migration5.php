@@ -24,9 +24,9 @@ class Migration5 extends Base
      */
     public function execute()
     {
-        $this->query('UPDATE `{{NAILS_DB_PREFIX}}custom_form` SET `header` = '[]' WHERE `header` = "";');
-        $this->query('UPDATE `{{NAILS_DB_PREFIX}}custom_form` SET `footer` = '[]' WHERE `footer` = "";');
-        $this->query('UPDATE `{{NAILS_DB_PREFIX}}custom_form` SET `thankyou_page_body` = '[]' WHERE `thankyou_page_body` = "";');
+        $this->query('UPDATE `{{NAILS_DB_PREFIX}}custom_form` SET `header` = "[]" WHERE `header` = "";');
+        $this->query('UPDATE `{{NAILS_DB_PREFIX}}custom_form` SET `footer` = "[]" WHERE `footer` = "";');
+        $this->query('UPDATE `{{NAILS_DB_PREFIX}}custom_form` SET `thankyou_page_body` = "[]" WHERE `thankyou_page_body` = "";');
         $this->query('ALTER TABLE `{{NAILS_DB_PREFIX}}custom_form_response` CHANGE `answers` `answers` JSON NULL;');
         $this->query('ALTER TABLE `{{NAILS_DB_PREFIX}}custom_form` CHANGE `header` `header` JSON NOT NULL;');
         $this->query('ALTER TABLE `{{NAILS_DB_PREFIX}}custom_form` CHANGE `footer` `footer` JSON NOT NULL;');
