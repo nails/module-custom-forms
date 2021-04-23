@@ -425,8 +425,8 @@ class Forms extends BaseAdmin
         $iFormId = !empty($this->data['form']->form->id) ? $this->data['form']->form->id : null;
         $aData   = [
             'label'                  => $oInput->post('label'),
-            'header'                 => $oInput->post('header'),
-            'footer'                 => $oInput->post('footer'),
+            'header'                 => trim($oInput->post('header')) ?: '[]',
+            'footer'                 => trim($oInput->post('footer')) ?: '[]',
             'cta_label'              => $oInput->post('cta_label'),
             'cta_attributes'         => $oInput->post('cta_attributes'),
             'form_attributes'        => $oInput->post('form_attributes'),
@@ -435,7 +435,7 @@ class Forms extends BaseAdmin
             'thankyou_email_subject' => $oInput->post('thankyou_email_subject'),
             'thankyou_email_body'    => $oInput->post('thankyou_email_body'),
             'thankyou_page_title'    => $oInput->post('thankyou_page_title'),
-            'thankyou_page_body'     => $oInput->post('thankyou_page_body'),
+            'thankyou_page_body'     => trim($oInput->post('thankyou_page_body')) ?: '[]',
             'form'                   => adminNormalizeFormData(
                 $iFormId,
                 $oInput->post('has_captcha'),
