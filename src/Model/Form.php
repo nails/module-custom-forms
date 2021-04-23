@@ -125,7 +125,7 @@ class Form extends Base
                 $aData['form_id'] = $oFormModel->create($aForm);
 
                 if (!$aData['form_id']) {
-                    throw new NailsException('Failed to create associated form.', 1);
+                    throw new NailsException('Failed to create associated form.');
                 }
 
             } else {
@@ -134,7 +134,7 @@ class Form extends Base
 
             $mResult = parent::create($aData, $bReturnObject);
             if (!$mResult) {
-                throw new NailsException('Failed to create form. ' . $this->lastError(), 1);
+                throw new NailsException('Failed to create form. ' . $this->lastError());
             }
 
             $oDb->transaction()->commit();
@@ -242,12 +242,12 @@ class Form extends Base
             if (!empty($aForm['id'])) {
                 $oFormModel = Factory::model('Form', \Nails\FormBuilder\Constants::MODULE_SLUG);
                 if (!$oFormModel->update($aForm['id'], $aForm)) {
-                    throw new NailsException('Failed to update associated form.', 1);
+                    throw new NailsException('Failed to update associated form.');
                 }
             }
 
             if (!parent::update($iId, $aData)) {
-                throw new NailsException('Failed to update form. ' . $this->lastError(), 1);
+                throw new NailsException('Failed to update form. ' . $this->lastError());
             }
 
             $oDb->transaction()->commit();
