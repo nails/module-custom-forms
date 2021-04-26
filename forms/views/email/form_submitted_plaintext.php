@@ -16,10 +16,11 @@ foreach ($emailObject->data->answers as $oAnswer) {
     } elseif (!empty($oAnswer->field->type)) {
 
         $sClass = $oAnswer->field->type;
+        /** @var \Nails\FormBuilder\Interfaces\FieldType $oField */
         $oField = new $sClass();
 
         echo $oField->extractText(
-                $oAnswer->answer,
+                (string) $oAnswer->answer,
                 $oAnswer->answer,
                 true
             ) . "\n\n";
