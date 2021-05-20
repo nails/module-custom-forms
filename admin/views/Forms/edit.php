@@ -40,6 +40,14 @@
                     'default'     => !empty($form->label) ? $form->label : '',
                 ]);
 
+                echo form_field([
+                    'key'         => 'slug',
+                    'label'       => 'Slug',
+                    'placeholder' => 'Define the form\'s slug',
+                    'default'     => !empty($form->slug) ? $form->slug : '',
+                    'info'        => 'If not defined, slug will be automatically generated from the form\'s label.',
+                ]);
+
                 echo form_field_cms_widgets([
                     'key'     => 'header',
                     'label'   => 'Header',

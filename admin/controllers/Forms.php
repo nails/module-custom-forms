@@ -241,7 +241,7 @@ class Forms extends BaseAdmin
         }
 
         if ($oInput->post()) {
-            if ($this->runFormValidation()) {
+            if ($this->runFormValidation([], $this->data['form'])) {
                 if ($oFormModel->update($iFormId, $this->getPostObject())) {
 
                     /** @var Session $oSession */
@@ -340,8 +340,10 @@ class Forms extends BaseAdmin
      *
      * @return bool
      */
-    protected function runFormValidation(array $aOverrides = [])
+    protected function runFormValidation(array $aOverrides = [], $oForm = null)
     {
+        /** @var Form $oFormModel */
+        $oFormModel = Factory::model('Form', Constants::MODULE_SLUG);
         /** @var FormValidation $oFormValidation */
         $oFormValidation = Factory::service('FormValidation');
         /** @var Input $oInput */
@@ -352,6 +354,11 @@ class Forms extends BaseAdmin
             $oFormValidation
                 ->buildValidator([
                     'label'                  => [FormValidation::RULE_REQUIRED],
+                    'slug'                   => [
+                        $oForm
+                            ? FormValidation::rule(FormValidation::RULE_UNIQUE_IF_DIFF, $oFormModel->getTableName(), 'slug', $oForm->slug)
+                            : FormValidation::rule(FormValidation::RULE_UNIQUE, $oFormModel->getTableName(), 'slug'),
+                    ],
                     'header'                 => [''],
                     'footer'                 => [''],
                     'cta_label'              => [''],
@@ -394,7 +401,6 @@ class Forms extends BaseAdmin
             $bValidForm = false;
         }
 
-
         try {
 
             FormBuilder\Helper\FormBuilder::adminValidateFormData(
@@ -424,7 +430,7 @@ class Forms extends BaseAdmin
         $oInput  = Factory::service('Input');
         $iFormId = !empty($this->data['form']->form->id) ? $this->data['form']->form->id : null;
         $aData   = [
-            'label'                  => $oInput->post('label'),
+            'label'                  => trim($oInput->post('label')),
             'header'                 => trim($oInput->post('header')) ?: '[]',
             'footer'                 => trim($oInput->post('footer')) ?: '[]',
             'cta_label'              => $oInput->post('cta_label'),
@@ -443,6 +449,11 @@ class Forms extends BaseAdmin
             ),
             'notifications'          => $this->extractNotificationsFromPost(),
         ];
+
+        $sSlug = trim($oInput->post('slug'));
+        if ($sSlug) {
+            $aData['slug'] = $sSlug;
+        }
 
         /**
          * For fieldNumber:{\d} values we need to generate a signature so we can

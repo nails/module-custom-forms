@@ -20,7 +20,6 @@ use Nails\Common\Model\Base;
 use Nails\Common\Service\Database;
 use Nails\CustomForms\Constants;
 use Nails\Factory;
-use phpDocumentor\Reflection\Types\Boolean;
 
 /**
  * Class Form
@@ -42,6 +41,13 @@ class Form extends Base
      * @var bool
      */
     const AUTO_SET_SLUG = true;
+
+    /**
+     * Whether a slug is immutable or not
+     *
+     * @var bool
+     */
+    const AUTO_SET_SLUG_IMMUTABLE = false;
 
     /**
      * Whether this model uses destructive delete or not
