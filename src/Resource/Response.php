@@ -13,6 +13,7 @@
 namespace Nails\CustomForms\Resource;
 
 use Nails\Common\Resource\Entity;
+use Nails\CustomForms\Resource;
 
 /**
  * Class Response
@@ -21,4 +22,15 @@ use Nails\Common\Resource\Entity;
  */
 class Response extends Entity
 {
+    /** @var int */
+    public $form_id;
+
+    /** @var Resource\Form */
+    public $form;
+
+    /** @var \stdClass[] */
+    public $answers;
+
+    /** @var bool */
+    public $is_deleted;
 }

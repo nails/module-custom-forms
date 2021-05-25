@@ -3,3 +3,8 @@ parameters:
     paths:
         - ../src
         - ../tests
+    bootstrapFiles:
+        - constants.php
+    scanFiles:
+        - ../vendor/nails/common/helpers/date.php
+        - ../vendor/nails/common/helpers/url.php

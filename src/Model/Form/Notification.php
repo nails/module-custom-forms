@@ -17,7 +17,7 @@ use Nails\Common\Exception\ModelException;
 use Nails\Common\Model\Base;
 use Nails\CustomForms\Constants;
 use Nails\Factory;
-use Nails\FormBuilder\Model\FormField;
+use Nails\FormBuilder\Model\Form\Field;
 
 /**
  * Class Notification
@@ -93,9 +93,10 @@ class Notification extends Base
             preg_match('/^(\d+):(\d+)$/', $aData['condition_field_id'], $aMatches)
         ) {
             //  This field needs mapped to a [newly created] field item
-            /** @var FormField $oFormFieldModel */
+            /** @var Field $oFormFieldModel */
             $oFormFieldModel = Factory::model('FormField', \Nails\FormBuilder\Constants::MODULE_SLUG);
-            $aFields         = $oFormFieldModel->getAll([
+            /** @var \Nails\FormBuilder\Resource\Form\Field[] $aFields */
+            $aFields = $oFormFieldModel->getAll([
                 'where' => [
                     ['form_id', $aMatches[1]],
                     ['order', $aMatches[2]],

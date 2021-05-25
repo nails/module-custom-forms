@@ -76,12 +76,7 @@ class Response extends Base
     {
         parent::__construct();
         $this
-            ->addExpandableField([
-                'trigger'   => 'form',
-                'model'     => 'Form',
-                'provider'  => Constants::MODULE_SLUG,
-                'id_column' => 'form_id',
-            ]);
+            ->hasOne('form', 'Form', Constants::MODULE_SLUG);
     }
 
     // --------------------------------------------------------------------------

@@ -21,4 +21,21 @@ use Nails\Common\Resource\Entity;
  */
 class Notification extends Entity
 {
+    /** @var int */
+    public $form_id;
+
+    /** @var string */
+    public $email;
+
+    /** @var bool */
+    public $condition_enabled;
+
+    /** @var int */
+    public $condition_field_id;
+
+    /** @var string */
+    public $condition_operator;
+
+    /** @var string */
+    public $condition_value;
 }

@@ -19,6 +19,7 @@ use Nails\Common\Exception\ValidationException;
 use Nails\Common\Model\Base;
 use Nails\Common\Service\Database;
 use Nails\CustomForms\Constants;
+use Nails\CustomForms\Resource;
 use Nails\Factory;
 
 /**
@@ -81,26 +82,9 @@ class Form extends Base
     {
         parent::__construct();
         $this
-            ->addExpandableField([
-                'trigger'   => 'form',
-                'model'     => 'Form',
-                'provider'  => \Nails\FormBuilder\Constants::MODULE_SLUG,
-                'id_column' => 'form_id',
-            ])
-            ->addExpandableField([
-                'trigger'   => 'notifications',
-                'type'      => self::EXPANDABLE_TYPE_MANY,
-                'model'     => 'FormNotification',
-                'provider'  => Constants::MODULE_SLUG,
-                'id_column' => 'form_id',
-            ])
-            ->addExpandableField([
-                'trigger'   => 'responses',
-                'type'      => self::EXPANDABLE_TYPE_MANY,
-                'model'     => 'Response',
-                'provider'  => Constants::MODULE_SLUG,
-                'id_column' => 'form_id',
-            ]);
+            ->hasOne('form', 'Form', \Nails\FormBuilder\Constants::MODULE_SLUG)
+            ->hasMany('notifications', 'FormNotification', 'form_id', Constants::MODULE_SLUG)
+            ->hasMany('responses', 'Response', 'form_id', Constants::MODULE_SLUG);
     }
 
     // --------------------------------------------------------------------------
@@ -119,9 +103,11 @@ class Form extends Base
         $aForm = array_key_exists('form', $aData) ? $aData['form'] : null;
         unset($aData['form']);
 
+        /** @var Database $oDb */
+        $oDb = Factory::service('Database');
+
         try {
 
-            $oDb = Factory::service('Database');
             $oDb->transaction()->start();
 
             //  Create the associated form (if no ID supplied)
@@ -169,6 +155,7 @@ class Form extends Base
      */
     public function copy(int $iFormId, bool $bReturnObject = false, array $aReturnData = [])
     {
+        /** @var Resource\Form $oForm */
         $oForm = $this->getById($iFormId);
         if (empty($iFormId)) {
             throw new ValidationException('Invalid form ID');
@@ -230,7 +217,7 @@ class Form extends Base
      * @param int   $iId   The ID of the form to update
      * @param array $aData The data to update the form with
      *
-     * @return mixed
+     * @return bool
      */
     public function update($iId, array $aData = []): bool
     {
@@ -238,9 +225,10 @@ class Form extends Base
         $aForm = array_key_exists('form', $aData) ? $aData['form'] : null;
         unset($aData['form']);
 
-        try {
+        /** @var Database $oDb */
+        $oDb = Factory::service('Database');
 
-            $oDb = Factory::service('Database');
+        try {
 
             $oDb->transaction()->start();
 

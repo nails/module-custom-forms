@@ -2,9 +2,11 @@
 
 namespace Nails\CustomForms\Admin\DataExport\Source;
 
+use Nails\Common\Helper\ArrayHelper;
 use Nails\Admin\Exception\DataExport\FailureException;
 use Nails\Admin\Interfaces\DataExport\Source;
 use Nails\CustomForms\Constants;
+use Nails\CustomForms\Resource;
 use Nails\Factory;
 
 /**
@@ -63,12 +65,14 @@ class Responses implements Source
         $oFormModel     = Factory::model('Form', Constants::MODULE_SLUG);
         $oResponseModel = Factory::model('Response', Constants::MODULE_SLUG);
 
-        $iFormId = (int) getFromArray('form_id', $aOptions) ?: null;
-        $oForm   = $oFormModel->getById($iFormId);
+        $iFormId = (int) ArrayHelper::get('form_id', $aOptions) ?: null;
+        /** @var Resource\Form $oForm */
+        $oForm = $oFormModel->getById($iFormId);
         if (empty($oForm)) {
             throw new FailureException('Invalid Form ID');
         }
 
+        /** @var Resource\Response[] $aResults */
         $aResults = $oResponseModel->getAll([
             'expand' => ['form'],
             'where'  => [

@@ -24,8 +24,10 @@
     "prefer-stable": true,
     "require": {
         "nails/common": "dev-develop",
-        "nails/module-form-builder": "dev-develop",
-        "nails/module-captcha": "dev-develop"
+        "nails/module-admin": "dev-develop",
+        "nails/module-captcha": "dev-develop",
+        "nails/module-email": "dev-develop",
+        "nails/module-form-builder": "dev-develop"
     },
     "require-dev": {
         "phpunit/phpunit": "9.*",
