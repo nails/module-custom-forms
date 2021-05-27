@@ -20,7 +20,7 @@ use Nails\Common\Exception\ModelException;
 use Nails\Common\Exception\ValidationException;
 use Nails\Common\Service\FormValidation;
 use Nails\Common\Service\Input;
-use Nails\Common\Service\Session;
+use Nails\Common\Service\UserFeedback;
 use Nails\Common\Service\Uri;
 use Nails\CustomForms\Constants;
 use Nails\CustomForms\Controller\BaseAdmin;
@@ -174,9 +174,9 @@ class Forms extends BaseAdmin
 
                 if ($iFormId) {
 
-                    /** @var Session $oSession */
-                    $oSession = Factory::service('Session');
-                    $oSession->setFlashData('success', 'Form created successfully.');
+                    /** @var UserFeedback $oUserFeedback */
+                    $oUserFeedback = Factory::service('UserFeedback');
+                    $oUserFeedback->success('Form created successfully.');
                     redirect('admin/forms/forms/edit/' . $iFormId);
 
                 } else {
@@ -244,9 +244,9 @@ class Forms extends BaseAdmin
             if ($this->runFormValidation([], $this->data['form'])) {
                 if ($oFormModel->update($iFormId, $this->getPostObject())) {
 
-                    /** @var Session $oSession */
-                    $oSession = Factory::service('Session');
-                    $oSession->setFlashData('success', 'Form updated successfully.');
+                    /** @var UserFeedback $oUserFeedback */
+                    $oUserFeedback = Factory::service('UserFeedback');
+                    $oUserFeedback->success('Form updated successfully.');
                     redirect('admin/forms/forms/edit/' . $this->data['form']->id);
 
                 } else {
@@ -491,6 +491,8 @@ class Forms extends BaseAdmin
         $oInput = Factory::service('Input');
         /** @var Uri $oUri */
         $oUri = Factory::service('Uri');
+        /** @var UserFeedback $oUserFeedback */
+        $oUserFeedback = Factory::service('UserFeedback');
         /** @var Form $oFormModel */
         $oFormModel = Factory::model('Form', Constants::MODULE_SLUG);
 
@@ -498,16 +500,10 @@ class Forms extends BaseAdmin
         $sReturn = $oInput->get('return') ? $oInput->get('return') : 'admin/forms/forms/index';
 
         if ($oFormModel->delete($iFormId)) {
-            $sStatus  = 'success';
-            $sMessage = 'Custom form was deleted successfully.';
+            $oUserFeedback->success('Custom form was deleted successfully.');
         } else {
-            $sStatus  = 'error';
-            $sMessage = 'Custom form failed to delete. ' . $oFormModel->lastError();
+            $oUserFeedback->error('Custom form failed to delete. ' . $oFormModel->lastError());
         }
-
-        /** @var Session $oSession */
-        $oSession = Factory::service('Session');
-        $oSession->setFlashData($sStatus, $sMessage);
 
         redirect($sReturn);
     }
@@ -651,15 +647,15 @@ class Forms extends BaseAdmin
      */
     protected function responseDelete($oResponse, $oForm)
     {
-        /** @var Session $oSession */
-        $oSession = Factory::service('Session');
+        /** @var UserFeedback $oUserFeedback */
+        $oUserFeedback = Factory::service('UserFeedback');
         /** @var Response $oModel */
         $oModel = Factory::model('Response', Constants::MODULE_SLUG);
 
         if ($oModel->delete($oResponse->id)) {
-            $oSession->setFlashData('success', 'Response deleted successfully!');
+            $oUserFeedback->success('Response deleted successfully!');
         } else {
-            $oSession->setFlashData('error', 'Failed to delete response. ' . $oModel->lastError());
+            $oUserFeedback->error('Failed to delete response. ' . $oModel->lastError());
         }
 
         redirect('admin/forms/forms/responses/' . $oForm->id);
@@ -683,25 +679,21 @@ class Forms extends BaseAdmin
         $oInput = Factory::service('Input');
         /** @var Uri $oUri */
         $oUri = Factory::service('Uri');
+        /** @var UserFeedback $oUserFeedback */
+        $oUserFeedback = Factory::service('UserFeedback');
         /** @var Form $oFormModel */
         $oFormModel = Factory::model('Form', Constants::MODULE_SLUG);
 
         try {
 
             $iNewFormId   = $oFormModel->copy((int) $oUri->segment(5));
-            $sStatus      = 'success';
-            $sMessage     = 'Custom form was copied successfully.';
+            $oUserFeedback->success('Custom form was copied successfully.');
             $sRedirectUrl = 'admin/forms/forms/edit/' . $iNewFormId;
 
         } catch (\Exception $e) {
-            $sStatus      = 'error';
-            $sMessage     = 'Custom form failed to copy. ' . $e->getMessage();
+            $oUserFeedback->error('Custom form failed to copy. ' . $e->getMessage());
             $sRedirectUrl = $oInput->get('return') ? $oInput->get('return') : 'admin/forms/forms/index';
         }
-
-        /** @var Session $oSession */
-        $oSession = Factory::service('Session');
-        $oSession->setFlashData($sStatus, $sMessage);
 
         redirect($sRedirectUrl);
     }
