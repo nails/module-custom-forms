@@ -37,7 +37,7 @@
                                 $oField = new $sClass();
 
                                 echo $oField->extractText(
-                                    $oAnswer->answer,
+                                    (string) $oAnswer->answer,
                                     $oAnswer->answer
                                 );
 
