@@ -593,20 +593,42 @@ class Forms extends BaseAdmin
         if ($oInput->get('dl')) {
 
             $aResults = [];
-            $aColumns = ['Created'];
+            $aColumns = [];
             $oHeader  = reset($this->data['responses']);
 
-            foreach ($oHeader->answers as $oColumn) {
-                $aColumns[] = $oColumn->question;
+            //  Extract all questions
+            foreach ($this->data['responses'] as $oResponse) {
+                foreach ($oResponse->answers as $oAnswer) {
+                    if (!in_array($oAnswer->question, $aColumns)) {
+                        $aColumns[] = $oAnswer->question;
+                    }
+                }
             }
 
             foreach ($this->data['responses'] as $oResponse) {
-                $aRow = [$oResponse->created];
-                foreach ($oResponse->answers as $oColumn) {
-                    $aRow[] = is_array($oColumn->answer) ? implode('|', $oColumn->answer) : $oColumn->answer;
+
+                $aRow = [];
+                foreach ($aColumns as $sQuestion) {
+                    $bFound = false;
+                    foreach ($oResponse->answers as $oAnswer) {
+                        if ($sQuestion === $oAnswer->question) {
+                            $bFound = true;
+                            $aRow[] = is_array($oAnswer->answer)
+                                ? implode('|', $oAnswer->answer)
+                                : $oAnswer->answer;
+                            break;
+                        }
+                    }
+
+                    if (!$bFound) {
+                        $aRow[] = null;
+                    }
                 }
 
-                $aResult[] = array_combine($aColumns, $aRow);
+                $aResult[] = array_combine(
+                    array_merge(['Created'], $aColumns),
+                    array_merge([(string) $oResponse->created], $aRow),
+                );
             }
 
             Helper::loadCsv($aResult, $this->data['form']->slug . '.csv');
@@ -686,7 +708,7 @@ class Forms extends BaseAdmin
 
         try {
 
-            $iNewFormId   = $oFormModel->copy((int) $oUri->segment(5));
+            $iNewFormId = $oFormModel->copy((int) $oUri->segment(5));
             $oUserFeedback->success('Custom form was copied successfully.');
             $sRedirectUrl = 'admin/forms/forms/edit/' . $iNewFormId;
 
