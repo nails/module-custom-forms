@@ -20,7 +20,6 @@ use Nails\Common\Exception\ModelException;
 use Nails\Common\Exception\ValidationException;
 use Nails\Common\Service\FormValidation;
 use Nails\Common\Service\Input;
-use Nails\Common\Service\UserFeedback;
 use Nails\Common\Service\Uri;
 use Nails\CustomForms\Constants;
 use Nails\CustomForms\Controller\BaseAdmin;
@@ -174,17 +173,15 @@ class Forms extends BaseAdmin
 
                 if ($iFormId) {
 
-                    /** @var UserFeedback $oUserFeedback */
-                    $oUserFeedback = Factory::service('UserFeedback');
-                    $oUserFeedback->success('Form created successfully.');
+                    $this->oUserFeedback->success('Form created successfully.');
                     redirect('admin/forms/forms/edit/' . $iFormId);
 
                 } else {
-                    $this->data['error'] = 'Failed to create form.' . $oFormModel->lastError();
+                    $this->oUserFeedback->error('Failed to create form.' . $oFormModel->lastError());
                 }
 
             } else {
-                $this->data['error'] = lang('fv_there_were_errors');
+                $this->oUserFeedback->error(lang('fv_there_were_errors'));
             }
         }
 
@@ -244,17 +241,15 @@ class Forms extends BaseAdmin
             if ($this->runFormValidation([], $this->data['form'])) {
                 if ($oFormModel->update($iFormId, $this->getPostObject())) {
 
-                    /** @var UserFeedback $oUserFeedback */
-                    $oUserFeedback = Factory::service('UserFeedback');
-                    $oUserFeedback->success('Form updated successfully.');
+                    $this->oUserFeedback->success('Form updated successfully.');
                     redirect('admin/forms/forms/edit/' . $this->data['form']->id);
 
                 } else {
-                    $this->data['error'] = 'Failed to update form. ' . $oFormModel->lastError();
+                    $this->oUserFeedback->error('Failed to update form. ' . $oFormModel->lastError());
                 }
 
             } else {
-                $this->data['error'] = lang('fv_there_were_errors');
+                $this->oUserFeedback->error(lang('fv_there_were_errors'));
             }
         }
 
@@ -491,8 +486,6 @@ class Forms extends BaseAdmin
         $oInput = Factory::service('Input');
         /** @var Uri $oUri */
         $oUri = Factory::service('Uri');
-        /** @var UserFeedback $oUserFeedback */
-        $oUserFeedback = Factory::service('UserFeedback');
         /** @var Form $oFormModel */
         $oFormModel = Factory::model('Form', Constants::MODULE_SLUG);
 
@@ -500,9 +493,9 @@ class Forms extends BaseAdmin
         $sReturn = $oInput->get('return') ? $oInput->get('return') : 'admin/forms/forms/index';
 
         if ($oFormModel->delete($iFormId)) {
-            $oUserFeedback->success('Custom form was deleted successfully.');
+            $this->oUserFeedback->success('Custom form was deleted successfully.');
         } else {
-            $oUserFeedback->error('Custom form failed to delete. ' . $oFormModel->lastError());
+            $this->oUserFeedback->error('Custom form failed to delete. ' . $oFormModel->lastError());
         }
 
         redirect($sReturn);
@@ -669,15 +662,13 @@ class Forms extends BaseAdmin
      */
     protected function responseDelete($oResponse, $oForm)
     {
-        /** @var UserFeedback $oUserFeedback */
-        $oUserFeedback = Factory::service('UserFeedback');
         /** @var Response $oModel */
         $oModel = Factory::model('Response', Constants::MODULE_SLUG);
 
         if ($oModel->delete($oResponse->id)) {
-            $oUserFeedback->success('Response deleted successfully!');
+            $this->oUserFeedback->success('Response deleted successfully!');
         } else {
-            $oUserFeedback->error('Failed to delete response. ' . $oModel->lastError());
+            $this->oUserFeedback->error('Failed to delete response. ' . $oModel->lastError());
         }
 
         redirect('admin/forms/forms/responses/' . $oForm->id);
@@ -701,19 +692,17 @@ class Forms extends BaseAdmin
         $oInput = Factory::service('Input');
         /** @var Uri $oUri */
         $oUri = Factory::service('Uri');
-        /** @var UserFeedback $oUserFeedback */
-        $oUserFeedback = Factory::service('UserFeedback');
         /** @var Form $oFormModel */
         $oFormModel = Factory::model('Form', Constants::MODULE_SLUG);
 
         try {
 
             $iNewFormId = $oFormModel->copy((int) $oUri->segment(5));
-            $oUserFeedback->success('Custom form was copied successfully.');
+            $this->oUserFeedback->success('Custom form was copied successfully.');
             $sRedirectUrl = 'admin/forms/forms/edit/' . $iNewFormId;
 
         } catch (\Exception $e) {
-            $oUserFeedback->error('Custom form failed to copy. ' . $e->getMessage());
+            $this->oUserFeedback->error('Custom form failed to copy. ' . $e->getMessage());
             $sRedirectUrl = $oInput->get('return') ? $oInput->get('return') : 'admin/forms/forms/index';
         }
 

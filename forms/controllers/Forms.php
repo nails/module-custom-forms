@@ -215,7 +215,7 @@ class Forms extends Base
                     ]);
 
             } catch (\Exception $e) {
-                $this->data['error'] = $e->getMessage();
+                $this->oUserFeedback->error($e->getMessage());
             }
         }
 
