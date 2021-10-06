@@ -352,7 +352,7 @@ class Forms extends BaseAdmin
                     'slug'                   => [
                         $oForm
                             ? FormValidation::rule(FormValidation::RULE_UNIQUE_IF_DIFF, $oFormModel->getTableName(), 'slug', $oForm->slug)
-                            : FormValidation::rule(FormValidation::RULE_UNIQUE, $oFormModel->getTableName(), 'slug'),
+                            : FormValidation::rule(FormValidation::RULE_IS_UNIQUE, $oFormModel->getTableName(), 'slug'),
                     ],
                     'header'                 => [''],
                     'footer'                 => [''],
