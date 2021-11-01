@@ -7,7 +7,7 @@
     "repository": "https://github.com/nails/module-cms",
     "devDependencies": {
         "autoprefixer": "^9.8",
-        "css-loader": "^6.4",
+        "css-loader": "^6.5",
         "mini-css-extract-plugin": "^2.4",
         "sass": "^1.43",
         "postcss-loader": "^6.2",
