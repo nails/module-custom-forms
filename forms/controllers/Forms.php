@@ -69,7 +69,7 @@ class Forms extends Base
         if ($oInput->post()) {
             try {
 
-                if (!formBuilderValidate($oForm->form->fields->data, $oInput->post('field'))) {
+                if (!formBuilderValidate($oForm->form->fields->data, (array) $oInput->post('field'))) {
                     throw new ValidationException(lang('fv_there_were_errors'));
                 }
 
