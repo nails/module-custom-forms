@@ -66,7 +66,7 @@ class Responses implements Source
         $oResponseModel = Factory::model('Response', Constants::MODULE_SLUG);
 
         $iFormId = (int) ArrayHelper::get('form_id', $aOptions) ?: null;
-        /** @var Resource\Form $oForm */
+        /** @var Resource\Form|null $oForm */
         $oForm = $oFormModel->getById($iFormId);
         if (empty($oForm)) {
             throw new FailureException('Invalid Form ID');
