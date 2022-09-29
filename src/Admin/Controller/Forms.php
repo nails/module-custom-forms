@@ -10,8 +10,9 @@
  * @link
  */
 
-namespace Nails\Admin\Forms;
+namespace Nails\CustomForms\Admin\Controller;
 
+use Nails\Admin\Controller\Base;
 use Nails\Admin\Factory\Nav;
 use Nails\Admin\Helper;
 use Nails\Captcha;
@@ -21,6 +22,7 @@ use Nails\Common\Exception\ValidationException;
 use Nails\Common\Service\FormValidation;
 use Nails\Common\Service\Input;
 use Nails\Common\Service\Uri;
+use Nails\CustomForms\Admin\Permission;
 use Nails\CustomForms\Constants;
 use Nails\CustomForms\Controller\BaseAdmin;
 use Nails\CustomForms\Model\Form;
@@ -31,9 +33,9 @@ use Nails\FormBuilder;
 /**
  * Class Forms
  *
- * @package Nails\Admin\Forms
+ * @package Nails\CustomForms\Admin\Controller
  */
-class Forms extends BaseAdmin
+class Forms extends Base
 {
     /**
      * Announces this controller's navGroups
@@ -42,7 +44,7 @@ class Forms extends BaseAdmin
      */
     public static function announce()
     {
-        if (userHasPermission('admin:forms:forms:browse')) {
+        if (userHasPermission(Permission\Form\Browse::class)) {
 
             /** @var Nav $oNavGroup */
             $oNavGroup = Factory::factory('Nav', \Nails\Admin\Constants::MODULE_SLUG);
@@ -58,34 +60,13 @@ class Forms extends BaseAdmin
     // --------------------------------------------------------------------------
 
     /**
-     * Returns an array of extra permissions for this controller
-     *
-     * @return array
-     */
-    public static function permissions(): array
-    {
-        $aPermissions = parent::permissions();
-
-        $aPermissions['browse']           = 'Can browse forms';
-        $aPermissions['create']           = 'Can create and duplicate forms';
-        $aPermissions['edit']             = 'Can edit forms';
-        $aPermissions['delete']           = 'Can delete forms';
-        $aPermissions['responses']        = 'Can view responses';
-        $aPermissions['responses_delete'] = 'Can delete responses';
-
-        return $aPermissions;
-    }
-
-    // --------------------------------------------------------------------------
-
-    /**
      * Browse existing form
      *
      * @return void
      */
     public function index()
     {
-        if (!userHasPermission('admin:forms:forms:browse')) {
+        if (!userHasPermission(Permission\Form\Browse::class)) {
             unauthorised();
         }
 
@@ -99,7 +80,7 @@ class Forms extends BaseAdmin
         // --------------------------------------------------------------------------
 
         //  Set method info
-        $this->data['page']->title = 'Browse Forms';
+        $this->setTitles(['Browse Forms']);
 
         // --------------------------------------------------------------------------
 
@@ -140,8 +121,8 @@ class Forms extends BaseAdmin
         $this->data['pagination'] = Helper::paginationObject($iPage, $iPerPage, $totalRows);
 
         //  Add a header button
-        if (userHasPermission('admin:forms:forms:create')) {
-            Helper::addHeaderButton('admin/forms/forms/create', 'Create Form');
+        if (userHasPermission(Permission\Form\Create::class)) {
+            Helper::addHeaderButton(static::url('create'), 'Create Form');
         }
 
         // --------------------------------------------------------------------------
@@ -158,7 +139,7 @@ class Forms extends BaseAdmin
      */
     public function create()
     {
-        if (!userHasPermission('admin:forms:forms:create')) {
+        if (!userHasPermission(Permission\Form\Create::class)) {
             unauthorised();
         }
 
@@ -174,7 +155,7 @@ class Forms extends BaseAdmin
                 if ($iFormId) {
 
                     $this->oUserFeedback->success('Form created successfully.');
-                    redirect('admin/forms/forms/edit/' . $iFormId);
+                    redirect(static::url('edit/' . $iFormId));
 
                 } else {
                     $this->oUserFeedback->error('Failed to create form.' . $oFormModel->lastError());
@@ -187,9 +168,10 @@ class Forms extends BaseAdmin
 
         // --------------------------------------------------------------------------
 
-        $this->data['page']->title = 'Create Form';
         $this->loadViewData();
-        Helper::loadView('edit');
+        $this
+            ->setTitles(['Create Form'])
+            ->loadView('edit');
     }
 
     // --------------------------------------------------------------------------
@@ -201,7 +183,7 @@ class Forms extends BaseAdmin
      */
     public function edit()
     {
-        if (!userHasPermission('admin:forms:forms:edit')) {
+        if (!userHasPermission(Permission\Form\Edit::class)) {
             unauthorised();
         }
 
@@ -242,7 +224,7 @@ class Forms extends BaseAdmin
                 if ($oFormModel->update($iFormId, $this->getPostObject())) {
 
                     $this->oUserFeedback->success('Form updated successfully.');
-                    redirect('admin/forms/forms/edit/' . $this->data['form']->id);
+                    redirect(static::url('edit/' . $this->data['form']->id));
 
                 } else {
                     $this->oUserFeedback->error('Failed to update form. ' . $oFormModel->lastError());
@@ -255,9 +237,10 @@ class Forms extends BaseAdmin
 
         // --------------------------------------------------------------------------
 
-        $this->data['page']->title = 'Edit Form';
         $this->loadViewData();
-        Helper::loadView('edit');
+        $this
+            ->setTitles(['Edit Form'])
+            ->loadView('edit');
     }
 
     // --------------------------------------------------------------------------
@@ -478,7 +461,7 @@ class Forms extends BaseAdmin
      */
     public function delete()
     {
-        if (!userHasPermission('admin:forms:forms:delete')) {
+        if (!userHasPermission(Permission\Form\Delete::class)) {
             unauthorised();
         }
 
@@ -490,7 +473,9 @@ class Forms extends BaseAdmin
         $oFormModel = Factory::model('Form', Constants::MODULE_SLUG);
 
         $iFormId = (int) $oUri->segment(5);
-        $sReturn = $oInput->get('return') ? $oInput->get('return') : 'admin/forms/forms/index';
+        $sReturn = $oInput->get('return')
+            ? $oInput->get('return')
+            : static::url();
 
         if ($oFormModel->delete($iFormId)) {
             $this->oUserFeedback->success('Custom form was deleted successfully.');
@@ -511,10 +496,6 @@ class Forms extends BaseAdmin
      */
     public function responses()
     {
-        if (!userHasPermission('admin:forms:forms:responses')) {
-            unauthorised();
-        }
-
         /** @var Uri $oUri */
         $oUri = Factory::service('Uri');
         /** @var Form $oFormModel */
@@ -570,12 +551,17 @@ class Forms extends BaseAdmin
      */
     protected function responsesList($oForm)
     {
+        if (!userHasPermission(Permission\Response\Browse::class)) {
+            unauthorised();
+        }
+
         /** @var Response $oResponseModel */
         $oResponseModel = Factory::model('Response', Constants::MODULE_SLUG);
 
-        $this->data['page']->title = 'Responses for form: ' . $oForm->label;
-        $this->data['form']        = $oForm;
-        $this->data['responses']   = $oResponseModel->getAll([
+        $this->setTitles(['Responses for form: ' . $oForm->label]);
+
+        $this->data['form']      = $oForm;
+        $this->data['responses'] = $oResponseModel->getAll([
             'where' => [
                 ['form_id', $oForm->id],
             ],
@@ -644,9 +630,14 @@ class Forms extends BaseAdmin
      */
     protected function responseView($oResponse, $oForm)
     {
-        $this->data['page']->title = 'Responses for form: ' . $oForm->label;
-        $this->data['response']    = $oResponse;
-        Helper::loadView('response');
+        if (!userHasPermission(Permission\Response\View::class)) {
+            unauthorised();
+        }
+
+        $this
+            ->setData('response', $oResponse)
+            ->setTitles(['Responses for form: ' . $oForm->label])
+            ->loadView('response');
     }
 
     // --------------------------------------------------------------------------
@@ -662,6 +653,10 @@ class Forms extends BaseAdmin
      */
     protected function responseDelete($oResponse, $oForm)
     {
+        if (!userHasPermission(Permission\Response\Delete::class)) {
+            unauthorised();
+        }
+
         /** @var Response $oModel */
         $oModel = Factory::model('Response', Constants::MODULE_SLUG);
 
@@ -671,7 +666,7 @@ class Forms extends BaseAdmin
             $this->oUserFeedback->error('Failed to delete response. ' . $oModel->lastError());
         }
 
-        redirect('admin/forms/forms/responses/' . $oForm->id);
+        redirect(static::url('responses/' . $oForm->id));
     }
 
     // --------------------------------------------------------------------------
@@ -684,7 +679,7 @@ class Forms extends BaseAdmin
      */
     public function copy()
     {
-        if (!userHasPermission('admin:forms:forms:create')) {
+        if (!userHasPermission(Permission\Form\Create::class)) {
             unauthorised();
         }
 
@@ -699,11 +694,13 @@ class Forms extends BaseAdmin
 
             $iNewFormId = $oFormModel->copy((int) $oUri->segment(5));
             $this->oUserFeedback->success('Custom form was copied successfully.');
-            $sRedirectUrl = 'admin/forms/forms/edit/' . $iNewFormId;
+            $sRedirectUrl = static::url('edit/' . $iNewFormId);
 
         } catch (\Exception $e) {
             $this->oUserFeedback->error('Custom form failed to copy. ' . $e->getMessage());
-            $sRedirectUrl = $oInput->get('return') ? $oInput->get('return') : 'admin/forms/forms/index';
+            $sRedirectUrl = $oInput->get('return')
+                ? $oInput->get('return')
+                : static::url();
         }
 
         redirect($sRedirectUrl);
