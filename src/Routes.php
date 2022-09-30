@@ -24,9 +24,9 @@ class Routes implements RouteGenerator
     /**
      * Returns an array of routes for this module
      *
-     * @return array
+     * @return string[]
      */
-    public static function generate()
+    public static function generate(): array
     {
         return [
             'forms(/(.+))?' => 'forms/index/$2',
