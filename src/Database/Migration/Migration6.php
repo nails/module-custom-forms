@@ -43,6 +43,12 @@ class Migration6 implements Interfaces\Database\Migration
      */
     public function execute(): void
     {
+        //  On a fresh build, this table might not yet exist
+        $oResult = $this->query('SHOW TABLES LIKE "{{NAILS_DB_PREFIX}}user_group"');
+        if ($oResult->rowCount() === 0) {
+            return;
+        }
+
         $oResult = $this->query('SELECT id, acl FROM `{{NAILS_DB_PREFIX}}user_group`');
         while ($row = $oResult->fetchObject()) {
 
