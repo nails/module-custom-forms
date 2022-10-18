@@ -202,7 +202,7 @@ class Forms extends Base
         $oFormModel = Factory::model('Form', Constants::MODULE_SLUG);
 
         $iFormId = (int) $oUri->segment(5);
-        /** @var \Nails\CustomForms\Resource\Form $oForm */
+        /** @var \Nails\CustomForms\Resource\Form|null $oForm */
         $oForm = $oFormModel->getById(
             $iFormId,
             [
