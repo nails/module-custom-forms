@@ -452,12 +452,12 @@ class Forms extends BaseAdmin
 
         /**
          * For fieldNumber:{\d} values we need to generate a signature so we can
-         * fetch the item later as the notificatuons require an Id, and this isn't
+         * fetch the item later as the notifications require an ID, and this isn't
          * available yet
          */
 
         foreach ($aData['notifications'] as $aNotification) {
-            if (preg_match('/^fieldNumber:(\d)+$/', $aNotification->condition_field_id, $aMatches)) {
+            if (preg_match('/^fieldNumber:(\d)+$/', (string) $aNotification->condition_field_id, $aMatches)) {
                 $aOption                           = getFromArray(
                     $aMatches[1],
                     $aData['form']['fields']
