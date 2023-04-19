@@ -112,7 +112,7 @@ class Forms extends Base
                 [$sSortOn, $sSortOrder],
             ],
             'keywords' => $sKeywords,
-            'expand'   => ['responses'],
+            'expand'   => ['responses:count'],
         ];
 
         //  Get the items for the page

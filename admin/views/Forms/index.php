@@ -46,7 +46,7 @@ use Nails\Admin\Helper;
                             if (userHasPermission(\Nails\CustomForms\Admin\Permission\Response\Browse::class)) {
                                 echo anchor(
                                     \Nails\CustomForms\Admin\Controller\Forms::url('responses/' . $form->id),
-                                    'View Responses (' . number_format($form->responses->count) . ')',
+                                    'View Responses (' . number_format($form->responses) . ')',
                                     'class="btn btn-xs btn-warning"'
                                 );
                             }
