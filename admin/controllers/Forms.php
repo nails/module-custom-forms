@@ -128,7 +128,7 @@ class Forms extends BaseAdmin
                 [$sSortOn, $sSortOrder],
             ],
             'keywords' => $sKeywords,
-            'expand'   => ['responses'],
+            'expand'   => ['responses:count'],
         ];
 
         //  Get the items for the page
