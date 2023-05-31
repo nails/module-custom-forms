@@ -90,7 +90,7 @@ class Notification extends Base
     {
         if (
             array_key_exists('condition_field_id', $aData) &&
-            preg_match('/^(\d+):(\d+)$/', $aData['condition_field_id'], $aMatches)
+            preg_match('/^(\d+):(\d+)$/', (string) $aData['condition_field_id'], $aMatches)
         ) {
             //  This field needs mapped to a [newly created] field item
             /** @var Field $oFormFieldModel */
