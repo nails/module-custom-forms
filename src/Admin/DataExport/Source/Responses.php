@@ -37,6 +37,18 @@ class Responses implements Source
 
     // --------------------------------------------------------------------------
 
+    /**
+     * Returns the source's extended description, HTML allowed, optional
+     *
+     * @return string
+     */
+    public function getDescriptionExtended(): string
+    {
+        return '';
+    }
+
+    // --------------------------------------------------------------------------
+
     public function getOptions(): array
     {
         $oModel = Factory::model('Form', Constants::MODULE_SLUG);
