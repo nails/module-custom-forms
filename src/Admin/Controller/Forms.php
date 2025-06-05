@@ -260,7 +260,7 @@ class Forms extends Base
      *
      * @throws FactoryException
      */
-    protected function loadViewData(\Nails\CustomForms\Resource\Form $oForm = null): self
+    protected function loadViewData(?\Nails\CustomForms\Resource\Form $oForm = null): self
     {
         /** @var Captcha\Service\Captcha $oCaptcha */
         $oCaptcha = Factory::service('Captcha', Captcha\Constants::MODULE_SLUG);
@@ -343,7 +343,7 @@ class Forms extends Base
      * @throws \Nails\Common\Exception\FactoryException
      * @throws \Nails\Common\Exception\ModelException
      */
-    protected function runFormValidation(array $aOverrides = [], \Nails\CustomForms\Resource\Form $oForm = null): bool
+    protected function runFormValidation(array $aOverrides = [], ?\Nails\CustomForms\Resource\Form $oForm = null): bool
     {
         /** @var Form $oFormModel */
         $oFormModel = Factory::model('Form', Constants::MODULE_SLUG);
@@ -429,7 +429,7 @@ class Forms extends Base
      * @return array
      * @throws \Nails\Common\Exception\FactoryException
      */
-    protected function getPostObject(\Nails\CustomForms\Resource\Form $oForm = null): array
+    protected function getPostObject(?\Nails\CustomForms\Resource\Form $oForm = null): array
     {
         Factory::helper('formbuilder', FormBuilder\Constants::MODULE_SLUG);
         /** @var Input $oInput */
