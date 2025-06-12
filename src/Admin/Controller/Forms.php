@@ -39,23 +39,20 @@ class Forms extends Base
 {
     /**
      * Announces this controller's navGroups
-     *
-     * @return Nav|void
      * @throws \Nails\Common\Exception\FactoryException
      */
-    public static function announce()
+    public static function announce(): Nav|array|null
     {
         if (userHasPermission(Permission\Form\Browse::class)) {
-
             /** @var Nav $oNavGroup */
             $oNavGroup = Factory::factory('Nav', \Nails\Admin\Constants::MODULE_SLUG);
             $oNavGroup
                 ->setLabel('Custom Forms')
                 ->setIcon('fa-list-alt')
                 ->addAction('Browse Forms');
-
-            return $oNavGroup;
         }
+
+        return $oNavGroup ?? null;
     }
 
     // --------------------------------------------------------------------------
