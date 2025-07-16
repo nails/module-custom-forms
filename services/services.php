@@ -45,25 +45,25 @@ return [
         },
     ],
     'resources' => [
-        'Form'             => function ($mObj): Resource\Form {
+        'Form'             => function ($resource, $model): Resource\Form {
             if (class_exists('\App\CustomForms\Resource\Form')) {
-                return new \App\CustomForms\Resource\Form($mObj);
+                return new \App\CustomForms\Resource\Form($resource, $model);
             } else {
-                return new Resource\Form($mObj);
+                return new Resource\Form($resource, $model);
             }
         },
-        'FormNotification' => function ($mObj): Resource\Form\Notification {
+        'FormNotification' => function ($resource, $model): Resource\Form\Notification {
             if (class_exists('\App\CustomForms\Resource\Form\Notification')) {
-                return new \App\CustomForms\Resource\Form\Notification($mObj);
+                return new \App\CustomForms\Resource\Form\Notification($resource, $model);
             } else {
-                return new Resource\Form\Notification($mObj);
+                return new Resource\Form\Notification($resource, $model);
             }
         },
-        'Response'         => function ($mObj): Resource\Response {
+        'Response'         => function ($resource, $model): Resource\Response {
             if (class_exists('\App\CustomForms\Resource\Response')) {
-                return new \App\CustomForms\Resource\Response($mObj);
+                return new \App\CustomForms\Resource\Response($resource, $model);
             } else {
-                return new Resource\Response($mObj);
+                return new Resource\Response($resource, $model);
             }
         },
     ],
