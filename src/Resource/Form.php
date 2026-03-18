@@ -13,7 +13,7 @@
 namespace Nails\CustomForms\Resource;
 
 use Nails\Common\Resource\Entity;
-use Nails\Common\Resource\ExpandableField;
+use Nails\Common\Resource\ExpandableFieldData;
 use Nails\CustomForms\Resource;
 
 /**
@@ -71,9 +71,9 @@ class Form extends Entity
     /** @var bool */
     public $is_deleted;
 
-    /** @var ExpandableField|null */
+    /** @var ExpandableFieldData|null */
     public $notifications;
 
-    /** @var ExpandableField|null */
+    /** @var ExpandableFieldData|null */
     public $responses;
 }
