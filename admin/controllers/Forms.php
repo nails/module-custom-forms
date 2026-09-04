@@ -18,13 +18,13 @@ use Nails\Captcha;
 use Nails\Common\Exception\FactoryException;
 use Nails\Common\Exception\ModelException;
 use Nails\Common\Exception\ValidationException;
-use Nails\Common\Service\FormValidation;
 use Nails\Common\Service\Input;
 use Nails\Common\Service\Uri;
 use Nails\CustomForms\Constants;
 use Nails\CustomForms\Controller\BaseAdmin;
 use Nails\CustomForms\Model\Form;
 use Nails\CustomForms\Model\Response;
+use Nails\CustomForms\Validator;
 use Nails\Factory;
 use Nails\FormBuilder;
 
@@ -334,58 +334,12 @@ class Forms extends BaseAdmin
      */
     protected function runFormValidation(array $aOverrides = [], $oForm = null)
     {
-        /** @var Form $oFormModel */
-        $oFormModel = Factory::model('Form', Constants::MODULE_SLUG);
-        /** @var FormValidation $oFormValidation */
-        $oFormValidation = Factory::service('FormValidation');
         /** @var Input $oInput */
         $oInput = Factory::service('Input');
 
         try {
 
-            $oFormValidation
-                ->buildValidator([
-                    'label'                  => [FormValidation::RULE_REQUIRED],
-                    'slug'                   => [
-                        $oForm
-                            ? FormValidation::rule(FormValidation::RULE_UNIQUE_IF_DIFF, $oFormModel->getTableName(), 'slug', $oForm->slug)
-                            : FormValidation::rule(FormValidation::RULE_IS_UNIQUE, $oFormModel->getTableName(), 'slug'),
-                    ],
-                    'header'                 => [''],
-                    'footer'                 => [''],
-                    'cta_label'              => [''],
-                    'cta_attributes'         => [''],
-                    'form_attributes'        => [''],
-                    'is_minimal'             => [''],
-                    'has_captcha'            => [''],
-                    'notifications'          => [''],
-                    'thankyou_email'         => [''],
-                    'thankyou_email_subject' => [''],
-                    'thankyou_email_body'    => [''],
-                    'thankyou_page_title'    => [
-                        function ($sTitle) use ($oInput) {
-                            $sTitle = trim($sTitle);
-                            $mBody  = json_decode($oInput->post('thankyou_page_body'));
-                            if (empty($sTitle) && empty($mBody)) {
-                                throw new ValidationException(
-                                    'Thank you page title is required if no body is set.'
-                                );
-                            }
-                        },
-                    ],
-                    'thankyou_page_body'     => [
-                        function ($mBody) use ($oInput) {
-                            $sTitle = trim($oInput->post('thankyou_page_title'));
-                            $mBody  = json_decode($oInput->post('thankyou_page_body'));
-                            if (empty($mBody) && empty($sTitle)) {
-                                throw new ValidationException(
-                                    'Thank you page body is required if no title is set.'
-                                );
-                            }
-                        },
-                    ],
-                ])
-                ->run();
+            (new Validator\Form($oForm))->run($oInput->post());
 
             $bValidForm = true;
 
