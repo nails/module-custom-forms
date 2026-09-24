@@ -6,7 +6,7 @@ use Nails\Admin\Helper;
 <div class="group-custom-forms browse">
     <?=Helper::loadSearch($search)?>
     <?=Helper::loadPagination($pagination)?>
-    <table class="table table-striped table-hover table-bordered table-responsive">
+    <table class="table table-striped table-hover table-responsive">
         <thead class="table-dark">
             <tr>
                 <th class="id">ID</th>
