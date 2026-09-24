@@ -5,7 +5,7 @@ use Nails\Admin\Helper;
 ?>
 <div class="group-custom-forms responses">
     <h2>Individual Responses (<?=number_format($form->responses->count)?>)</h2>
-    <table class="table table-striped table-hover table-bordered table-responsive">
+    <table class="table table-striped table-hover table-responsive">
         <thead class="table-dark">
             <tr>
                 <th class="usercell">
