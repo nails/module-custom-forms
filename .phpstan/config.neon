@@ -6,5 +6,6 @@ parameters:
     bootstrapFiles:
         - constants.php
     scanFiles:
+        - ../vendor/pocketarc/codeigniter/system/database/DB_result.php
         - ../vendor/nails/common/helpers/date.php
         - ../vendor/nails/common/helpers/url.php
