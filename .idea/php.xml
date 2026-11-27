@@ -102,6 +102,18 @@
       <path value="$PROJECT_DIR$/vendor/annexare/countries-list" />
       <path value="$PROJECT_DIR$/vendor/wikimedia/common-passwords" />
       <path value="$PROJECT_DIR$/vendor/phpunit/php-invoker" />
+      <path value="$PROJECT_DIR$/vendor/phpoption/phpoption" />
+      <path value="$PROJECT_DIR$/vendor/pocketarc/codeigniter" />
+      <path value="$PROJECT_DIR$/vendor/staabm/side-effects-detector" />
+      <path value="$PROJECT_DIR$/vendor/vlucas/phpdotenv" />
+      <path value="$PROJECT_DIR$/vendor/nails/module-housekeeping" />
+      <path value="$PROJECT_DIR$/vendor/nails/module-queue" />
+      <path value="$PROJECT_DIR$/vendor/nails/module-find-replace" />
+      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php83" />
+      <path value="$PROJECT_DIR$/vendor/symfony/translation-contracts" />
+      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php82" />
+      <path value="$PROJECT_DIR$/vendor/graham-campbell/result-type" />
+      <path value="$PROJECT_DIR$/vendor/lbuchs/webauthn" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.3">
